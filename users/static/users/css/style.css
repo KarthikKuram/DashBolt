@@ -1,0 +1,11 @@
+@import url("https://fonts.googleapis.com/css2?family=Dosis:wght@400;500&family=Playfair+Display&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Roboto:wght@300;400&display=swap");
+
+body {
+  /* font-family: "Playfair Display", serif !important; */
+  /* font-family: "Dosis", sans-serif !important; */
+  font-family: "Roboto", sans-serif !important;
+}
+.material-icons {
+  font-size: 20px;
+}

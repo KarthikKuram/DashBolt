@@ -1,0 +1,138 @@
+{% extends 'users/base.html' %} {% load static %} {% load crispy_forms_tags %}
+{% load widget_tweaks %} {% block content %}
+<div class="col-md-7 m-0">
+  <img
+    src="{% static 'users/img/dashboard.jpg' %}"
+    class="w-100 h-100 img-responsive"
+    alt=""
+  />
+</div>
+<div class="col-md-5 p-5 card-body">
+  <div class="flex-column justify-content-start align-items-center h-100 mx-5 px-5"
+  style="border: 1px solid lightgrey;border-radius: 27.5px;box-shadow: 0 10px 30px 0 rgb(172 168 168 / 43%);">
+    <div class="fw-bold text-center pt-5">
+      <span class="fs-2">
+          <i class="fas fa-bolt" style="color: rgba(0, 180, 216, 0.7)"></i>
+          DASHBOLT
+        </span>
+    </div>
+    <p class="fw-bold fs-4 mb-md-3 text-center">Create your account</p>
+    <form class="align-middle row g-3" method="post" action={% url 'register_page' %}>
+    {% csrf_token %}
+    {% if form.non_field_errors %}
+      {% for error in form.non_field_errors %}
+        <div class="aler alert-danger mb-2" role="alert" style="font-size:12px">
+          {{error}}
+        </div>
+      {% endfor %}
+    {% endif %}
+    {% if form.first_name.errors %}
+      <div class="col-md-6">
+        <label for="{{form.first_name.id_for_label}}" class="form-label">First Name</label>
+        {% render_field form.first_name class+='form-control is-invalid mb-2' %}
+        {% for error in form.first_name.errors %}
+          <div class="aler alert-danger mb-1" role="alert" style="font-size:12px">
+            {{error}}
+          </div>
+        {% endfor %}
+      </div>  
+    {% else %}
+      <div class="col-md-6">
+        <label for="{{form.first_name.id_for_label}}" class="form-label">First Name</label>
+        {% render_field form.first_name class+='form-control' %}
+      </div>
+    {% endif %}
+    {% if form.last_name.errors %}
+      <div class="col-md-6">
+        <label for="{{form.last_name.id_for_label}}" class="form-label">Last Name</label>
+        {% render_field form.last_name class+='form-control is-invalid mb-2' %}
+        {% for error in form.last_name.errors %}
+          <div class="aler alert-danger mb-1" role="alert" style="font-size:12px">
+            {{error}}
+          </div>
+        {% endfor %}
+      </div>  
+    {% else %}
+      <div class="col-md-6">
+        <label for="{{form.last_name.id_for_label}}" class="form-label">Last Name</label>
+        {% render_field form.last_name class+='form-control' %}
+      </div>
+    {% endif %}
+    {% if form.email.errors %}
+      <div class="col-md-6">
+        <label for="{{form.email.id_for_label}}" class="form-label">Email Address</label>
+        {% render_field form.email class+='form-control is-invalid mb-2' %}
+        {% for error in form.email.errors %}
+          <div class="aler alert-danger mb-1" role="alert" style="font-size:12px">
+            {{error}}
+          </div>
+        {% endfor %}
+      </div>
+    {% else %}
+      <div class="col-md-6">
+        <label for="{{form.email.id_for_label}}" class="form-label">Email Address</label>
+        {% render_field form.email class+='form-control' %}
+      </div>
+    {% endif %}
+    {% if form.organization.errors %}
+      <div class="col-md-6">
+        <label for="{{form.organization.id_for_label}}" class="form-label">Organization</label>
+        {% render_field form.organization class+='form-control is-invalid mb-2' %}
+        {% for error in form.organization.errors %}
+          <div class="aler alert-danger mb-1" role="alert" style="font-size:12px">
+            {{error}}
+          </div>
+        {% endfor %}
+      </div>
+    {% else %}
+      <div class="col-md-6">
+        <label for="{{form.organization.id_for_label}}" class="form-label">Organization</label>
+        {% render_field form.organization class+='form-control' %}
+      </div>
+    {% endif %}
+    {% if form.password1.errors %}
+      <div class="col-md-12">
+        <label for="{{form.password1.id_for_label}}" class="form-label">Password</label>
+        {% render_field form.password1 class+='form-control is-invalid mb-2' %}
+        {% for error in form.password1.errors %}
+          <div class="aler alert-danger mb-1" role="alert" style="font-size:12px">
+            {{error}}
+          </div>
+        {% endfor %}
+      </div>
+    {% else %}
+      <div class="col-md-12">
+        <label for="{{form.password1.id_for_label}}" class="form-label">Password</label>
+        {% render_field form.password1 class+='form-control' %}
+      </div>
+    {% endif %}
+    {% if form.password2.errors %}
+      <div class="col-md-12 mb-2">
+        <label for="{{form.password2.id_for_label}}" class="form-label">Confirm Password</label>
+        {% render_field form.password2 class+='form-control is-invalid mb-2' %}
+        {% for error in form.password2.errors %}
+          <div class="aler alert-danger mb-1" role="alert" style="font-size:12px">
+            {{error}}
+          </div>
+        {% endfor %}
+      </div>   
+    {% else %}
+      <div class="col-md-12 mb-2">
+        <label for="{{form.password2.id_for_label}}" class="form-label">Confirm Password</label>
+        {% render_field form.password2 class+='form-control' %}
+      </div>   
+    {% endif %}
+      <div class="col-md-12">
+        <button type="submit" class="btn btn-success my-md-3 w-100">Create Account</button>
+      </div>
+    </form>
+    <a
+      href="{% url 'login_page' %}"
+      class="form-text align-self-baseline"
+      style=""
+      >Back to Login</a
+    >
+  </div>
+</div>
+
+{% endblock content %}

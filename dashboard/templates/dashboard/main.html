@@ -1,0 +1,2898 @@
+{% extends 'dashboard/base.html' %} {% block loginoptions %}
+<button
+  class="navbar-toggler"
+  type="button"
+  data-bs-toggle="collapse"
+  data-bs-target="#navbarSupportedContent"
+  aria-controls="navbarSupportedContent"
+  aria-expanded="false"
+  aria-label="Toggle navigation"
+>
+  <span class="navbar-toggler-icon"></span>
+</button>
+<div
+  class="collapse navbar-collapse justify-content-end my-3 my-lg-0"
+  id="navbarSupportedContent"
+>
+  <ul class="navbar-nav mb-2 mb-lg-0">
+    <li class="nav-item dropdown">
+      <a
+        class="nav-link dropdown-toggle p-1"
+        href="#"
+        id="navbarDropdown"
+        role="button"
+        data-bs-toggle="dropdown"
+        aria-expanded="false"
+      >
+        <i class="fas fa-user-tie" style="color: white"></i>
+      </a>
+      <ul
+        class="dropdown-menu dropdown-menu-end"
+        aria-labelledby="navbarDropdown"
+      >
+        <li>
+          <a class="dropdown-item" href="#">
+            <span class="material-icons align-middle" style="color: #455a64"
+              >person</span
+            >
+            <span class="align-middle m-2">My Account</span>
+          </a>
+        </li>
+        <li>
+          <a class="dropdown-item" href="#"
+            ><span class="material-icons align-middle" style="color: #455a64"
+              >settings</span
+            >
+            <span class="align-middle m-2">Settings</span></a
+          >
+        </li>
+        <li><hr class="dropdown-divider" /></li>
+        <li>
+          <a class="dropdown-item" href="{% url 'logout_page' %}">
+            <span class="material-icons align-middle" style="color: #455a64"
+              >logout</span
+            >
+            <span class="align-middle m-2">Log Out</span>
+          </a>
+        </li>
+      </ul>
+    </li>
+  </ul>
+</div>
+{% endblock loginoptions %} {% block dashboard %}
+<div class="row mb-2">
+  <div
+    class="col-md-12 d-flex flex-row justify-content-start align-items-center"
+  >
+    <div class="align-self-baseline fw-bold fs-3">Dashboard</div>
+    <div class="align-self-baseline fw-bold text-muted" style="font-size: 12px">
+      <span class="m-1"><i class="fas fa-sync-alt"></i></span>
+      <span>Latest Refresh an hour back</span>
+    </div>
+    <div class="align-self-baseline ms-auto">
+      <div
+        id="reportrange"
+        class="d-flex flex-row justify-content-start bg-light"
+        style="
+          background: #fff;
+          cursor: pointer;
+          border: 1px solid #ccc;
+          border-radius: 5px;
+          font-size: 12px;
+        "
+      >
+        <span class="material-icons align-self-center">date_range</span>
+        &nbsp;
+        <span class="selected-date align-self-center"></span>
+        <span class="material-icons align-self-center">expand_more</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- <div class="col-md-12 fw-bold fs-3 mb-2">Dashboard</div> -->
+</div>
+<div class="row dash-cards">
+  <div class="col-md-3 mb-1">
+    <div class="card mb-3 h-100 card-content">
+      <div class="card-body">
+        <h6 class="card-subtitle fw-bold text-muted">TOTAL SALES</h6>
+        <div
+          class="
+            d-flex
+            flex-row
+            align-items-center
+            gx-2
+            mb-1
+            justify-content-between
+          "
+        >
+          <div class="col-md-6">
+            <span
+              class="card-subtitle fw-bold h4"
+              style="text-shadow: 1px 2px 3px rgb(0 0 0 / 10%)"
+              >Rs 4,30,000</span
+            >
+          </div>
+          <div class="col-md-6">
+            <canvas id="line-chart-dash"></canvas>
+          </div>
+        </div>
+        <div class="d-flex flex-row mt-1 justify-content-start">
+          <div class="d-flex align-items-center mb-1">
+            <span
+              class="badge rounded-pill"
+              style="background: rgba(0, 201, 167, 0.1); color: #00c9a7"
+              ><span><i class="fas fa-arrow-up"></i></span>
+              +&nbsp;3.5 %
+            </span>
+          </div>
+          <div class="text-muted d-flex align-items-center mb-1">
+            &nbsp;&nbsp;from Rs 4,00,000
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-3 mb-1">
+    <div class="card mb-3 h-100 card-content">
+      <div class="card-body">
+        <h6 class="card-subtitle fw-bold text-muted">TOTAL EXPENSES</h6>
+        <div
+          class="
+            d-flex
+            flex-row
+            align-items-center
+            gx-2
+            mb-1
+            justify-content-between
+          "
+        >
+          <div class="col-md-6">
+            <span
+              class="card-subtitle fw-bold h4"
+              style="text-shadow: 1px 2px 3px rgb(0 0 0 / 10%)"
+              >Rs 2,50,000</span
+            >
+          </div>
+          <div class="col-md-6">
+            <canvas id="bar-chart-dash"></canvas>
+          </div>
+        </div>
+        <div class="d-flex flex-row mt-1 justify-content-start">
+          <div class="d-flex align-items-center mb-1">
+            <span
+              class="badge rounded-pill"
+              style="background: rgba(237, 76, 120, 0.1); color: #ed4c78"
+              ><span><i class="fas fa-arrow-down"></i></span>
+              -&nbsp;5.20 %
+            </span>
+          </div>
+          <div class="text-muted d-flex align-items-center mb-1">
+            &nbsp;&nbsp;from Rs 2,70,000
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-3 mb-1">
+    <div class="card mb-3 h-100 card-content">
+      <div class="card-body">
+        <h6 class="card-subtitle fw-bold mb-2 text-muted">
+          <span>RECEIVABLE </span><span style="font-size: 12px"> & </span
+          ><span>PAYABLE</span>
+        </h6>
+        <div class="row justify-content-between">
+          <div class="col-6">
+            <div class="row mb-1"></div>
+            <div class="row mb-2">
+              <div class="col-12 pr-2">
+                <div class="d-flex flex-row justify-content-between">
+                  <div class="d-flex mr-2 p-1 align-self-center">
+                    <span class="material-icons fw-bold fs-4 first_color"
+                      >account_balance_wallet</span
+                    >
+                  </div>
+                  <div
+                    class="
+                      d-flex
+                      ml-1
+                      p-0
+                      align-self-center
+                      ms-auto
+                      fw-bold
+                      fs-4
+                      first_color
+                    "
+                    style="text-shadow: 1px 2px 3px rgb(0 0 0 / 10%)"
+                  >
+                    240K
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-12 pr-2">
+                <div class="d-flex flex-row justify-content-between">
+                  <div class="d-flex mr-2 p-1 align-self-center">
+                    <span class="material-icons fw-bold fs-4 second_color"
+                      >payments</span
+                    >
+                  </div>
+                  <div
+                    class="
+                      d-flex
+                      ml-1
+                      p-0
+                      align-self-center
+                      ms-auto
+                      fw-bold
+                      fs-4
+                      second_color
+                    "
+                    style="
+                      text-shadow: 1px 2px 3px rgb(0 0 0 / 10%);
+                      font-size: 16px;
+                    "
+                  >
+                    354K
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div
+            class="col-6 p-0 d-flex align-items-center"
+            style="width: 140px; height: 80px"
+          >
+            <canvas
+              id="donut-chart-dash"
+              style="height: 80px"
+              class="m-0 d-flex justify-content-end"
+            ></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-3 mb-1">
+    <div class="card mb-3 h-100 card-content">
+      <div class="card-body">
+        <h6 class="card-subtitle fw-bold mb-2 text-muted">
+          <span>CASH </span><span style="font-size: 12px"> & </span
+          ><span>BANK</span>
+        </h6>
+        <div class="row justify-content-between">
+          <div class="col-6">
+            <div class="row mb-1"></div>
+            <div class="row mb-2">
+              <div class="col-12 pr-2">
+                <div class="d-flex flex-row justify-content-between">
+                  <div class="d-flex mr-2 p-1 align-self-center">
+                    <span class="material-icons fs-4 fw-bold fourth_color"
+                      >attach_money</span
+                    >
+                  </div>
+                  <div class="d-flex ml-1 p-0 align-self-center fw-bold"></div>
+                  <div
+                    class="
+                      d-flex
+                      ml-1
+                      p-0
+                      align-self-center
+                      ms-auto
+                      fw-bold
+                      fs-4
+                      fourth_color
+                    "
+                    style="text-shadow: 1px 2px 3px rgb(0 0 0 / 10%)"
+                  >
+                    63K
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-12 pr-2">
+                <div class="d-flex flex-row justify-content-between">
+                  <div class="d-flex mr-2 p-1 align-self-center">
+                    <span class="material-icons fs-4 first_color fw-bold"
+                      >account_balance</span
+                    >
+                  </div>
+                  <div class="d-flex ml-1 p-0 align-self-center fw-bold"></div>
+                  <div
+                    class="
+                      d-flex
+                      ml-1
+                      p-0
+                      align-self-center
+                      ms-auto
+                      fw-bold
+                      fs-4
+                      first_color
+                    "
+                    style="text-shadow: 1px 2px 3px rgb(0 0 0 / 10%)"
+                  >
+                    354K
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div
+            class="col-6 p-0 d-flex align-items-center"
+            style="width: 140px; height: 80px"
+          >
+            <canvas
+              id="pie-chart-dash"
+              style="height: 80px"
+              class="m-0 d-flex justify-content-end"
+            ></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="row other-cards" style="text-shadow: 1px 2px 3px rgb(0 0 0 / 5%)">
+  <div class="col-md-4 mb-1">
+    <div class="card w-100 h-100">
+      <div class="card-header py-1" style="background: white">
+        <div class="align-items-center row">
+          <div class="col d-flex p-0">
+            <span
+              class="material-icons align-self-center mx-2"
+              style="color: #455a64"
+            >
+              analytics
+            </span>
+            <span class="fw-bold fs-6 align-self-center">P&L Movement</span>
+          </div>
+          <div class="text-right col-auto d-flex align-items-center px-0">
+            <div class="dropdown">
+              <a href="#" style="color: inherit">
+                <span
+                  class="material-icons align-middle"
+                  style="color: #455a64"
+                >
+                  more_vert</span
+                >
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="card-body d-flex flex-column p-1">
+        <div class="d-flex flex-row flex-grow-1 justify-content-center">
+          <div class="mt-2">
+            <canvas
+              class="chart p-0 w-100 h-100"
+              id="waterfall"
+              style="display: block"
+            ></canvas>
+          </div>
+        </div>
+        <div class="d-flex">
+          <table
+            class="table table-bordered table-sm align-middle"
+            style="font-size: 12px"
+          >
+            <thead>
+              <tr class="bg-light">
+                <th class="text-center" scope="col" style="width: 60%">
+                  Particulars
+                </th>
+                <th class="text-center" scope="col" style="width: 40%">
+                  Amount
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+                  <div class="w-100 mx-1 text-wrap">
+                    <div
+                      class="
+                        d-flex
+                        flex-row
+                        justify-content-start
+                        align-items-center
+                      "
+                    >
+                      <div class="col-1 text-start align-items-center">
+                        <span
+                          class="badge rounded-pill first_value align-middle"
+                          style="background: #0088c7; color: white"
+                          >R</span
+                        >
+                      </div>
+                      <div class="col-11 text-start align-items-center">
+                        <span class="align-middle mx-2">Revenue</span>
+                      </div>
+                    </div>
+                  </div>
+                </td>
+                <td>
+                  <div class="w-100 text-end align-middle">
+                    <span class="text-end align-middle mx-1">54,00,000</span>
+                    <span
+                      class="badge rounded-pill text-center align-middle"
+                      style="
+                        background: rgba(0, 201, 167, 0.1);
+                        color: #00c9a7;
+                        display: inline-block;
+                        width: 45px;
+                      "
+                      >+ 12%</span
+                    >
+                  </div>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <div class="w-100 mx-1 text-wrap">
+                    <div
+                      class="
+                        d-flex
+                        flex-row
+                        justify-content-start
+                        align-items-center
+                      "
+                    >
+                      <div class="col-1 text-start align-items-center">
+                        <span
+                          class="badge rounded-pill second_value align-middle"
+                          style="background: #00a7d8; color: white"
+                          >D</span
+                        >
+                      </div>
+                      <div class="col-11 text-start align-items-center">
+                        <span class="align-middle mx-2">Direct Expenses</span>
+                      </div>
+                    </div>
+                  </div>
+                </td>
+                <td>
+                  <div class="w-100 text-end align-middle">
+                    <span class="text-end align-middle mx-1">4,00,000</span>
+                    <span
+                      class="badge rounded-pill text-center align-middle"
+                      style="
+                        background: rgba(237, 76, 120, 0.1);
+                        color: #ed4c78;
+                        display: inline-block;
+                        width: 45px;
+                      "
+                      >- 1.2%</span
+                    >
+                  </div>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <div class="w-100 text-wrap mx-1">
+                    <div
+                      class="
+                        d-flex
+                        flex-row
+                        justify-content-start
+                        align-items-center
+                      "
+                    >
+                      <div class="col-1 text-start align-items-center">
+                        <span
+                          class="badge rounded-pill third_value align-middle"
+                          style="background: #31c5e4; color: white"
+                          >G</span
+                        >
+                      </div>
+                      <div class="col-11 text-start align-items-center">
+                        <span class="align-middle mx-2">Gross Profit</span>
+                      </div>
+                    </div>
+                  </div>
+                </td>
+                <td>
+                  <div class="w-100 text-end align-middle">
+                    <span class="text-end align-middle mx-1">50,00,000</span>
+                    <span
+                      class="badge rounded-pill text-center align-middle"
+                      style="
+                        background: rgba(0, 201, 167, 0.1);
+                        color: #00c9a7;
+                        display: inline-block;
+                        width: 45px;
+                      "
+                      >+ 200%</span
+                    >
+                  </div>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <div class="w-100 text-wrap mx-1">
+                    <div
+                      class="
+                        d-flex
+                        flex-row
+                        justify-content-start
+                        align-items-center
+                      "
+                    >
+                      <div class="col-1 text-start align-items-center">
+                        <span
+                          class="badge rounded-pill fourth_value align-middle"
+                          style="background: #63e2ec; color: white"
+                          >E
+                        </span>
+                      </div>
+                      <div class="col-11 text-start align-items-center">
+                        <span class="align-middle mx-2">Indirect Expenses</span>
+                      </div>
+                    </div>
+                  </div>
+                </td>
+                <td>
+                  <div class="w-100 text-end align-middle">
+                    <span class="text-end align-middle mx-1">49,50,000</span>
+                    <span
+                      class="badge rounded-pill text-center align-middle"
+                      style="
+                        background: rgba(237, 76, 120, 0.1);
+                        color: #ed4c78;
+                        display: inline-block;
+                        width: 45px;
+                      "
+                      >- 10%</span
+                    >
+                  </div>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <div class="w-100 text-wrap mx-1">
+                    <div
+                      class="
+                        d-flex
+                        flex-row
+                        justify-content-start
+                        align-items-center
+                      "
+                    >
+                      <div class="col-1 text-start align-items-center">
+                        <span
+                          class="badge rounded-pill fifth_value align-middle"
+                          style="background: #94fff4; color: white"
+                          >N</span
+                        >
+                      </div>
+                      <div class="col-11 text-start align-items-center">
+                        <span class="align-middle mx-2">Net Profit</span>
+                      </div>
+                    </div>
+                  </div>
+                </td>
+                <td>
+                  <div class="w-100 text-end align-middle">
+                    <span class="text-end align-middle mx-1">50,000</span>
+                    <span
+                      class="badge rounded-pill text-center align-middle"
+                      style="
+                        background: rgba(0, 201, 167, 0.1);
+                        color: #00c9a7;
+                        display: inline-block;
+                        width: 45px;
+                      "
+                      >+ 1%</span
+                    >
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-4 mb-1">
+    <div class="card w-100 h-100">
+      <div class="card-header py-1" style="background: white">
+        <div class="align-items-center row">
+          <div class="col d-flex p-0">
+            <span
+              class="material-icons align-self-center mx-2"
+              style="color: #455a64"
+            >
+              people
+            </span>
+            <span class="fw-bold fs-6 align-self-center">Top 5 Customers</span>
+          </div>
+          <div class="text-right col-auto d-flex align-items-center px-0">
+            <div class="dropdown">
+              <a href="#" style="color: inherit">
+                <span
+                  class="material-icons align-middle"
+                  style="color: #455a64"
+                >
+                  more_vert</span
+                >
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="card-body d-flex flex-column p-1">
+        <div class="d-flex justify-content-center w-100 h-100">
+          <div
+            class="mt-2"
+            style="height: 200px; width: 200px; float: left; position: relative"
+          >
+            <div
+              class="fw-bold fs-2 text-muted"
+              style="
+                height: 50px;
+                width: 200px;
+                top: 50%;
+                left: 0;
+                margin-top: -20px;
+                line-height: 19px;
+                text-align: center;
+                z-index: 999999999999999;
+                position: absolute;
+              "
+            >
+              92M <br />
+              <span class="fs-6">(58%)</span>
+            </div>
+            <canvas
+              class="chart"
+              id="donut-top-5-Customers"
+              style="display: block"
+            ></canvas>
+          </div>
+        </div>
+        <div class="d-flex">
+          <table
+            class="table table-bordered table-sm align-middle"
+            style="font-size: 12px"
+          >
+            <thead>
+              <tr class="bg-light">
+                <th class="text-center" scope="col" style="width: 40%">
+                  Customer
+                </th>
+                <th class="text-center" scope="col" style="width: 30%">
+                  Revenue
+                </th>
+                <th class="text-center" scope="col" style="width: 30%">
+                  Receivable
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+                  <div class="w-100 text-wrap mx-1">
+                    <div
+                      class="
+                        d-flex
+                        flex-row
+                        justify-content-start
+                        align-items-center
+                      "
+                    >
+                      <div class="col-2 text-start align-items-center">
+                        <span
+                          class="badge rounded-pill first_value align-middle"
+                          style="background: #0088c7; color: white"
+                          >O</span
+                        >
+                      </div>
+                      <div class="col-10 text-start align-items-center">
+                        <span class="align-middle ml-1">Optimalytics</span>
+                      </div>
+                    </div>
+                  </div>
+                </td>
+                <td>
+                  <div class="w-100 text-end align-middle">
+                    <span class="text-end align-middle mx-1">24,000</span
+                    ><span
+                      class="badge rounded-pill text-center align-middle"
+                      style="
+                        background: #5886a5;
+                        color: white;
+                        display: inline-block;
+                        width: 35px;
+                      "
+                      >120</span
+                    >
+                  </div>
+                </td>
+                <td>
+                  <div class="w-100 text-end align-middle">
+                    <span class="text-end align-middle mx-1">24,000</span
+                    ><span
+                      class="badge rounded-pill text-center align-middle"
+                      style="
+                        background: rgba(0, 201, 167, 0.1);
+                        color: #00c9a7;
+                        display: inline-block;
+                        width: 45px;
+                      "
+                      >+ 12%</span
+                    >
+                  </div>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <div class="w-100 text-wrap mx-1">
+                    <div
+                      class="
+                        d-flex
+                        flex-row
+                        justify-content-start
+                        align-items-center
+                      "
+                    >
+                      <div class="col-2 text-start align-items-center">
+                        <span
+                          class="badge rounded-pill second_value align-middle"
+                          style="background: #0088c7; color: white"
+                          >C</span
+                        >
+                      </div>
+                      <div class="col-10 text-start align-items-center">
+                        <span class="align-middle ml-1">Cap Corp</span>
+                      </div>
+                    </div>
+                  </div>
+                </td>
+                <td>
+                  <div class="w-100 text-end align-middle">
+                    <span class="text-end align-middle mx-1">44,765</span
+                    ><span
+                      class="badge rounded-pill text-center align-middle"
+                      style="
+                        background: #5886a5;
+                        color: white;
+                        display: inline-block;
+                        width: 35px;
+                      "
+                      >100</span
+                    >
+                  </div>
+                </td>
+                <td>
+                  <div class="w-100 text-end align-middle">
+                    <span class="text-end align-middle mx-1">45,00,000</span
+                    ><span
+                      class="badge rounded-pill text-center align-middle"
+                      style="
+                        background: rgba(237, 76, 120, 0.1);
+                        color: #ed4c78;
+                        display: inline-block;
+                        width: 45px;
+                      "
+                      >- 1.2%</span
+                    >
+                  </div>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <div class="w-100 text-wrap mx-1">
+                    <div
+                      class="
+                        d-flex
+                        flex-row
+                        justify-content-start
+                        align-items-center
+                      "
+                    >
+                      <div class="col-2 text-start align-items-center">
+                        <span
+                          class="badge rounded-pill third_value align-middle"
+                          style="background: #0088c7; color: white"
+                          >G</span
+                        >
+                      </div>
+                      <div class="col-10 text-start align-items-center">
+                        <span class="align-middle ml-1">GenPact</span>
+                      </div>
+                    </div>
+                  </div>
+                </td>
+                <td>
+                  <div class="w-100 text-end align-middle">
+                    <span class="text-end align-middle mx-1">1,00,000</span
+                    ><span
+                      class="badge rounded-pill text-center align-middle"
+                      style="
+                        background: #5886a5;
+                        color: white;
+                        display: inline-block;
+                        width: 35px;
+                      "
+                      >80</span
+                    >
+                  </div>
+                </td>
+                <td>
+                  <div class="w-100 text-end align-middle">
+                    <span class="text-end align-middle mx-1">56,00,000</span
+                    ><span
+                      class="badge rounded-pill text-center align-middle"
+                      style="
+                        background: rgba(0, 201, 167, 0.1);
+                        color: #00c9a7;
+                        display: inline-block;
+                        width: 45px;
+                      "
+                      >+ 120%</span
+                    >
+                  </div>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <div class="w-100 text-wrap mx-1">
+                    <div
+                      class="
+                        d-flex
+                        flex-row
+                        justify-content-start
+                        align-items-center
+                      "
+                    >
+                      <div class="col-2 text-start align-items-center">
+                        <span
+                          class="badge rounded-pill fourth_value align-middle"
+                          style="background: #0088c7; color: white"
+                          >M</span
+                        >
+                      </div>
+                      <div class="col-10 text-start align-items-center">
+                        <span class="align-middle ml-1">Merc Corp</span>
+                      </div>
+                    </div>
+                  </div>
+                </td>
+                <td>
+                  <div class="w-100 text-end align-middle">
+                    <span class="text-end align-middle mx-1">67,00,765</span
+                    ><span
+                      class="badge rounded-pill text-center align-middle"
+                      style="
+                        background: #5886a5;
+                        color: white;
+                        display: inline-block;
+                        width: 35px;
+                      "
+                      >50</span
+                    >
+                  </div>
+                </td>
+                <td>
+                  <div class="w-100 text-end align-middle">
+                    <span class="text-end align-middle mx-1">5,00,000</span
+                    ><span
+                      class="badge rounded-pill text-center align-middle"
+                      style="
+                        background: rgba(237, 76, 120, 0.1);
+                        color: #ed4c78;
+                        display: inline-block;
+                        width: 45px;
+                      "
+                      >- 2.0%</span
+                    >
+                  </div>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <div class="w-100 text-wrap mx-1">
+                    <div
+                      class="
+                        d-flex
+                        flex-row
+                        justify-content-start
+                        align-items-center
+                      "
+                    >
+                      <div class="col-2 text-start align-items-center">
+                        <span
+                          class="badge rounded-pill fifth_value align-middle"
+                          style="background: #0088c7; color: white"
+                          >N</span
+                        >
+                      </div>
+                      <div class="col-10 text-start align-items-center">
+                        <span class="align-middle ml-1">New India</span>
+                      </div>
+                    </div>
+                  </div>
+                </td>
+                <td>
+                  <div class="w-100 text-end align-middle">
+                    <span class="text-end align-middle mx-1">10,000</span
+                    ><span
+                      class="badge rounded-pill text-center align-middle"
+                      style="
+                        background: #5886a5;
+                        color: white;
+                        display: inline-block;
+                        width: 35px;
+                      "
+                      >8</span
+                    >
+                  </div>
+                </td>
+                <td>
+                  <div class="w-100 text-end align-middle">
+                    <span class="text-end align-middle mx-1">10,000</span
+                    ><span
+                      class="badge rounded-pill text-center align-middle"
+                      style="
+                        background: rgba(0, 201, 167, 0.1);
+                        color: #00c9a7;
+                        display: inline-block;
+                        width: 45px;
+                      "
+                      >+ 1%</span
+                    >
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-4 mb-1">
+    <div class="card w-100 h-100">
+      <div class="card-header py-1" style="background: white">
+        <div class="align-items-center row">
+          <div class="col d-flex p-0">
+            <span
+              class="material-icons align-self-center mx-2"
+              style="color: #455a64"
+            >
+              people
+            </span>
+            <span class="fw-bold fs-6 align-self-center">Top 5 Vendors</span>
+          </div>
+          <div class="text-right col-auto d-flex align-items-center px-0">
+            <div class="dropdown">
+              <a href="#" style="color: inherit">
+                <span
+                  class="material-icons align-middle"
+                  style="color: #455a64"
+                >
+                  more_vert</span
+                >
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="card-body d-flex flex-column p-1">
+        <div class="d-flex justify-content-start w-100 h-100">
+          <div class="mt-2 flex-fill">
+            <canvas
+              class="chart px-3"
+              id="h-bar-top-5-expenses"
+              style="display: block"
+            ></canvas>
+          </div>
+        </div>
+        <div class="d-flex">
+          <table
+            class="table table-bordered table-sm align-middle"
+            style="font-size: 12px"
+          >
+            <thead>
+              <tr class="bg-light">
+                <th class="text-center" scope="col" style="width: 40%">
+                  Vendor
+                </th>
+                <th class="text-center" scope="col" style="width: 30%">
+                  Costs
+                </th>
+                <th class="text-center" scope="col" style="width: 30%">
+                  Payable
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+                  <div class="w-100 text-wrap mx-1">
+                    <div
+                      class="
+                        d-flex
+                        flex-row
+                        justify-content-start
+                        align-items-center
+                      "
+                    >
+                      <div class="col-2 text-start align-items-center">
+                        <span
+                          class="badge rounded-pill first_value align-middle"
+                          style="background: #0088c7; color: white"
+                          >R</span
+                        >
+                      </div>
+                      <div class="col-10 text-start align-items-center">
+                        <span class="align-middle ml-1">Ranger</span>
+                      </div>
+                    </div>
+                  </div>
+                </td>
+                <td>
+                  <div class="w-100 text-end align-middle">
+                    <span class="text-end align-middle mx-1">41,45,500</span
+                    ><span
+                      class="badge rounded-pill text-center align-middle"
+                      style="
+                        background: #5886a5;
+                        color: white;
+                        display: inline-block;
+                        width: 35px;
+                      "
+                      >132</span
+                    >
+                  </div>
+                </td>
+                <td>
+                  <div class="w-100 text-end align-middle">
+                    <span class="text-end align-middle mx-1">41.45,500</span
+                    ><span
+                      class="badge rounded-pill text-center align-middle"
+                      style="
+                        background: rgba(0, 201, 167, 0.1);
+                        color: #00c9a7;
+                        display: inline-block;
+                        width: 45px;
+                      "
+                      >+ 102%</span
+                    >
+                  </div>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <div class="w-100 text-wrap mx-1">
+                    <div
+                      class="
+                        d-flex
+                        flex-row
+                        justify-content-start
+                        align-items-center
+                      "
+                    >
+                      <div class="col-2 text-start align-items-center">
+                        <span
+                          class="badge rounded-pill second_value align-middle"
+                          style="background: #0088c7; color: white"
+                          >B</span
+                        >
+                      </div>
+                      <div class="col-10 text-start align-items-center">
+                        <span class="align-middle ml-1">Big Basket</span>
+                      </div>
+                    </div>
+                  </div>
+                </td>
+                <td>
+                  <div class="w-100 text-end align-middle">
+                    <span class="text-end align-middle mx-1">30,00,005</span
+                    ><span
+                      class="badge rounded-pill text-center align-middle"
+                      style="
+                        background: #5886a5;
+                        color: white;
+                        display: inline-block;
+                        width: 35px;
+                      "
+                      >110</span
+                    >
+                  </div>
+                </td>
+                <td>
+                  <div class="w-100 text-end align-middle">
+                    <span class="text-end align-middle mx-1">30,10,000</span
+                    ><span
+                      class="badge rounded-pill text-center align-middle"
+                      style="
+                        background: rgba(237, 76, 120, 0.1);
+                        color: #ed4c78;
+                        display: inline-block;
+                        width: 45px;
+                      "
+                      >- 142%</span
+                    >
+                  </div>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <div class="w-100 text-wrap mx-1">
+                    <div
+                      class="
+                        d-flex
+                        flex-row
+                        justify-content-start
+                        align-items-center
+                      "
+                    >
+                      <div class="col-2 text-start align-items-center">
+                        <span
+                          class="badge rounded-pill third_value align-middle"
+                          style="background: #0088c7; color: white"
+                          >F</span
+                        >
+                      </div>
+                      <div class="col-10 text-start align-items-center">
+                        <span class="align-middle ml-1">Future Group</span>
+                      </div>
+                    </div>
+                  </div>
+                </td>
+                <td>
+                  <div class="w-100 text-end align-middle">
+                    <span class="text-end align-middle mx-1">1,00,000</span
+                    ><span
+                      class="badge rounded-pill text-center align-middle"
+                      style="
+                        background: #5886a5;
+                        color: white;
+                        display: inline-block;
+                        width: 35px;
+                      "
+                      >81</span
+                    >
+                  </div>
+                </td>
+                <td>
+                  <div class="w-100 text-end align-middle">
+                    <span class="text-end align-middle mx-1">6,00,000</span
+                    ><span
+                      class="badge rounded-pill text-center align-middle"
+                      style="
+                        background: rgba(0, 201, 167, 0.1);
+                        color: #00c9a7;
+                        display: inline-block;
+                        width: 45px;
+                      "
+                      >+ 10%</span
+                    >
+                  </div>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <div class="w-100 text-wrap mx-1">
+                    <div
+                      class="
+                        d-flex
+                        flex-row
+                        justify-content-start
+                        align-items-center
+                      "
+                    >
+                      <div class="col-2 text-start align-items-center">
+                        <span
+                          class="badge rounded-pill fourth_value align-middle"
+                          style="background: #0088c7; color: white"
+                          >H</span
+                        >
+                      </div>
+                      <div class="col-10 text-start align-items-center">
+                        <span class="align-middle ml-1">Hitachi</span>
+                      </div>
+                    </div>
+                  </div>
+                </td>
+                <td>
+                  <div class="w-100 text-end align-middle">
+                    <span class="text-end align-middle mx-1">50,999</span
+                    ><span
+                      class="badge rounded-pill text-center align-middle"
+                      style="
+                        background: #5886a5;
+                        color: white;
+                        display: inline-block;
+                        width: 35px;
+                      "
+                      >5</span
+                    >
+                  </div>
+                </td>
+                <td>
+                  <div class="w-100 text-end align-middle">
+                    <span class="text-end align-middle mx-1">50,000</span
+                    ><span
+                      class="badge rounded-pill text-center align-middle"
+                      style="
+                        background: rgba(237, 76, 120, 0.1);
+                        color: #ed4c78;
+                        display: inline-block;
+                        width: 45px;
+                      "
+                      >- 4.0%</span
+                    >
+                  </div>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <div class="w-100 text-wrap mx-1">
+                    <div
+                      class="
+                        d-flex
+                        flex-row
+                        justify-content-start
+                        align-items-center
+                      "
+                    >
+                      <div class="col-2 text-start align-items-center">
+                        <span
+                          class="badge rounded-pill fifth_value align-middle"
+                          style="background: #0088c7; color: white"
+                          >S</span
+                        >
+                      </div>
+                      <div class="col-10 text-start align-items-center">
+                        <span class="align-middle ml-1">SunRise</span>
+                      </div>
+                    </div>
+                  </div>
+                </td>
+                <td>
+                  <div class="w-100 text-end align-middle">
+                    <span class="text-end align-middle mx-1">1,000</span
+                    ><span
+                      class="badge rounded-pill text-center align-middle"
+                      style="
+                        background: #5886a5;
+                        color: white;
+                        display: inline-block;
+                        width: 35px;
+                      "
+                      >1</span
+                    >
+                  </div>
+                </td>
+                <td>
+                  <div class="w-100 text-end align-middle">
+                    <span class="text-end align-middle mx-1">8,000</span
+                    ><span
+                      class="badge rounded-pill text-center align-middle"
+                      style="
+                        background: rgba(0, 201, 167, 0.1);
+                        color: #00c9a7;
+                        display: inline-block;
+                        width: 45px;
+                      "
+                      >+ 10%</span
+                    >
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div
+  class="row other-cards my-3"
+  style="text-shadow: 1px 2px 3px rgb(0 0 0 / 5%)"
+>
+  <div class="col-md-4 mb-1">
+    <div class="card w-100 h-100">
+      <div class="card-header py-1" style="background: white">
+        <div class="align-items-center row">
+          <div class="col d-flex p-0">
+            <span
+              class="material-icons align-self-center mx-2"
+              style="color: #455a64"
+            >
+              paid
+            </span>
+            <span class="fw-bold fs-6 align-self-center"
+              >Top 5 Income Accounts</span
+            >
+          </div>
+          <div class="text-right col-auto d-flex align-items-center px-0">
+            <div class="dropdown">
+              <a href="#" style="color: inherit">
+                <span
+                  class="material-icons align-middle"
+                  style="color: #455a64"
+                >
+                  more_vert</span
+                >
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="card-body d-flex flex-column p-1">
+        <div class="d-flex flex-row flex-grow-1 justify-content-center">
+          <div class="mt-2">
+            <canvas
+              class="chart p-0"
+              width="200"
+              height="200"
+              id="pie-top-5-incomes"
+              style="display: block"
+            ></canvas>
+          </div>
+        </div>
+        <div class="d-flex">
+          <table
+            class="table table-bordered table-sm align-middle"
+            style="font-size: 12px"
+          >
+            <thead>
+              <tr class="bg-light">
+                <th class="text-center" scope="col" style="width: 60%">
+                  Income Accounts
+                </th>
+                <th class="text-center" scope="col" style="width: 40%">
+                  Accounted
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+                  <div class="w-100 mx-1 text-wrap">
+                    <div
+                      class="
+                        d-flex
+                        flex-row
+                        justify-content-start
+                        align-items-center
+                      "
+                    >
+                      <div class="col-1 text-start align-items-center">
+                        <span
+                          class="badge rounded-pill first_value align-middle"
+                          style="background: #0088c7; color: white"
+                          >S</span
+                        >
+                      </div>
+                      <div class="col-11 text-start align-items-center">
+                        <span class="align-middle mx-2">Income_Account-1</span>
+                      </div>
+                    </div>
+                  </div>
+                </td>
+                <td>
+                  <div class="w-100 text-end align-middle">
+                    <span class="text-end align-middle mx-1">54,00,000</span>
+                    <span
+                      class="badge rounded-pill text-center align-middle"
+                      style="
+                        background: rgba(0, 201, 167, 0.1);
+                        color: #00c9a7;
+                        display: inline-block;
+                        width: 45px;
+                      "
+                      >+ 12%</span
+                    >
+                  </div>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <div class="w-100 mx-1 text-wrap">
+                    <div
+                      class="
+                        d-flex
+                        flex-row
+                        justify-content-start
+                        align-items-center
+                      "
+                    >
+                      <div class="col-1 text-start align-items-center">
+                        <span
+                          class="badge rounded-pill second_value align-middle"
+                          style="background: #00a7d8; color: white"
+                          >S</span
+                        >
+                      </div>
+                      <div class="col-11 text-start align-items-center">
+                        <span class="align-middle mx-2">Income_Account-2</span>
+                      </div>
+                    </div>
+                  </div>
+                </td>
+                <td>
+                  <div class="w-100 text-end align-middle">
+                    <span class="text-end align-middle mx-1">4,00,000</span>
+                    <span
+                      class="badge rounded-pill text-center align-middle"
+                      style="
+                        background: rgba(237, 76, 120, 0.1);
+                        color: #ed4c78;
+                        display: inline-block;
+                        width: 45px;
+                      "
+                      >- 1.2%</span
+                    >
+                  </div>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <div class="w-100 text-wrap mx-1">
+                    <div
+                      class="
+                        d-flex
+                        flex-row
+                        justify-content-start
+                        align-items-center
+                      "
+                    >
+                      <div class="col-1 text-start align-items-center">
+                        <span
+                          class="badge rounded-pill third_value align-middle"
+                          style="background: #31c5e4; color: white"
+                          >S</span
+                        >
+                      </div>
+                      <div class="col-11 text-start align-items-center">
+                        <span class="align-middle mx-2">Income_Account-3</span>
+                      </div>
+                    </div>
+                  </div>
+                </td>
+                <td>
+                  <div class="w-100 text-end align-middle">
+                    <span class="text-end align-middle mx-1">50,00,000</span>
+                    <span
+                      class="badge rounded-pill text-center align-middle"
+                      style="
+                        background: rgba(0, 201, 167, 0.1);
+                        color: #00c9a7;
+                        display: inline-block;
+                        width: 45px;
+                      "
+                      >+ 200%</span
+                    >
+                  </div>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <div class="w-100 text-wrap mx-1">
+                    <div
+                      class="
+                        d-flex
+                        flex-row
+                        justify-content-start
+                        align-items-center
+                      "
+                    >
+                      <div class="col-1 text-start align-items-center">
+                        <span
+                          class="badge rounded-pill fourth_value align-middle"
+                          style="background: #63e2ec; color: white"
+                          >S
+                        </span>
+                      </div>
+                      <div class="col-11 text-start align-items-center">
+                        <span class="align-middle mx-2">Income_Account-4</span>
+                      </div>
+                    </div>
+                  </div>
+                </td>
+                <td>
+                  <div class="w-100 text-end align-middle">
+                    <span class="text-end align-middle mx-1">49,50,000</span>
+                    <span
+                      class="badge rounded-pill text-center align-middle"
+                      style="
+                        background: rgba(237, 76, 120, 0.1);
+                        color: #ed4c78;
+                        display: inline-block;
+                        width: 45px;
+                      "
+                      >- 10%</span
+                    >
+                  </div>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <div class="w-100 text-wrap mx-1">
+                    <div
+                      class="
+                        d-flex
+                        flex-row
+                        justify-content-start
+                        align-items-center
+                      "
+                    >
+                      <div class="col-1 text-start align-items-center">
+                        <span
+                          class="badge rounded-pill fifth_value align-middle"
+                          style="background: #94fff4; color: white"
+                          >S</span
+                        >
+                      </div>
+                      <div class="col-11 text-start align-items-center">
+                        <span class="align-middle mx-2">Income_Account-5</span>
+                      </div>
+                    </div>
+                  </div>
+                </td>
+                <td>
+                  <div class="w-100 text-end align-middle">
+                    <span class="text-end align-middle mx-1">50,000</span>
+                    <span
+                      class="badge rounded-pill text-center align-middle"
+                      style="
+                        background: rgba(0, 201, 167, 0.1);
+                        color: #00c9a7;
+                        display: inline-block;
+                        width: 45px;
+                      "
+                      >+ 1%</span
+                    >
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-4 mb-1">
+    <div class="card w-100 h-100">
+      <div class="card-header py-1" style="background: white">
+        <div class="align-items-center row">
+          <div class="col d-flex p-0">
+            <span
+              class="material-icons align-self-center mx-2"
+              style="color: #455a64"
+            >
+              paid
+            </span>
+            <span class="fw-bold fs-6 align-self-center"
+              >Top 5 Expense Accounts</span
+            >
+          </div>
+          <div class="text-right col-auto d-flex align-items-center px-0">
+            <div class="dropdown">
+              <a href="#" style="color: inherit">
+                <span
+                  class="material-icons align-middle"
+                  style="color: #455a64"
+                >
+                  more_vert</span
+                >
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="card-body d-flex flex-column p-1">
+        <div class="d-flex justify-content-center w-100 h-100">
+          <div class="mt-2">
+            <canvas
+              class="chart p-0"
+              width="200"
+              height="200"
+              id="polar-top-5-expenses"
+              style="display: block"
+            ></canvas>
+          </div>
+        </div>
+        <div class="d-flex">
+          <table
+            class="table table-bordered table-sm align-middle"
+            style="font-size: 12px"
+          >
+            <thead>
+              <tr class="bg-light">
+                <th class="text-center" scope="col" style="width: 60%">
+                  Expense Accounts
+                </th>
+                <th class="text-center" scope="col" style="width: 40%">
+                  Accounted
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+                  <div class="w-100 text-wrap mx-1">
+                    <div
+                      class="
+                        d-flex
+                        flex-row
+                        justify-content-start
+                        align-items-center
+                      "
+                    >
+                      <div class="col-1 text-start align-items-center">
+                        <span
+                          class="badge rounded-pill first_value align-middle"
+                          style="background: #0088c7; color: white"
+                          >E</span
+                        >
+                      </div>
+                      <div class="col-11 text-start align-items-center">
+                        <span class="align-middle mx-1">Expense_Account-1</span>
+                      </div>
+                    </div>
+                  </div>
+                </td>
+                <td>
+                  <div class="w-100 text-end align-middle">
+                    <span class="text-end align-middle mx-1">24,000</span
+                    ><span
+                      class="badge rounded-pill text-center align-middle"
+                      style="
+                        background: rgba(0, 201, 167, 0.1);
+                        color: #00c9a7;
+                        display: inline-block;
+                        width: 45px;
+                      "
+                      >+ 12%</span
+                    >
+                  </div>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <div class="w-100 text-wrap mx-1">
+                    <div
+                      class="
+                        d-flex
+                        flex-row
+                        justify-content-start
+                        align-items-center
+                      "
+                    >
+                      <div class="col-1 text-start align-items-center">
+                        <span
+                          class="badge rounded-pill second_value align-middle"
+                          style="background: #0088c7; color: white"
+                          >E</span
+                        >
+                      </div>
+                      <div class="col-11 text-start align-items-center">
+                        <span class="align-middle mx-1">Expense_Account-2</span>
+                      </div>
+                    </div>
+                  </div>
+                </td>
+                <td>
+                  <div class="w-100 text-end align-middle">
+                    <span class="text-end align-middle mx-1">45,00,000</span
+                    ><span
+                      class="badge rounded-pill text-center align-middle"
+                      style="
+                        background: rgba(237, 76, 120, 0.1);
+                        color: #ed4c78;
+                        display: inline-block;
+                        width: 45px;
+                      "
+                      >- 1.2%</span
+                    >
+                  </div>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <div class="w-100 text-wrap mx-1">
+                    <div
+                      class="
+                        d-flex
+                        flex-row
+                        justify-content-start
+                        align-items-center
+                      "
+                    >
+                      <div class="col-1 text-start align-items-center">
+                        <span
+                          class="badge rounded-pill third_value align-middle"
+                          style="background: #0088c7; color: white"
+                          >E</span
+                        >
+                      </div>
+                      <div class="col-11 text-start align-items-center">
+                        <span class="align-middle mx-1">Expense_Account-3</span>
+                      </div>
+                    </div>
+                  </div>
+                </td>
+                <td>
+                  <div class="w-100 text-end align-middle">
+                    <span class="text-end align-middle mx-1">56,00,000</span
+                    ><span
+                      class="badge rounded-pill text-center align-middle"
+                      style="
+                        background: rgba(0, 201, 167, 0.1);
+                        color: #00c9a7;
+                        display: inline-block;
+                        width: 45px;
+                      "
+                      >+ 120%</span
+                    >
+                  </div>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <div class="w-100 text-wrap mx-1">
+                    <div
+                      class="
+                        d-flex
+                        flex-row
+                        justify-content-start
+                        align-items-center
+                      "
+                    >
+                      <div class="col-1 text-start align-items-center">
+                        <span
+                          class="badge rounded-pill fourth_value align-middle"
+                          style="background: #0088c7; color: white"
+                          >E</span
+                        >
+                      </div>
+                      <div class="col-11 text-start align-items-center">
+                        <span class="align-middle mx-1">Expense_Account-4</span>
+                      </div>
+                    </div>
+                  </div>
+                </td>
+                <td>
+                  <div class="w-100 text-end align-middle">
+                    <span class="text-end align-middle mx-1">5,00,000</span
+                    ><span
+                      class="badge rounded-pill text-center align-middle"
+                      style="
+                        background: rgba(237, 76, 120, 0.1);
+                        color: #ed4c78;
+                        display: inline-block;
+                        width: 45px;
+                      "
+                      >- 2.0%</span
+                    >
+                  </div>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <div class="w-100 text-wrap mx-1">
+                    <div
+                      class="
+                        d-flex
+                        flex-row
+                        justify-content-start
+                        align-items-center
+                      "
+                    >
+                      <div class="col-1 text-start align-items-center">
+                        <span
+                          class="badge rounded-pill fifth_value align-middle"
+                          style="background: #0088c7; color: white"
+                          >E</span
+                        >
+                      </div>
+                      <div class="col-11 text-start align-items-center">
+                        <span class="align-middle mx-1">Expense_Account-5</span>
+                      </div>
+                    </div>
+                  </div>
+                </td>
+                <td>
+                  <div class="w-100 text-end align-middle">
+                    <span class="text-end align-middle mx-1">10,000</span
+                    ><span
+                      class="badge rounded-pill text-center align-middle"
+                      style="
+                        background: rgba(0, 201, 167, 0.1);
+                        color: #00c9a7;
+                        display: inline-block;
+                        width: 45px;
+                      "
+                      >+ 1%</span
+                    >
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-4 mb-1">
+    <div class="card w-100 h-100">
+      <div class="card-header py-1" style="background: white">
+        <div class="align-items-center row">
+          <div class="col d-flex p-0">
+            <span
+              class="material-icons align-self-center mx-2"
+              style="color: #455a64"
+            >
+              segment
+            </span>
+            <span class="fw-bold fs-6 align-self-center">Ageing Schedule</span>
+          </div>
+          <div class="text-right col-auto d-flex align-items-center px-0">
+            <div class="dropdown">
+              <a href="#" style="color: inherit">
+                <span
+                  class="material-icons align-middle"
+                  style="color: #455a64"
+                >
+                  more_vert</span
+                >
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="card-body d-flex flex-column p-1">
+        <div class="d-flex justify-content-start w-100 h-100">
+          <div class="mt-2 flex-fill">
+            <canvas
+              class="chart px-3"
+              id="bar-ageing"
+              style="display: block"
+            ></canvas>
+          </div>
+        </div>
+        <div class="d-flex">
+          <table
+            class="table table-bordered table-sm align-middle"
+            style="font-size: 12px"
+          >
+            <thead>
+              <tr class="bg-light">
+                <th class="text-center" scope="col" style="width: 20%">
+                  Particulars
+                </th>
+                <th class="text-center" scope="col" style="width: 40%">
+                  Receivables
+                </th>
+                <th class="text-center" scope="col" style="width: 40%">
+                  Payables
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+                  <div class="w-100 text-wrap mx-1">
+                    <span class="align-middle mx-1">00 - 30</span>
+                  </div>
+                </td>
+                <td>
+                  <div class="w-100 text-end align-middle">
+                    <span class="text-end align-middle mx-1">41,45,500</span
+                    ><span
+                      class="badge rounded-pill text-center align-middle"
+                      style="
+                        background: rgba(0, 201, 167, 0.1);
+                        color: #00c9a7;
+                        display: inline-block;
+                        width: 45px;
+                      "
+                      >+ 102%</span
+                    >
+                  </div>
+                </td>
+                <td>
+                  <div class="w-100 text-end align-middle">
+                    <span class="text-end align-middle mx-1">41.45,500</span
+                    ><span
+                      class="badge rounded-pill text-center align-middle"
+                      style="
+                        background: rgba(0, 201, 167, 0.1);
+                        color: #00c9a7;
+                        display: inline-block;
+                        width: 45px;
+                      "
+                      >+ 102%</span
+                    >
+                  </div>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <div class="w-100 text-wrap mx-1">
+                    <span class="align-middle mx-1">31 - 60</span>
+                  </div>
+                </td>
+                <td>
+                  <div class="w-100 text-end align-middle">
+                    <span class="text-end align-middle mx-1">30,00,005</span
+                    ><span
+                      class="badge rounded-pill text-center align-middle"
+                      style="
+                        background: rgba(237, 76, 120, 0.1);
+                        color: #ed4c78;
+                        display: inline-block;
+                        width: 45px;
+                      "
+                      >- 142%</span
+                    >
+                  </div>
+                </td>
+                <td>
+                  <div class="w-100 text-end align-middle">
+                    <span class="text-end align-middle mx-1">30,10,000</span
+                    ><span
+                      class="badge rounded-pill text-center align-middle"
+                      style="
+                        background: rgba(237, 76, 120, 0.1);
+                        color: #ed4c78;
+                        display: inline-block;
+                        width: 45px;
+                      "
+                      >- 142%</span
+                    >
+                  </div>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <div class="w-100 text-wrap mx-1">
+                    <span class="align-middle mx-1">61 - 90</span>
+                  </div>
+                </td>
+                <td>
+                  <div class="w-100 text-end align-middle">
+                    <span class="text-end align-middle mx-1">6,00,500</span
+                    ><span
+                      class="badge rounded-pill text-center align-middle"
+                      style="
+                        background: rgba(0, 201, 167, 0.1);
+                        color: #00c9a7;
+                        display: inline-block;
+                        width: 45px;
+                      "
+                      >+ 12%</span
+                    >
+                  </div>
+                </td>
+                <td>
+                  <div class="w-100 text-end align-middle">
+                    <span class="text-end align-middle mx-1">45,500</span
+                    ><span
+                      class="badge rounded-pill text-center align-middle"
+                      style="
+                        background: rgba(0, 201, 167, 0.1);
+                        color: #00c9a7;
+                        display: inline-block;
+                        width: 45px;
+                      "
+                      >+ 2%</span
+                    >
+                  </div>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <div class="w-100 text-wrap mx-1">
+                    <span class="align-middle mx-1">91 - 120</span>
+                  </div>
+                </td>
+                <td>
+                  <div class="w-100 text-end align-middle">
+                    <span class="text-end align-middle mx-1">50,005</span
+                    ><span
+                      class="badge rounded-pill text-center align-middle"
+                      style="
+                        background: rgba(237, 76, 120, 0.1);
+                        color: #ed4c78;
+                        display: inline-block;
+                        width: 45px;
+                      "
+                      >- 1%</span
+                    >
+                  </div>
+                </td>
+                <td>
+                  <div class="w-100 text-end align-middle">
+                    <span class="text-end align-middle mx-1">3,10,000</span
+                    ><span
+                      class="badge rounded-pill text-center align-middle"
+                      style="
+                        background: rgba(237, 76, 120, 0.1);
+                        color: #ed4c78;
+                        display: inline-block;
+                        width: 45px;
+                      "
+                      >- 14%</span
+                    >
+                  </div>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <div class="w-100 text-wrap mx-1">
+                    <span class="align-middle mx-1">>> - 120</span>
+                  </div>
+                </td>
+                <td>
+                  <div class="w-100 text-end align-middle">
+                    <span class="text-end align-middle mx-1">9,67,203</span
+                    ><span
+                      class="badge rounded-pill text-center align-middle"
+                      style="
+                        background: rgba(0, 201, 167, 0.1);
+                        color: #00c9a7;
+                        display: inline-block;
+                        width: 45px;
+                      "
+                      >+ 200%</span
+                    >
+                  </div>
+                </td>
+                <td>
+                  <div class="w-100 text-end align-middle">
+                    <span class="text-end align-middle mx-1">5,500</span
+                    ><span
+                      class="badge rounded-pill text-center align-middle"
+                      style="
+                        background: rgba(0, 201, 167, 0.1);
+                        color: #00c9a7;
+                        display: inline-block;
+                        width: 45px;
+                      "
+                      >+ 20%</span
+                    >
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div
+  class="row other-cards mt-3"
+  style="text-shadow: 1px 2px 3px rgb(0 0 0 / 5%)"
+>
+  <div class="col-md-4 mb-1">
+    <div class="card w-100 h-100">
+      <div class="card-header py-1" style="background: white">
+        <div class="align-items-center row">
+          <div class="col d-flex p-0">
+            <span
+              class="material-icons align-self-center mx-2"
+              style="color: #455a64"
+            >
+              business
+            </span>
+            <span class="fw-bold fs-6 align-self-center"
+              >Top 5 Cost Centres</span
+            >
+          </div>
+          <div class="text-right col-auto d-flex align-items-center px-0">
+            <div class="dropdown">
+              <a href="#" style="color: inherit">
+                <span
+                  class="material-icons align-middle"
+                  style="color: #455a64"
+                >
+                  more_vert</span
+                >
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="card-body d-flex flex-column p-1">
+        <div class="d-flex justify-content-center w-100 h-100 p-0">
+          <div class="m-0 w-100">
+            <canvas class="chart p-1 h-100" id="tree-top-5-cc"></canvas>
+          </div>
+        </div>
+        <div class="d-flex">
+          <table
+            class="table table-bordered table-sm align-middle"
+            style="font-size: 12px"
+          >
+            <thead>
+              <tr class="bg-light">
+                <th class="text-center" scope="col" style="width: 60%">
+                  Cost Centres
+                </th>
+                <th class="text-center" scope="col" style="width: 40%">
+                  Accounted
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+                  <div class="w-100 mx-1 text-wrap">
+                    <div
+                      class="
+                        d-flex
+                        flex-row
+                        align-items-center
+                        justify-content-start
+                      "
+                    >
+                      <div class="col-1 text-start align-items-center">
+                        <span
+                          class="badge rounded-pill first_value align-middle"
+                          style="background: #0088c7; color: white"
+                          >C</span
+                        >
+                      </div>
+                      <div class="col-11 text-start align-items-center">
+                        <span class="align-middle mx-2">Cost_Centre-1</span>
+                      </div>
+                    </div>
+                  </div>
+                </td>
+                <td>
+                  <div class="w-100 text-end align-middle">
+                    <span class="text-end align-middle mx-1">54,00,000</span>
+                    <span
+                      class="badge rounded-pill text-center align-middle"
+                      style="
+                        background: rgba(0, 201, 167, 0.1);
+                        color: #00c9a7;
+                        display: inline-block;
+                        width: 45px;
+                      "
+                      >+ 12%</span
+                    >
+                  </div>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <div class="w-100 mx-1 text-wrap">
+                    <div
+                      class="
+                        d-flex
+                        flex-row
+                        align-items-center
+                        justify-content-start
+                      "
+                    >
+                      <div class="col-1 text-start align-items-center">
+                        <span
+                          class="badge rounded-pill second_value align-middle"
+                          style="background: #00a7d8; color: white"
+                          >C</span
+                        >
+                      </div>
+                      <div class="col-11 text-start align-items-center">
+                        <span class="align-middle mx-2">Cost_Centre-2</span>
+                      </div>
+                    </div>
+                  </div>
+                </td>
+                <td>
+                  <div class="w-100 text-end align-middle">
+                    <span class="text-end align-middle mx-1">4,00,000</span>
+                    <span
+                      class="badge rounded-pill text-center align-middle"
+                      style="
+                        background: rgba(237, 76, 120, 0.1);
+                        color: #ed4c78;
+                        display: inline-block;
+                        width: 45px;
+                      "
+                      >- 1.2%</span
+                    >
+                  </div>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <div class="w-100 text-wrap mx-1">
+                    <div
+                      class="
+                        d-flex
+                        flex-row
+                        align-items-center
+                        justify-content-start
+                      "
+                    >
+                      <div class="col-1 text-start align-items-center">
+                        <span
+                          class="badge rounded-pill third_value align-middle"
+                          style="background: #31c5e4; color: white"
+                          >C</span
+                        >
+                      </div>
+                      <div class="col-11 text-start align-items-center">
+                        <span class="align-middle mx-2">Cost_Centre-3</span>
+                      </div>
+                    </div>
+                  </div>
+                </td>
+                <td>
+                  <div class="w-100 text-end align-middle">
+                    <span class="text-end align-middle mx-1">50,00,000</span>
+                    <span
+                      class="badge rounded-pill text-center align-middle"
+                      style="
+                        background: rgba(0, 201, 167, 0.1);
+                        color: #00c9a7;
+                        display: inline-block;
+                        width: 45px;
+                      "
+                      >+ 200%</span
+                    >
+                  </div>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <div class="w-100 text-wrap mx-1">
+                    <div
+                      class="
+                        d-flex
+                        flex-row
+                        align-items-center
+                        justify-content-start
+                      "
+                    >
+                      <div class="col-1 text-start align-items-center">
+                        <span
+                          class="badge rounded-pill fourth_value align-middle"
+                          style="background: #63e2ec; color: white"
+                          >C
+                        </span>
+                      </div>
+                      <div class="col-11 text-start align-items-center">
+                        <span class="align-middle mx-2">Cost_Centre-4</span>
+                      </div>
+                    </div>
+                  </div>
+                </td>
+                <td>
+                  <div class="w-100 text-end align-middle">
+                    <span class="text-end align-middle mx-1">49,50,000</span>
+                    <span
+                      class="badge rounded-pill text-center align-middle"
+                      style="
+                        background: rgba(237, 76, 120, 0.1);
+                        color: #ed4c78;
+                        display: inline-block;
+                        width: 45px;
+                      "
+                      >- 10%</span
+                    >
+                  </div>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <div class="w-100 text-wrap mx-1">
+                    <div
+                      class="
+                        d-flex
+                        flex-row
+                        align-items-center
+                        justify-content-star
+                      "
+                    >
+                      <div class="col-1 text-start align-items-center">
+                        <span
+                          class="badge rounded-pill fifth_value align-middle"
+                          style="background: #94fff4; color: white"
+                          >C</span
+                        >
+                      </div>
+                      <div class="col-11 text-start align-items-center">
+                        <span class="align-middle mx-2">Cost_Centre-5</span>
+                      </div>
+                    </div>
+                  </div>
+                </td>
+                <td>
+                  <div class="w-100 text-end align-middle">
+                    <span class="text-end align-middle mx-1">50,000</span>
+                    <span
+                      class="badge rounded-pill text-center align-middle"
+                      style="
+                        background: rgba(0, 201, 167, 0.1);
+                        color: #00c9a7;
+                        display: inline-block;
+                        width: 45px;
+                      "
+                      >+ 1%</span
+                    >
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-4 mb-1">
+    <div class="card w-100 h-100">
+      <div class="card-header py-1" style="background: white">
+        <div class="align-items-center row">
+          <div class="col d-flex p-0">
+            <span
+              class="material-icons align-self-center mx-2"
+              style="color: #455a64"
+            >
+              radar
+            </span>
+            <span class="fw-bold fs-6 align-self-center"
+              >Top 3 Inventory Distribution</span
+            >
+          </div>
+          <div class="text-right col-auto d-flex align-items-center px-0">
+            <div class="dropdown">
+              <a href="#" style="color: inherit">
+                <span
+                  class="material-icons align-middle"
+                  style="color: #455a64"
+                >
+                  more_vert</span
+                >
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="card-body d-flex flex-column p-1">
+        <div class="d-flex justify-content-center w-100 h-100">
+          <div class="m-0">
+            <canvas class="chart" id="radar-top-3-inventory"></canvas>
+          </div>
+        </div>
+        <div class="d-flex">
+          <table
+            class="table table-bordered table-sm align-middle"
+            style="font-size: 12px"
+          >
+            <thead>
+              <tr class="bg-light">
+                <th class="text-center" scope="col" style="width: 40%">
+                  Inventory
+                </th>
+                <th class="text-center" scope="col" style="width: 30%">
+                  Quantity
+                </th>
+                <th class="text-center" scope="col" style="width: 30%">
+                  Value
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+                  <div class="w-100 text-wrap mx-1">
+                    <div
+                      class="
+                        d-flex
+                        flex-row
+                        justify-content-start
+                        align-items-center
+                      "
+                    >
+                      <div class="col-2 text-start align-items-center">
+                        <span
+                          class="badge rounded-pill first_value align-middle"
+                          style="background: #0088c7; color: white"
+                          >P</span
+                        >
+                      </div>
+                      <div class="col-10 text-start align-items-center">
+                        <span class="align-middle mx-1">Product_1</span>
+                      </div>
+                    </div>
+                  </div>
+                </td>
+                <td>
+                  <div class="w-100 text-end align-middle">
+                    <span class="text-end align-middle mx-1">24,000</span
+                    ><span
+                      class="badge rounded-pill text-center align-middle"
+                      style="
+                        background: rgba(0, 201, 167, 0.1);
+                        color: #00c9a7;
+                        display: inline-block;
+                        width: 45px;
+                      "
+                      >+ 12%</span
+                    >
+                  </div>
+                </td>
+                <td>
+                  <div class="w-100 text-end align-middle">
+                    <span class="text-end align-middle mx-1">24,000</span
+                    ><span
+                      class="badge rounded-pill text-center align-middle"
+                      style="
+                        background: rgba(0, 201, 167, 0.1);
+                        color: #00c9a7;
+                        display: inline-block;
+                        width: 45px;
+                      "
+                      >+ 12%</span
+                    >
+                  </div>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <div class="w-100 text-wrap mx-1">
+                    <div
+                      class="
+                        d-flex
+                        flex-row
+                        justify-content-start
+                        align-items-center
+                      "
+                    >
+                      <div class="col-2 text-start align-items-center">
+                        <span
+                          class="badge rounded-pill second_value align-middle"
+                          style="background: #0088c7; color: white"
+                          >P</span
+                        >
+                      </div>
+                      <div class="col-10 text-start align-items-center">
+                        <span class="align-middle mx-1">Product_2</span>
+                      </div>
+                    </div>
+                  </div>
+                </td>
+                <td>
+                  <div class="w-100 text-end align-middle">
+                    <span class="text-end align-middle mx-1">44,765</span
+                    ><span
+                      class="badge rounded-pill text-center align-middle"
+                      style="
+                        background: rgba(237, 76, 120, 0.1);
+                        color: #ed4c78;
+                        display: inline-block;
+                        width: 45px;
+                      "
+                      >- 1.2%</span
+                    >
+                  </div>
+                </td>
+                <td>
+                  <div class="w-100 text-end align-middle">
+                    <span class="text-end align-middle mx-1">45,00,000</span
+                    ><span
+                      class="badge rounded-pill text-center align-middle"
+                      style="
+                        background: rgba(237, 76, 120, 0.1);
+                        color: #ed4c78;
+                        display: inline-block;
+                        width: 45px;
+                      "
+                      >- 1.2%</span
+                    >
+                  </div>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <div class="w-100 text-wrap mx-1">
+                    <div
+                      class="
+                        d-flex
+                        flex-row
+                        justify-content-start
+                        align-items-cente
+                      "
+                    >
+                      <div class="col-2 text-start align-items-center">
+                        <span
+                          class="badge rounded-pill third_value align-middle"
+                          style="background: #0088c7; color: white"
+                          >P</span
+                        >
+                      </div>
+                      <div class="col-10 text-start align-items-center">
+                        <span class="align-middle mx-1">Product_3</span>
+                      </div>
+                    </div>
+                  </div>
+                </td>
+                <td>
+                  <div class="w-100 text-end align-middle">
+                    <span class="text-end align-middle mx-1">1,00,000</span
+                    ><span
+                      class="badge rounded-pill text-center align-middle"
+                      style="
+                        background: rgba(0, 201, 167, 0.1);
+                        color: #00c9a7;
+                        display: inline-block;
+                        width: 45px;
+                      "
+                      >+ 120%</span
+                    >
+                  </div>
+                </td>
+                <td>
+                  <div class="w-100 text-end align-middle">
+                    <span class="text-end align-middle mx-1">56,00,000</span
+                    ><span
+                      class="badge rounded-pill text-center align-middle"
+                      style="
+                        background: rgba(0, 201, 167, 0.1);
+                        color: #00c9a7;
+                        display: inline-block;
+                        width: 45px;
+                      "
+                      >+ 120%</span
+                    >
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-4 mb-1">
+    <div class="row mb-3">
+      <div class="col-md-12">
+        <div class="card w-100 h-100">
+          <div class="card-header py-1" style="background: white">
+            <div class="align-items-center row">
+              <div class="col d-flex p-0">
+                <span
+                  class="material-icons align-self-center mx-2"
+                  style="color: #455a64"
+                >
+                  area_chart
+                </span>
+                <span class="fw-bold fs-6 align-self-center"
+                  >Receipts v/s Payments</span
+                >
+              </div>
+              <div class="text-right col-auto d-flex align-items-center px-0">
+                <div class="dropdown">
+                  <a href="#" style="color: inherit">
+                    <span
+                      class="material-icons align-middle"
+                      style="color: #455a64"
+                    >
+                      more_vert</span
+                    >
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="card-body p-0">
+            <canvas
+              class="chart p-0"
+              id="area-chart-accounts"
+              style="display: block"
+            ></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-md-12">
+        <div class="card w-100 h-100">
+          <div class="card-header py-1" style="background: white">
+            <div class="align-items-center row">
+              <div class="col d-flex p-0">
+                <span
+                  class="material-icons align-self-center mx-2"
+                  style="color: #455a64"
+                >
+                  format_list_numbered
+                </span>
+                <span class="fw-bold fs-6 align-self-center"
+                  >Financial Ratios</span
+                >
+              </div>
+              <div class="text-right col-auto d-flex align-items-center px-0">
+                <div class="dropdown">
+                  <a href="#" style="color: inherit">
+                    <span
+                      class="material-icons align-middle"
+                      style="color: #455a64"
+                    >
+                      more_vert</span
+                    >
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="card-body p-1" style="font-size: 12px">
+            <div
+              class="
+                align-items-center
+                py-1
+                border-bottom border-200
+                d-flex
+                flex-row
+              "
+            >
+              <div class="col-6 py-1">
+                <div
+                  class="
+                    align-items-center
+                    d-flex
+                    flex-row
+                    justify-cotent-start
+                  "
+                >
+                  <div class="col-3 text-start align-items-center">
+                    <div class="align-self-center px-2">
+                      <span class="first_value badge rounded-pill m-0">CR</span>
+                    </div>
+                  </div>
+                  <div class="col-9 text-start">
+                    <div class="align-self-center">Current</div>
+                  </div>
+                </div>
+              </div>
+              <div class="col-6 px-2">
+                <div
+                  class="align-items-center d-flex flex-row justify-content-end"
+                >
+                  <div class="col-6 text-end">
+                    <div class="align-self-center px-2">2.23</div>
+                  </div>
+                  <div class="col-6 text-start">
+                    <div class="align-self-center">
+                      <div class="progress">
+                        <div
+                          class="progress-bar first_value"
+                          role="progressbar"
+                          style="width: 75%"
+                          aria-valuenow="75"
+                          aria-valuemin="0"
+                          aria-valuemax="100"
+                        ></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div
+              class="
+                align-items-center
+                py-1
+                border-bottom border-200
+                d-flex
+                flex-row
+              "
+            >
+              <div class="col-6 py-1">
+                <div
+                  class="
+                    align-items-center
+                    d-flex
+                    flex-row
+                    justify-content-start
+                  "
+                >
+                  <div class="col-3 text-start aling-items-center">
+                    <div class="align-self-center px-2">
+                      <span class="second_value badge rounded-pill m-0"
+                        >CR</span
+                      >
+                    </div>
+                  </div>
+                  <div class="col-9 text-start">
+                    <div class="align-self-center">Cash</div>
+                  </div>
+                </div>
+              </div>
+              <div class="col-6 px-2">
+                <div
+                  class="align-items-center d-flex flex-row justify-content-end"
+                >
+                  <div class="col-6 text-end">
+                    <div class="align-self-center px-2">2.0</div>
+                  </div>
+                  <div class="col-6 text-start">
+                    <div class="align-self-center">
+                      <div class="progress">
+                        <div
+                          class="progress-bar second_value"
+                          role="progressbar"
+                          style="width: 25%"
+                          aria-valuenow="25"
+                          aria-valuemin="0"
+                          aria-valuemax="100"
+                        ></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div
+              class="
+                align-items-center
+                py-1
+                border-bottom border-200
+                d-flex
+                flex-row
+              "
+            >
+              <div class="col-6 py-1">
+                <div
+                  class="
+                    align-items-center
+                    d-flex
+                    flex-row
+                    justify-content-start
+                  "
+                >
+                  <div class="col-3 text-start align-items-center">
+                    <div class="align-self-center px-2">
+                      <span class="third_value badge rounded-pill m-0">IC</span>
+                    </div>
+                  </div>
+                  <div class="col-9 text-start">
+                    <div class="align-self-center">Interest Coverage</div>
+                  </div>
+                </div>
+              </div>
+              <div class="col-6 px-2">
+                <div
+                  class="align-items-center d-flex flex-row justify-content-end"
+                >
+                  <div class="col-6 text-end">
+                    <div class="align-self-center px-2">4.55</div>
+                  </div>
+                  <div class="col-6 text-start">
+                    <div class="align-self-center">
+                      <div class="progress">
+                        <div
+                          class="progress-bar third_value"
+                          role="progressbar"
+                          style="width: 50%"
+                          aria-valuenow="50"
+                          aria-valuemin="0"
+                          aria-valuemax="100"
+                        ></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div
+              class="
+                align-items-center
+                py-1
+                border-bottom border-200
+                d-flex
+                flex-row
+              "
+            >
+              <div class="col-6 py-1">
+                <div
+                  class="
+                    align-items-center
+                    d-flex
+                    flex-row
+                    justify-content-start
+                  "
+                >
+                  <div class="col-3 text-start align-items-center">
+                    <div class="align-self-center px-2">
+                      <span class="fourth_value badge rounded-pill m-0"
+                        >GM</span
+                      >
+                    </div>
+                  </div>
+                  <div class="col-9 text-start">
+                    <div class="align-self-center">Gross Margin</div>
+                  </div>
+                </div>
+              </div>
+              <div class="col-6 px-2">
+                <div
+                  class="align-items-center d-flex flex-row justify-content-end"
+                >
+                  <div class="col-6 text-end">
+                    <div class="align-self-center px-2">1.12</div>
+                  </div>
+                  <div class="col-6 text-start">
+                    <div class="align-self-center">
+                      <div class="progress">
+                        <div
+                          class="progress-bar fourth_value"
+                          role="progressbar"
+                          style="width: 100%"
+                          aria-valuenow="100"
+                          aria-valuemin="0"
+                          aria-valuemax="100"
+                        ></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div
+              class="
+                align-items-center
+                py-1
+                border-bottom border-200
+                d-flex
+                flex-row
+              "
+            >
+              <div class="col-6 py-1">
+                <div
+                  class="
+                    align-items-center
+                    d-flex
+                    flex-row
+                    justify-content-start
+                  "
+                >
+                  <div class="col-3 text-start align-items-center">
+                    <div class="align-self-center px-2">
+                      <span class="fifth_value badge rounded-pill m-0">OM</span>
+                    </div>
+                  </div>
+                  <div class="col-9 text-start">
+                    <div class="align-self-center">Operating Margin</div>
+                  </div>
+                </div>
+              </div>
+              <div class="col-6 px-2">
+                <div
+                  class="align-items-center d-flex flex-row justify-content-end"
+                >
+                  <div class="col-6 text-end">
+                    <div class="align-self-center px-2">7.6</div>
+                  </div>
+                  <div class="col-6 text-start">
+                    <div class="align-self-center">
+                      <div class="progress">
+                        <div
+                          class="progress-bar fifth_value"
+                          role="progressbar"
+                          style="width: 85%"
+                          aria-valuenow="85"
+                          aria-valuemin="0"
+                          aria-valuemax="100"
+                        ></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock dashboard %}

@@ -1,0 +1,27 @@
+{% extends 'dashboard/base.html' %} {% block dashboard %}
+
+<br />
+
+<div class="jumbotron text-center">
+  <h1 class="display-3">Thank You!</h1>
+  <p class="lead">
+    <strong
+      >Please wait till the Administrator grants your account access.</strong
+    >
+  </p>
+  <hr />
+  <p>
+    Want to get in touch with us? Mail us at:
+    <a href="#">dashbolt@optimalytics.in</a>
+  </p>
+  <p class="lead">
+    <a
+      class="btn btn-primary btn-sm"
+      href="{% url 'logout_page' %}"
+      role="button"
+      >Logout</a
+    >
+  </p>
+</div>
+
+{% endblock dashboard %}

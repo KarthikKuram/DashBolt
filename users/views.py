@@ -4,6 +4,8 @@ from django.urls import reverse, reverse_lazy
 from django.views.generic import (TemplateView, CreateView)
 from .forms import NewUserForm 
 from django.contrib.auth.views import LoginView, LogoutView
+from django.contrib.auth.decorators import login_required, permission_required
+from django.contrib.auth import login,logout,authenticate
 from django.utils import timezone
 # Create your views here.
 
@@ -13,8 +15,12 @@ class Login_page(LoginView):
 class Register_page(CreateView):
     template_name = 'users/sign_up.html'
     form_class = NewUserForm
-    success_url = reverse_lazy('dashboard')
+    success_url = reverse_lazy('register_success')
 
+class Register_success(TemplateView):
+    template_name = 'users/pending_access.html'
+
+@login_required
 def Dashboard_page(request):
     if not request.user.access:
         return render(request,'users/pending_access.html')

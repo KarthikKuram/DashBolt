@@ -55,7 +55,7 @@
             >DASHBOLT</span
           ></a
         >
-        {% block loginoptions %}{% endblock loginoptions %} {% comment %}
+        {% if user.access %}
         <button
           class="navbar-toggler"
           type="button"
@@ -98,7 +98,7 @@
                   </a>
                 </li>
                 <li>
-                  <a class="dropdown-item" href="#"
+                  <a class="dropdown-item" href="{% url 'redirect_settings' %}"
                     ><span
                       class="material-icons align-middle"
                       style="color: #455a64"
@@ -109,7 +109,7 @@
                 </li>
                 <li><hr class="dropdown-divider" /></li>
                 <li>
-                  <a class="dropdown-item" href="#">
+                  <a class="dropdown-item" href="{% url 'logout_page' %}">
                     <span
                       class="material-icons align-middle"
                       style="color: #455a64"
@@ -122,7 +122,7 @@
             </li>
           </ul>
         </div>
-        {% endcomment %}
+        {% endif %}
       </div>
     </nav>
     <!-- OFFCANVAS -->

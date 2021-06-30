@@ -1,6 +1,12 @@
 from django.contrib.auth.base_user import BaseUserManager
 from django.utils.translation import ugettext_lazy as _
+from django.db import models
 
+class Organization(models.Model):
+    name = models.CharField(max_length=255,unique=False)
+    
+    def __str__(self):
+        return self.name
 
 class CustomUserManager(BaseUserManager):
     
@@ -27,7 +33,12 @@ class CustomUserManager(BaseUserManager):
         extra_fields.setdefault('is_superuser',True)
         extra_fields.setdefault('is_active',True)
         extra_fields.setdefault('access',True)
-        
+        organization = Organization(
+            name = "Optimalytics Business Solutions Private Limited"
+        )
+        organization.save()
+        extra_fields.setdefault('organization',organization)
+            
         if extra_fields.get('is_staff') is not True:
             raise ValueError(_('Superuser must have is_staff=True'))
         

@@ -1,0 +1,24 @@
+{% extends "dashboard/base.html" %}
+{% load crispy_forms_tags %}
+{% load widget_tweaks %}
+{% load static %}
+
+{%block dashboard %}
+<div class="container">
+    <div class="row">
+        <div class="d-flex flex-row justify-content-between align-items-center mb-3">
+            <div class="col-6">
+                <legend><strong>TALLY SETTINGS</strong></legend>
+            </div>
+        </div>
+        <div class="col-md-12">
+            <form action="" method="post">
+                {% csrf_token %}
+                <h4 class="mb-4">Are you sure you want to delete tally settings for {{object}}?</h4>
+                <input type="submit" value="Confirm" class="btn btn-danger">
+            </form>
+        </div>    
+    </div> 
+</div>
+
+{% endblock %}

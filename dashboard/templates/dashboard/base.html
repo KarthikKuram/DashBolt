@@ -98,7 +98,7 @@
                   </a>
                 </li>
                 <li>
-                  <a class="dropdown-item" href="{% url 'redirect_settings' %}"
+                  <a class="dropdown-item" href="{% url 'tally_settings' %}"
                     ><span
                       class="material-icons align-middle"
                       style="color: #455a64"
@@ -137,6 +137,13 @@
       <div class="offcanvas-body p-0">
         <nav class="navbar-light">
           <ul class="navbar-nav">
+            {% if user.access %}
+              <li>
+                <div class="text-muted text-uppercase fw-bold small px-3 mt-1">
+                  {{user.first_name}} {{user.last_name}}
+                </div>
+              </li>
+            {% endif %}
             <li>
               <div class="text-muted text-uppercase fw-bold small px-3 mt-3">
                 DASHBOARD

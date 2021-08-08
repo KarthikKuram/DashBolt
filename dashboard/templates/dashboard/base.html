@@ -125,7 +125,7 @@
         {% endif %}
       </div>
     </nav>
-    <!-- OFFCANVAS -->
+    <!-- OFFCANVAS -->    
     <div
       class="offcanvas offcanvas-start sidebar-nav"
       data-bs-scroll="true"
@@ -487,6 +487,7 @@
         </nav>
       </div>
     </div>
+    
     <main class="mt-5 pt-3">
       <div class="container-fluid">
         {% block dashboard %}{% endblock dashboard %}
@@ -557,5 +558,7 @@
       });
     </script>
     <script src="{% static 'dashboard/js/app.js' %}"></script>
+    {% block customjs %}{% endblock customjs %}
   </body>
+  
 </html>

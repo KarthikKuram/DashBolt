@@ -1,0 +1,274 @@
+[
+  {
+    "model": "dashboard.ledger_category",
+    "pk": 1,
+    "fields": {
+      "primary_group": "Bank Accounts",
+      "category": "Asset"
+    }
+  },
+  {
+    "model": "dashboard.ledger_category",
+    "pk": 2,
+    "fields": {
+      "primary_group": "Bank OCC A/c",
+      "category": "Liability"
+    }
+  },
+  {
+    "model": "dashboard.ledger_category",
+    "pk": 3,
+    "fields": {
+      "primary_group": "Bank OD A/c",
+      "category": "Liability"
+    }
+  },
+  {
+    "model": "dashboard.ledger_category",
+    "pk": 4,
+    "fields": {
+      "primary_group": "Branch / Divisions",
+      "category": "Liability"
+    }
+  },
+  {
+    "model": "dashboard.ledger_category",
+    "pk": 5,
+    "fields": {
+      "primary_group": "Capital Account",
+      "category": "Liability"
+    }
+  },
+  {
+    "model": "dashboard.ledger_category",
+    "pk": 6,
+    "fields": {
+      "primary_group": "Cash-in-hand",
+      "category": "Asset"
+    }
+  },
+  {
+    "model": "dashboard.ledger_category",
+    "pk": 7,
+    "fields": {
+      "primary_group": "Current Assets",
+      "category": "Asset"
+    }
+  },
+  {
+    "model": "dashboard.ledger_category",
+    "pk": 8,
+    "fields": {
+      "primary_group": "Current Liabilities",
+      "category": "Liability"
+    }
+  },
+  {
+    "model": "dashboard.ledger_category",
+    "pk": 9,
+    "fields": {
+      "primary_group": "Deposits (Asset)",
+      "category": "Asset"
+    }
+  },
+  {
+    "model": "dashboard.ledger_category",
+    "pk": 10,
+    "fields": {
+      "primary_group": "Direct Expenses",
+      "category": "Expense"
+    }
+  },
+  {
+    "model": "dashboard.ledger_category",
+    "pk": 11,
+    "fields": {
+      "primary_group": "Direct Incomes",
+      "category": "Income"
+    }
+  },
+  {
+    "model": "dashboard.ledger_category",
+    "pk": 12,
+    "fields": {
+      "primary_group": "Duties & Taxes",
+      "category": "Liability"
+    }
+  },
+  {
+    "model": "dashboard.ledger_category",
+    "pk": 13,
+    "fields": {
+      "primary_group": "Expenses (Direct)",
+      "category": "Expense"
+    }
+  },
+  {
+    "model": "dashboard.ledger_category",
+    "pk": 14,
+    "fields": {
+      "primary_group": "Expenses (Indirect)",
+      "category": "Expense"
+    }
+  },
+  {
+    "model": "dashboard.ledger_category",
+    "pk": 15,
+    "fields": {
+      "primary_group": "Fixed Assets",
+      "category": "Asset"
+    }
+  },
+  {
+    "model": "dashboard.ledger_category",
+    "pk": 16,
+    "fields": {
+      "primary_group": "Income (Direct)",
+      "category": "Income"
+    }
+  },
+  {
+    "model": "dashboard.ledger_category",
+    "pk": 17,
+    "fields": {
+      "primary_group": "Income (Indirect)",
+      "category": "Income"
+    }
+  },
+  {
+    "model": "dashboard.ledger_category",
+    "pk": 18,
+    "fields": {
+      "primary_group": "Indirect Expenses",
+      "category": "Expense"
+    }
+  },
+  {
+    "model": "dashboard.ledger_category",
+    "pk": 19,
+    "fields": {
+      "primary_group": "Indirect Incomes",
+      "category": "Income"
+    }
+  },
+  {
+    "model": "dashboard.ledger_category",
+    "pk": 20,
+    "fields": {
+      "primary_group": "Investments",
+      "category": "Asset"
+    }
+  },
+  {
+    "model": "dashboard.ledger_category",
+    "pk": 21,
+    "fields": {
+      "primary_group": "Loans and Advances (Asset)",
+      "category": "Asset"
+    }
+  },
+  {
+    "model": "dashboard.ledger_category",
+    "pk": 22,
+    "fields": {
+      "primary_group": "Loans (Liability)",
+      "category": "Liability"
+    }
+  },
+  {
+    "model": "dashboard.ledger_category",
+    "pk": 23,
+    "fields": {
+      "primary_group": "Misc.Expenses (ASSET)",
+      "category": "Asset"
+    }
+  },
+  {
+    "model": "dashboard.ledger_category",
+    "pk": 24,
+    "fields": {
+      "primary_group": "Provisions",
+      "category": "Liability"
+    }
+  },
+  {
+    "model": "dashboard.ledger_category",
+    "pk": 25,
+    "fields": {
+      "primary_group": "Purchase Accounts",
+      "category": "Expense"
+    }
+  },
+  {
+    "model": "dashboard.ledger_category",
+    "pk": 26,
+    "fields": {
+      "primary_group": "Reserves & Surplus",
+      "category": "Liability"
+    }
+  },
+  {
+    "model": "dashboard.ledger_category",
+    "pk": 27,
+    "fields": {
+      "primary_group": "Retained Earnings",
+      "category": "Liability"
+    }
+  },
+  {
+    "model": "dashboard.ledger_category",
+    "pk": 28,
+    "fields": {
+      "primary_group": "Sales Accounts",
+      "category": "Income"
+    }
+  },
+  {
+    "model": "dashboard.ledger_category",
+    "pk": 29,
+    "fields": {
+      "primary_group": "Secured Loans",
+      "category": "Liability"
+    }
+  },
+  {
+    "model": "dashboard.ledger_category",
+    "pk": 30,
+    "fields": {
+      "primary_group": "Stock-in-hand",
+      "category": "Asset"
+    }
+  },
+  {
+    "model": "dashboard.ledger_category",
+    "pk": 31,
+    "fields": {
+      "primary_group": "Sundry Creditors",
+      "category": "Liability"
+    }
+  },
+  {
+    "model": "dashboard.ledger_category",
+    "pk": 32,
+    "fields": {
+      "primary_group": "Sundry Debtors",
+      "category": "Asset"
+    }
+  },
+  {
+    "model": "dashboard.ledger_category",
+    "pk": 33,
+    "fields": {
+      "primary_group": "Suspense A/c",
+      "category": "Liability"
+    }
+  },
+  {
+    "model": "dashboard.ledger_category",
+    "pk": 34,
+    "fields": {
+      "primary_group": "Unsecured Loans",
+      "category": "Liability"
+    }
+  }
+]

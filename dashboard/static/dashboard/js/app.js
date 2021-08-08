@@ -19,7 +19,6 @@ function hexToRGBA(hex, opacity) {
     ")"
   );
 }
-
 // Dashboard Theme colors
 // custom_colors = ["#0088c7", "#00a7d8", "#31c5e4", "#63e2ec", "#94fff4"];
 // custom_colors = ["#0097dc", "#a18aeb", "#ff71c0", "#ff7670", "#ffa600"];
@@ -30,105 +29,7 @@ var custom_colors_rgba = custom_colors.map(function (item) {
   return hexToRGBA(item, 0.5);
 });
 
-// Line Chart for Sales Dash Card
-new Chart(document.getElementById("line-chart-dash"), {
-  type: "line",
-  data: {
-    labels: [
-      "January",
-      "February",
-      "March",
-      "April",
-      "May",
-      "June",
-      "July",
-      "August",
-      "September",
-      "October",
-      "November",
-      "December",
-    ],
-    datasets: [
-      {
-        data: [247, 526, 734, 584, 433, 478, 567, 734, 784, 733, 856, 997],
-        borderColor: custom_colors[0],
-        fill: true,
-        backgroundColor: custom_colors_rgba[0],
-        lineTension: 0.5,
-        pointRadius: 2,
-        pointHoverRadius: 6,
-      },
-    ],
-  },
-  options: {
-    repsonsive: true,
-    title: {
-      display: false,
-    },
-    plugins: {
-      legend: false,
-    },
-    scales: {
-      x: {
-        grid: { display: false, drawBorder: false },
-        ticks: { display: false },
-      },
-      y: {
-        grid: { display: false, drawBorder: false },
-        ticks: { display: false },
-      },
-    },
-  },
-});
-
-// Bar chart for Expenses Dash Card
-new Chart(document.getElementById("bar-chart-dash"), {
-  type: "bar",
-  data: {
-    labels: [
-      "January",
-      "February",
-      "March",
-      "April",
-      "May",
-      "June",
-      "July",
-      "August",
-      "September",
-      "October",
-      "November",
-      "December",
-    ],
-    datasets: [
-      {
-        backgroundColor: [...custom_colors],
-        data: [1478, 2267, 734, 784, 433, 500, 340, 567, 789, 876, 777, 343],
-      },
-    ],
-  },
-  options: {
-    legend: { display: false },
-    title: {
-      display: false,
-    },
-    plugins: { legend: false },
-    scales: {
-      x: {
-        grid: { display: false, drawBorder: false },
-        ticks: { display: false },
-      },
-      y: {
-        grid: { display: false, drawBorder: false },
-        ticks: { display: false },
-      },
-    },
-    borderRadius: 4,
-    barThickness: 3,
-  },
-});
-
 // Donutchart for Receivables and Payables Dash Card
-
 new Chart(document.getElementById("donut-chart-dash"), {
   type: "doughnut",
   data: {
@@ -192,7 +93,6 @@ new Chart(document.getElementById("pie-chart-dash"), {
 });
 
 // WaterFall Chart for P&L Movement
-
 new Chart(document.getElementById("waterfall"), {
   type: "bar",
   data: {
@@ -248,7 +148,6 @@ new Chart(document.getElementById("waterfall"), {
 });
 
 // Top 5 Customers
-
 new Chart(document.getElementById("donut-top-5-Customers"), {
   type: "doughnut",
   data: {
@@ -644,7 +543,6 @@ $(document).ready(function () {
 });
 
 // Change color of spans based on theme chosen:
-
 $(document).ready(function () {
   $(".first_value").css("background", custom_colors[0]);
   $(".second_value").css("background", custom_colors[1]);
@@ -658,7 +556,145 @@ $(document).ready(function () {
   $(".fifth_color").css("color", custom_colors[4]);
 });
 
-$("#reportrange").on("apply.daterangepicker", function (ev, picker) {
-  console.log(picker.startDate.format("YYYY-MM-DD"));
-  console.log(picker.endDate.format("YYYY-MM-DD"));
-});
+// Update Income Dash Card:
+function income_dash_card(data) {
+  $("#income-chart-dash").remove();
+  $("#income-chart-dash-div").append(
+    '<canvas id="income-chart-dash"></canvas>'
+  );
+  var $income_chart = $("#income-chart-dash");
+  var income_dash = $income_chart[0].getContext("2d");
+
+  $("#income-amount-present").html(
+    "&#8377;&nbsp;" +
+      data.present_income.toLocaleString("hi") +
+      data.present_income_denomination
+  );
+  $("#income-amount-previous").html(
+    "&nbsp;&nbsp;from &#8377;&nbsp;" +
+      data.previous_income.toLocaleString("hi") +
+      data.previous_income_denomination
+  );
+  $("#perc-change-income").removeClass("perc_increase");
+  $("#perc-change-income").removeClass("perc_decrease");
+  if (data.perc_change_income > 0) {
+    $("#perc-change-income").html(
+      '<span><i class="fas fa-arrow-up"></i></span>&nbsp;' +
+        data.perc_change_income +
+        " %"
+    );
+    $("#perc-change-income").addClass("perc_increase");
+  } else {
+    $("#perc-change-income").html(
+      '<span><i class="fas fa-arrow-down"></i></span>&nbsp;' +
+        Math.abs(data.perc_change_income) +
+        " %"
+    );
+    $("#perc-change-income").addClass("perc_decrease");
+  }
+  new Chart(income_dash, {
+    type: "line",
+    data: {
+      labels: data.income_chart_labels,
+      datasets: [
+        {
+          data: data.income_chart_data,
+          borderColor: custom_colors[0],
+          fill: true,
+          backgroundColor: custom_colors_rgba[0],
+          lineTension: 0.5,
+          pointRadius: 1,
+          pointHoverRadius: 6,
+        },
+      ],
+    },
+    options: {
+      repsonsive: true,
+      title: {
+        display: false,
+      },
+      plugins: {
+        legend: false,
+      },
+      scales: {
+        x: {
+          grid: { display: false, drawBorder: false },
+          ticks: { display: false },
+        },
+        y: {
+          grid: { display: false, drawBorder: false },
+          ticks: { display: false },
+        },
+      },
+    },
+  });
+}
+
+// Update Expense Dash Card:
+function expense_dash_card(data) {
+  $("#expense-chart-dash").remove();
+  $("#expense-chart-dash-div").append(
+    '<canvas id="expense-chart-dash"></canvas>'
+  );
+  var $expense_chart = $("#expense-chart-dash");
+  var expense_dash = $expense_chart[0].getContext("2d");
+
+  $("#expense-amount-present").html(
+    "&#8377;&nbsp;" +
+      data.present_expense.toLocaleString("hi") +
+      data.present_expense_denomination
+  );
+  $("#expense-amount-previous").html(
+    "&nbsp;&nbsp;from &#8377;&nbsp;" +
+      data.previous_expense.toLocaleString("hi") +
+      data.previous_expense_denomination
+  );
+  $("#perc-change-expense").removeClass("perc_increase");
+  $("#perc-change-expense").removeClass("perc_decrease");
+  if (data.perc_change_expense > 0) {
+    $("#perc-change-expense").html(
+      '<span><i class="fas fa-arrow-up"></i></span>&nbsp;' +
+        data.perc_change_expense +
+        " %"
+    );
+    $("#perc-change-expense").addClass("perc_increase");
+  } else {
+    $("#perc-change-expense").html(
+      '<span><i class="fas fa-arrow-down"></i></span>&nbsp;' +
+        Math.abs(data.perc_change_expense) +
+        " %"
+    );
+    $("#perc-change-expense").addClass("perc_decrease");
+  }
+  new Chart(expense_dash, {
+    type: "bar",
+    data: {
+      labels: data.expense_chart_labels,
+      datasets: [
+        {
+          backgroundColor: [...custom_colors],
+          data: data.expense_chart_data,
+        },
+      ],
+    },
+    options: {
+      legend: { display: false },
+      title: {
+        display: false,
+      },
+      plugins: { legend: false },
+      scales: {
+        x: {
+          grid: { display: false, drawBorder: false },
+          ticks: { display: false },
+        },
+        y: {
+          grid: { display: false, drawBorder: false },
+          ticks: { display: false },
+        },
+      },
+      borderRadius: 4,
+      barThickness: 3,
+    },
+  });
+}

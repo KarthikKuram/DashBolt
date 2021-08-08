@@ -53,16 +53,21 @@
               ></span
             >
           </div>
-          <div id="income-chart-dash-div" class="col-md-6">
-            <canvas id="income-chart-dash"></canvas>
+          <div class="col-md-6">
+            <canvas id="line-chart-dash"></canvas>
           </div>
         </div>
         <div class="d-flex flex-row mt-1 justify-content-start">
           <div class="d-flex align-items-center mb-1">
-            <span id="perc-change-income" class="badge rounded-pill">
+            <span
+              class="badge rounded-pill"
+              style="background: rgba(0, 201, 167, 0.1); color: #00c9a7"
+              ><span><i class="fas fa-arrow-up"></i></span>
+              +&nbsp;3.5 %
             </span>
           </div>
-          <div id="income-amount-previous" class="text-muted d-flex align-items-center mb-1">
+          <div class="text-muted d-flex align-items-center mb-1">
+            &nbsp;&nbsp;from Rs 4,00,000
           </div>
         </div>
       </div>
@@ -71,7 +76,7 @@
   <div class="col-md-3 mb-1">
     <div class="card mb-3 h-100 card-content">
       <div class="card-body">
-        <h6 class="card-subtitle fw-bold text-muted">TOTAL EXPENSE</h6>
+        <h6 class="card-subtitle fw-bold text-muted">TOTAL EXPENSES</h6>
         <div
           class="
             d-flex
@@ -83,22 +88,27 @@
           "
         >
           <div class="col-md-6">
-            <span id="expense-amount-present"
+            <span
               class="card-subtitle fw-bold h4"
               style="text-shadow: 1px 2px 3px rgb(0 0 0 / 10%)"
-              ></span
+              >Rs 2,50,000</span
             >
           </div>
-          <div id="expense-chart-dash-div" class="col-md-6">
-            <canvas id="expense-chart-dash"></canvas>
+          <div class="col-md-6">
+            <canvas id="bar-chart-dash"></canvas>
           </div>
         </div>
         <div class="d-flex flex-row mt-1 justify-content-start">
           <div class="d-flex align-items-center mb-1">
-            <span id="perc-change-expense" class="badge rounded-pill">
+            <span
+              class="badge rounded-pill"
+              style="background: rgba(237, 76, 120, 0.1); color: #ed4c78"
+              ><span><i class="fas fa-arrow-down"></i></span>
+              -&nbsp;5.20 %
             </span>
           </div>
-          <div id="expense-amount-previous" class="text-muted d-flex align-items-center mb-1">            
+          <div class="text-muted d-flex align-items-center mb-1">
+            &nbsp;&nbsp;from Rs 2,70,000
           </div>
         </div>
       </div>
@@ -2829,6 +2839,12 @@
 
 {% block customjs %}
 <script>
+  {% comment %} $(document).ready(function() {
+    console.log("Hey")
+    var st = $('#reportrange').data('daterangepicker').startDate._d;
+    console.log(st);
+  }); {% endcomment %}
+
   $(function(){
     var start_date = $('#reportrange').data('daterangepicker').startDate.format("YYYY-MM-DD");
     var end_date = $('#reportrange').data('daterangepicker').endDate.format("YYYY-MM-DD");
@@ -2842,40 +2858,15 @@
                   $('#loader').removeClass('hidden');                  
               },
       success: function(data){
-        income_dash_card(data);
-        expense_dash_card(data);
+        $('#income-amount-present').html("Rs "+ data.qs);
       },
       complete: function () { // Set our complete callback, adding the .hidden class and hiding the spinner.
                   $('#loader').addClass('hidden')
-      }
-    });
+    }
+    
+  });
   });
 
-</script>
-<script>
-  $('#reportrange').on('apply.daterangepicker', function(ev, picker) {
-  var start_date = picker.startDate.format("YYYY-MM-DD");
-  var end_date = picker.endDate.format("YYYY-MM-DD");
-    $.ajax({
-      url: "{% url 'update_dashboard' %}",
-      data:{
-        'start_date': start_date,
-        'end_date': end_date
-      },
-      beforeSend: function () { // Before we send the request, remove the .hidden class from the spinner and default to inline-block.
-                  $('#loader').removeClass('hidden');                  
-              },
-      success: function(data){
-        income_dash_card(data);
-        expense_dash_card(data);
-        
-
-      },
-      complete: function () { // Set our complete callback, adding the .hidden class and hiding the spinner.
-                  $('#loader').addClass('hidden')
-      }
-    });
-});
 </script>
 <style>
   .se-pre-con {

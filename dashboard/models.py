@@ -95,6 +95,21 @@ class IncomeManager(models.Manager):
 class ExpenseManager(models.Manager):
     def get_queryset(self):
         return super(ExpenseManager, self).get_queryset().filter(ledger_category='Expense')
+class DebtorManager(models.Manager):
+    def get_queryset(self):
+        return super(DebtorManager, self).get_queryset().filter(ledger_primary_group='Sundry Debtors')
+    
+class CreditorManager(models.Manager):
+    def get_queryset(self):
+        return super(CreditorManager, self).get_queryset().filter(ledger_primary_group='Sundry Creditors')
+class CashManager(models.Manager):
+    def get_queryset(self):
+        return super(CashManager, self).get_queryset().filter(ledger_primary_group='Cash-in-hand')
+class BankManager(models.Manager):
+    def get_queryset(self):
+        return super(BankManager, self).get_queryset().filter(ledger_primary_group='Bank Accounts')
+
+
     
 class Voucher_Ledgers(models.Model):
     master_id = models.IntegerField()
@@ -114,6 +129,10 @@ class Voucher_Ledgers(models.Model):
     objects = models.Manager()
     income = IncomeManager()
     expense = ExpenseManager()
+    debtor = DebtorManager()
+    creditor = CreditorManager()
+    cash = CashManager()
+    bank = BankManager()
     
     class Meta:
         verbose_name = 'Voucher Ledger'

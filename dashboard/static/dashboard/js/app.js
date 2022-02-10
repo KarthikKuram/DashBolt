@@ -47,55 +47,6 @@ var custom_colors_rgba = custom_colors.map(function (item) {
   return hexToRGBA(item, 0.5);
 });
 
-// // Top 5 Expense Accounts
-// new Chart(document.getElementById("polar-top-5-expenses"), {
-//   type: "polarArea",
-//   data: {
-//     labels: ["Expense-1", "Expense-2", "Expense-3", "Expense-4", "Expense-5"],
-//     datasets: [
-//       {
-//         data: [50, 40, 30, 20, 10],
-//         backgroundColor: [...custom_colors],
-//         borderWidth: 5,
-//       },
-//     ],
-//   },
-//   options: {
-//     responsive: true,
-//     plugins: {
-//       legend: {
-//         display: false,
-//       },
-//       title: {
-//         display: false,
-//       },
-//     },
-//     scales: {
-//       r: {
-//         angleLines: { display: false },
-//         ticks: { display: false },
-//         grid: { display: true },
-//       },
-//       x: {
-//         grid: { display: false, drawBorder: false },
-//         ticks: {
-//           display: false,
-//           autoSkip: false,
-//           padding: 0,
-//           maxRotation: 0,
-//           font: { size: 10 },
-//         },
-//       },
-//       y: {
-//         grid: { display: false, drawBorder: false },
-//         ticks: {
-//           display: false,
-//         },
-//       },
-//     },
-//   },
-// });
-
 // Receivable vs Payable Ageing
 new Chart(document.getElementById("bar-ageing"), {
   type: "bar",

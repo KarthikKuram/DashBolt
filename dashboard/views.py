@@ -1,9 +1,10 @@
 from django.views.generic import CreateView,UpdateView,RedirectView,ListView,DeleteView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib import messages
-from django.db.models import ProtectedError, Sum, Q, Count
+from django.db.models import ProtectedError, Sum, Q, Count,Min,Case,Value,When,FloatField,DateField,ExpressionWrapper,F,IntegerField,CharField
+from django.db.models.functions import Cast,ExtractDay,TruncDate
 from .forms import Tally_Details_Form
-from .models import Tally_Detail,Voucher_Ledgers,Ledger_Master
+from .models import Tally_Detail,Voucher_Ledgers,Ledger_Master,Voucher_Bills
 from django.urls import reverse_lazy, reverse
 from django.shortcuts import render,redirect
 from django.http import JsonResponse
@@ -272,11 +273,69 @@ def update_dashboard(request):
             perc_change_creditor = 100        
     
     
+    ### AGEING SCHEDULE WORKINGS ###
+    debtor_bills_ref = Voucher_Bills.objects.filter(voucher_date__lte=end_date,ledger_primary_group="Sundry Debtors").exclude(bill_type = "On Account").\
+        values('bill_name').annotate(
+            bill_date = Min('voucher_date'),
+            net_due = Sum('bill_amount')*-1,
+            cutoff_date = Value(end_date_pd,output_field=DateField()),
+            age=Cast(ExtractDay(TruncDate(F('cutoff_date')) - TruncDate(F('bill_date'))),output_field = IntegerField()),
+            age_group = Case(
+                        When(age__range = [0,30],then = Value('0-30')),
+                        When(age__range = [31,60],then = Value('31-60')),
+                        When(age__range = [61,90],then = Value('61-90')),
+                        When(age__range = [91,120],then = Value('91-120')),
+                        When(age__gt = 120,then = Value('>>120')),
+                        default = Value('No Group'),
+                        output_field = CharField()
+                    )
+            ).filter(net_due__gt = 0).values_list('age_group','net_due')
+    debtor_bills_ref = pd.DataFrame(debtor_bills_ref,columns = ['Age_Group','Due'])
+    debtor_bills_ref = debtor_bills_ref.groupby('Age_Group').Due.agg(['sum','count'])
     
+    debtor_bills_onaccount = Voucher_Bills.objects.filter(voucher_date__lte=end_date,ledger_primary_group="Sundry Debtors",bill_type = "On Account").\
+        values('bill_name').annotate(net_due = Sum('bill_amount')*-1, count = Count('bill_amount')).\
+            filter(net_due__gt = 0).values_list('net_due','count')
+            
+    if debtor_bills_onaccount.exists():
+        print("Yes")
+    else:
+        print("No")            
+        
+        
+    # debtor_bills = Voucher_Bills.objects.filter(voucher_date__lte=end_date,ledger_primary_group="Sundry Debtors").exclude(bill_type = "On Account").\
+    #     values('bill_name').annotate(
+    #         bill_date = Min('voucher_date'),
+    #         net_due = Sum('bill_amount')*-1,
+    #         cutoff_date = Value(end_date_pd,output_field=DateField()),
+    #         age=Cast(ExtractDay(TruncDate(F('cutoff_date')) - TruncDate(F('bill_date'))),output_field = IntegerField())).\
+    #             filter(net_due__gt = 0).annotate(
+    #                 age_group = Case(
+    #                     When(age__range=[0,30],then= Value('0-30')),
+    #                     When(age__range=[31,60],then= Value('31-60')),
+    #                     When(age__range=[61,90],then= Value('61-90')),
+    #                     When(age__range=[91,120],then= Value('91-120')),
+    #                     When(age__gt=120,then= Value('>>120')),
+    #                     default = Value('No Group'),
+    #                     output_field = CharField()
+    #                 )
+    #             ).values('age_group').annotate(total=Sum(F('net_due')))
     
-    
-    
-    
+    # debtor_bills = Voucher_Bills.objects.filter(voucher_date__lte=end_date,ledger_primary_group="Sundry Debtors").exclude(bill_type = "On Account").\
+    #     values('bill_name').annotate(
+    #         Booking_Date = Case(
+    #         When(bill_amount__lt = 0, then = Min('voucher_date')),
+    #         output_field = DateField()
+    #     ),
+    #         Booked_Amount = Case(
+    #         When(bill_amount__lt = 0,then = Sum('bill_amount')*-1),
+    #         default = 0,output_field=FloatField()
+    #     ),
+    #         Paid_Amount = Case(
+    #             When(bill_amount__gt = 0, then = Sum('bill_amount')),
+    #             default = 0, output_field = FloatField()
+    #                                  )).filter(bill_name = '0082/2019-20')
+    # print(debtor_bills_ref)
         
     ### CASH & BANK DASH CARD ###
     cashbank_chart_data = []

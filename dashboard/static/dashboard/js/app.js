@@ -22,7 +22,8 @@ function hexToRGBA(hex, opacity) {
 // Dashboard Theme colors
 // custom_colors = ["#0088c7", "#00a7d8", "#31c5e4", "#63e2ec", "#94fff4"];
 // custom_colors = ["#0097dc", "#a18aeb", "#ff71c0", "#ff7670", "#ffa600"];
-custom_colors = ["#9092b0", "#bc8bbd", "#f27ea2", "#ff8066", "#f59f00"];
+// custom_colors = ["#9092b0", "#bc8bbd", "#f27ea2", "#ff8066", "#f59f00"];
+custom_colors = ["#005f73", "#0a9396", "#94d2bd", "#e9d8a6", "#ee9b00"];
 
 // proper case function (JScript 5.5+)
 function toProperCase(s) {
@@ -45,80 +46,6 @@ function find_digits(n) {
 // Dashboard Theme colors in RGBA
 var custom_colors_rgba = custom_colors.map(function (item) {
   return hexToRGBA(item, 0.5);
-});
-
-// Receivable vs Payable Ageing
-new Chart(document.getElementById("bar-ageing"), {
-  type: "bar",
-  data: {
-    labels: ["0-30", "31-60", "61-90", "91-120", "> 120"],
-    datasets: [
-      {
-        label: "Receivable",
-        data: [50, 90, 30, 70, 10],
-        backgroundColor: custom_colors[0],
-        borderRadius: 5,
-      },
-      {
-        label: "Payable",
-        data: [120, 50, 25, 90, 35],
-        backgroundColor: custom_colors[4],
-        borderRadius: 5,
-      },
-    ],
-  },
-  options: {
-    responsive: true,
-    plugins: {
-      legend: {
-        display: false,
-      },
-      title: {
-        display: false,
-      },
-    },
-    scales: {
-      x: {
-        grid: { display: true, drawBorder: true },
-        ticks: {
-          display: true,
-          autoSkip: false,
-          padding: 0,
-          maxRotation: 0,
-          font: { size: 10 },
-        },
-      },
-      y: {
-        grid: { display: false, drawBorder: false },
-        ticks: {
-          display: false,
-        },
-      },
-    },
-  },
-});
-
-// Tree Map Top 5 Cost Centres
-new Chart(document.getElementById("tree-top-5-cc"), {
-  type: "treemap",
-  data: {
-    datasets: [
-      {
-        tree: [8, 4, 3, 3, 1],
-        backgroundColor: [...custom_colors],
-      },
-    ],
-  },
-  options: {
-    repsonsive: true,
-    title: {
-      display: false,
-    },
-    plugins: {
-      dataLabels: false,
-      legend: false,
-    },
-  },
 });
 
 // Radar Chart for Top 3 Inventory Items
@@ -198,99 +125,6 @@ new Chart(document.getElementById("radar-top-3-inventory"), {
   },
 });
 
-// Area chart for Receipts v/s Payments
-new Chart(document.getElementById("area-chart-accounts"), {
-  type: "bar",
-  data: {
-    labels: ["April", "May", "June", "July", "August", "September"],
-    datasets: [
-      {
-        label: "Bank Receipt",
-        data: [247, 526, 734, 584, 433, 478],
-        borderColor: custom_colors_rgba[0],
-        backgroundColor: custom_colors_rgba[0],
-        borderRadius: 5,
-        order: 1,
-        yAxisID: "yAxis",
-      },
-      {
-        label: "Bank Payment",
-        data: [200, 100, 800, 300, 200, 150],
-        borderColor: custom_colors_rgba[4],
-        backgroundColor: custom_colors_rgba[4],
-        borderRadius: 5,
-        order: 1,
-        yAxisID: "yAxis",
-      },
-      {
-        label: "Cash Receipt",
-        data: [100, 300, 200, 700, 50, 10],
-        borderColor: custom_colors_rgba[0],
-        fill: true,
-        backgroundColor: custom_colors_rgba[0],
-        order: 0,
-        type: "line",
-        lineTension: 0.3,
-        pointRadius: 2,
-        pointHoverRadius: 6,
-        yAxisID: "yAxis_1",
-      },
-      {
-        label: "Cash Payment",
-        data: [50, 400, 10, 2500, 300, 432],
-        borderColor: custom_colors_rgba[4],
-        fill: true,
-        backgroundColor: custom_colors_rgba[4],
-        order: 0,
-        type: "line",
-        lineTension: 0.3,
-        pointRadius: 2,
-        pointHoverRadius: 6,
-        yAxisID: "yAxis_1",
-      },
-    ],
-  },
-  options: {
-    repsonsive: true,
-    title: {
-      display: false,
-    },
-    plugins: {
-      legend: false,
-    },
-    scales: {
-      x: {
-        grid: { display: true, drawBorder: true },
-        ticks: {
-          display: true,
-          autoSkip: false,
-          padding: 0,
-          maxRotation: 0,
-          font: { size: 10 },
-        },
-      },
-      yAxis: {
-        type: "linear",
-        display: false,
-        position: "left",
-        grid: { drawOnChart: false },
-        ticks: {
-          display: false,
-        },
-      },
-      yAxis_1: {
-        type: "linear",
-        display: false,
-        position: "left",
-        grid: { drawOnChart: false },
-        ticks: {
-          display: false,
-        },
-      },
-    },
-  },
-});
-
 // Data Table Initialization
 $(document).ready(function () {
   $("#example").DataTable({
@@ -323,11 +157,26 @@ function income_dash_card(data) {
   var $income_chart = $("#income-chart-dash");
   var income_dash = $income_chart[0].getContext("2d");
 
-  $("#income-amount-present").html(
-    "&#8377;&nbsp;" +
-      data.present_income.toLocaleString("hi") +
-      data.present_income_denomination
-  );
+  if (find_digits(data.present_income) > 6) {
+    $("#income-amount-present").html(
+      "&#8377;&nbsp;" +
+        Math.round(data.present_income / 100000, 2).toLocaleString("hi") +
+        " L"
+    );
+  } else {
+    $("#income-amount-present").html(
+      "&#8377;&nbsp;" + Math.round(data.present_income, 0).toLocaleString("hi")
+    );
+  }
+  $("#income-amount-present").attr({
+    title: "₹ " + Math.round(data.present_income, 0).toLocaleString("hi"),
+  });
+  // $("#income-amount-present").html(
+  //   "&#8377;&nbsp;" +
+  //     data.present_income.toLocaleString("hi") +
+  //     data.present_income_denomination
+  // );
+  // custom_colors$("#income-amount-present").attr({ title: data.present_income });
   $("#income-amount-previous").html(
     "&nbsp;&nbsp;from &#8377;&nbsp;" +
       data.previous_income.toLocaleString("hi") +
@@ -373,6 +222,14 @@ function income_dash_card(data) {
       },
       plugins: {
         legend: false,
+        tooltip: {
+          callbacks: {
+            label: (tooltipItems) => {
+              const v = tooltipItems.dataset.data[tooltipItems.dataIndex];
+              return v.toLocaleString("hi");
+            },
+          },
+        },
       },
       scales: {
         x: {
@@ -1582,7 +1439,10 @@ function top_income_ledgers_dash_card(data) {
       $("#top-income-ledger-1").html("");
     }
     try {
-      $("#top-income-ledger-1-name").html(toProperCase(ledger.split(" ")[0]));
+      $("#top-income-ledger-1-name").html(
+        toProperCase(ledger.slice(0, 30))
+        // toProperCase(ledger.split(" ")[0] + " " + ledger.split(" ")[1])
+      );
       $("#top-income-ledger-1-name").attr({ title: toProperCase(ledger) });
     } catch (error) {
       $("#top-income-ledger-1-name").html("");
@@ -1633,7 +1493,7 @@ function top_income_ledgers_dash_card(data) {
       $("#top-income-ledger-2").html("");
     }
     try {
-      $("#top-income-ledger-2-name").html(toProperCase(ledger.split(" ")[0]));
+      $("#top-income-ledger-2-name").html(toProperCase(ledger.slice(0, 30)));
       $("#top-income-ledger-2-name").attr({ title: toProperCase(ledger) });
     } catch (error) {
       $("#top-income-ledger-2-name").html("");
@@ -1683,7 +1543,7 @@ function top_income_ledgers_dash_card(data) {
       $("#top-income-ledger-3").html("");
     }
     try {
-      $("#top-income-ledger-3-name").html(toProperCase(ledger.split(" ")[0]));
+      $("#top-income-ledger-3-name").html(toProperCase(ledger.slice(0, 30)));
       $("#top-income-ledger-3-name").attr({ title: toProperCase(ledger) });
     } catch (error) {
       $("#top-income-ledger-3-name").html("");
@@ -1733,7 +1593,7 @@ function top_income_ledgers_dash_card(data) {
       $("#top-income-ledger-4").html("");
     }
     try {
-      $("#top-income-ledger-4-name").html(toProperCase(ledger.split(" ")[0]));
+      $("#top-income-ledger-4-name").html(toProperCase(ledger.slice(0, 30)));
       $("#top-income-ledger-4-name").attr({ title: toProperCase(ledger) });
     } catch (error) {
       $("#top-income-ledger-4-name").html("");
@@ -1783,7 +1643,7 @@ function top_income_ledgers_dash_card(data) {
       $("#top-income-ledger-5").html("");
     }
     try {
-      $("#top-income-ledger-5-name").html(toProperCase(ledger.split(" ")[0]));
+      $("#top-income-ledger-5-name").html(toProperCase(ledger.slice(0, 30)));
       $("#top-income-ledger-5-name").attr({ title: toProperCase(ledger) });
     } catch (error) {
       $("#top-income-ledger-5-name").html("");
@@ -1868,7 +1728,7 @@ function top_expense_ledgers_dash_card(data) {
       $("#top-expense-ledger-1").html("");
     }
     try {
-      $("#top-expense-ledger-1-name").html(toProperCase(ledger.split(" ")[0]));
+      $("#top-expense-ledger-1-name").html(toProperCase(ledger.slice(0, 30)));
       $("#top-expense-ledger-1-name").attr({ title: toProperCase(ledger) });
     } catch (error) {
       $("#top-expense-ledger-1-name").html("");
@@ -1919,7 +1779,7 @@ function top_expense_ledgers_dash_card(data) {
       $("#top-expense-ledger-2").html("");
     }
     try {
-      $("#top-expense-ledger-2-name").html(toProperCase(ledger.split(" ")[0]));
+      $("#top-expense-ledger-2-name").html(toProperCase(ledger.slice(0, 30)));
       $("#top-expense-ledger-2-name").attr({ title: toProperCase(ledger) });
     } catch (error) {
       $("#top-expense-ledger-2-name").html("");
@@ -1959,7 +1819,6 @@ function top_expense_ledgers_dash_card(data) {
     }
   } else {
     $("#top-expense-ledgers-row-2").css("display", "None");
-    $("#top-expense-ledgers-heading").css("display", "None");
   }
   var ledger = data.expense_ledgers_chart_labels[2];
   if (typeof ledger !== "undefined") {
@@ -1970,7 +1829,7 @@ function top_expense_ledgers_dash_card(data) {
       $("#top-expense-ledger-3").html("");
     }
     try {
-      $("#top-expense-ledger-3-name").html(toProperCase(ledger.split(" ")[0]));
+      $("#top-expense-ledger-3-name").html(toProperCase(ledger.slice(0, 30)));
       $("#top-expense-ledger-3-name").attr({ title: toProperCase(ledger) });
     } catch (error) {
       $("#top-expense-ledger-3-name").html("");
@@ -2010,7 +1869,6 @@ function top_expense_ledgers_dash_card(data) {
     }
   } else {
     $("#top-expense-ledgers-row-3").css("display", "None");
-    $("#top-expense-ledgers-heading").css("display", "None");
   }
   var ledger = data.expense_ledgers_chart_labels[3];
   if (typeof ledger !== "undefined") {
@@ -2021,7 +1879,7 @@ function top_expense_ledgers_dash_card(data) {
       $("#top-expense-ledger-4").html("");
     }
     try {
-      $("#top-expense-ledger-4-name").html(toProperCase(ledger.split(" ")[0]));
+      $("#top-expense-ledger-4-name").html(toProperCase(ledger.slice(0, 30)));
       $("#top-expense-ledger-4-name").attr({ title: toProperCase(ledger) });
     } catch (error) {
       $("#top-expense-ledger-4-name").html("");
@@ -2061,7 +1919,6 @@ function top_expense_ledgers_dash_card(data) {
     }
   } else {
     $("#top-expense-ledgers-row-4").css("display", "None");
-    $("#top-expense-ledgers-heading").css("display", "None");
   }
   var ledger = data.expense_ledgers_chart_labels[4];
   if (typeof ledger !== "undefined") {
@@ -2072,7 +1929,7 @@ function top_expense_ledgers_dash_card(data) {
       $("#top-expense-ledger-5").html("");
     }
     try {
-      $("#top-expense-ledger-5-name").html(toProperCase(ledger.split(" ")[0]));
+      $("#top-expense-ledger-5-name").html(toProperCase(ledger.slice(0, 30)));
       $("#top-expense-ledger-5-name").attr({ title: toProperCase(ledger) });
     } catch (error) {
       $("#top-expense-ledger-5-name").html("");
@@ -2112,7 +1969,6 @@ function top_expense_ledgers_dash_card(data) {
     }
   } else {
     $("#top-expense-ledgers-row-5").css("display", "None");
-    $("#top-expense-ledgers-heading").css("display", "None");
   }
   new Chart(top_expense_ledgers_dash, {
     type: "polarArea",
@@ -2158,6 +2014,638 @@ function top_expense_ledgers_dash_card(data) {
             display: false,
           },
         },
+      },
+    },
+  });
+}
+
+// Update Ageing Dash Card:
+function ageing_dash_card(data) {
+  $("#ageing").remove();
+  $("#ageing-div").append(
+    '<canvas class="chart px-3" id="ageing" style="display: block"></canvas>'
+  );
+  var $ageing_chart = $("#ageing");
+  var ageing_dash = $ageing_chart[0].getContext("2d");
+
+  if (find_digits(data.receivable_ageing_value[0]) > 6) {
+    $("#ageing-1-amount-drs").html(
+      "&#8377;&nbsp;" +
+        Math.round(data.receivable_ageing_value[0] / 100000, 0).toLocaleString(
+          "hi"
+        ) +
+        " L"
+    );
+  } else {
+    $("#ageing-1-amount-drs").html(
+      "&#8377;&nbsp;" +
+        Math.round(data.receivable_ageing_value[0], 0).toLocaleString("hi")
+    );
+  }
+  $("#ageing-1-count-drs").html(
+    Math.round(data.receivable_ageing_count[0], 0).toLocaleString("hi")
+  );
+
+  if (find_digits(data.payable_ageing_value[0]) > 6) {
+    $("#ageing-1-amount-crs").html(
+      "&#8377;&nbsp;" +
+        Math.round(data.payable_ageing_value[0] / 100000, 0).toLocaleString(
+          "hi"
+        ) +
+        " L"
+    );
+  } else {
+    $("#ageing-1-amount-crs").html(
+      "&#8377;&nbsp;" +
+        Math.round(data.payable_ageing_value[0], 0).toLocaleString("hi")
+    );
+  }
+  $("#ageing-1-count-crs").html(
+    Math.round(data.payable_ageing_count[0], 0).toLocaleString("hi")
+  );
+
+  if (find_digits(data.receivable_ageing_value[1]) > 6) {
+    $("#ageing-2-amount-drs").html(
+      "&#8377;&nbsp;" +
+        Math.round(data.receivable_ageing_value[1] / 100000, 0).toLocaleString(
+          "hi"
+        ) +
+        " L"
+    );
+  } else {
+    $("#ageing-2-amount-drs").html(
+      "&#8377;&nbsp;" +
+        Math.round(data.receivable_ageing_value[1], 0).toLocaleString("hi")
+    );
+  }
+  $("#ageing-2-count-drs").html(
+    Math.round(data.receivable_ageing_count[1], 0).toLocaleString("hi")
+  );
+
+  if (find_digits(data.payable_ageing_value[1]) > 6) {
+    $("#ageing-2-amount-crs").html(
+      "&#8377;&nbsp;" +
+        Math.round(data.payable_ageing_value[1] / 100000, 0).toLocaleString(
+          "hi"
+        ) +
+        " L"
+    );
+  } else {
+    $("#ageing-2-amount-crs").html(
+      "&#8377;&nbsp;" +
+        Math.round(data.payable_ageing_value[1], 0).toLocaleString("hi")
+    );
+  }
+  $("#ageing-2-count-crs").html(
+    Math.round(data.payable_ageing_count[1], 0).toLocaleString("hi")
+  );
+
+  if (find_digits(data.receivable_ageing_value[2]) > 6) {
+    $("#ageing-3-amount-drs").html(
+      "&#8377;&nbsp;" +
+        Math.round(data.receivable_ageing_value[2] / 100000, 0).toLocaleString(
+          "hi"
+        ) +
+        " L"
+    );
+  } else {
+    $("#ageing-3-amount-drs").html(
+      "&#8377;&nbsp;" +
+        Math.round(data.receivable_ageing_value[2], 0).toLocaleString("hi")
+    );
+  }
+  $("#ageing-3-count-drs").html(
+    Math.round(data.receivable_ageing_count[2], 0).toLocaleString("hi")
+  );
+
+  if (find_digits(data.payable_ageing_value[2]) > 6) {
+    $("#ageing-3-amount-crs").html(
+      "&#8377;&nbsp;" +
+        Math.round(data.payable_ageing_value[2] / 100000, 0).toLocaleString(
+          "hi"
+        ) +
+        " L"
+    );
+  } else {
+    $("#ageing-3-amount-crs").html(
+      "&#8377;&nbsp;" +
+        Math.round(data.payable_ageing_value[2], 0).toLocaleString("hi")
+    );
+  }
+  $("#ageing-3-count-crs").html(
+    Math.round(data.payable_ageing_count[2], 0).toLocaleString("hi")
+  );
+
+  if (find_digits(data.receivable_ageing_value[3]) > 6) {
+    $("#ageing-4-amount-drs").html(
+      "&#8377;&nbsp;" +
+        Math.round(data.receivable_ageing_value[3] / 100000, 0).toLocaleString(
+          "hi"
+        ) +
+        " L"
+    );
+  } else {
+    $("#ageing-4-amount-drs").html(
+      "&#8377;&nbsp;" +
+        Math.round(data.receivable_ageing_value[3], 0).toLocaleString("hi")
+    );
+  }
+  $("#ageing-4-count-drs").html(
+    Math.round(data.receivable_ageing_count[3], 0).toLocaleString("hi")
+  );
+
+  if (find_digits(data.payable_ageing_value[3]) > 6) {
+    $("#ageing-4-amount-crs").html(
+      "&#8377;&nbsp;" +
+        Math.round(data.payable_ageing_value[3] / 100000, 0).toLocaleString(
+          "hi"
+        ) +
+        " L"
+    );
+  } else {
+    $("#ageing-4-amount-crs").html(
+      "&#8377;&nbsp;" +
+        Math.round(data.payable_ageing_value[3], 0).toLocaleString("hi")
+    );
+  }
+  $("#ageing-4-count-crs").html(
+    Math.round(data.payable_ageing_count[3], 0).toLocaleString("hi")
+  );
+
+  if (find_digits(data.receivable_ageing_value[4]) > 6) {
+    $("#ageing-5-amount-drs").html(
+      "&#8377;&nbsp;" +
+        Math.round(data.receivable_ageing_value[4] / 100000, 0).toLocaleString(
+          "hi"
+        ) +
+        " L"
+    );
+  } else {
+    $("#ageing-5-amount-drs").html(
+      "&#8377;&nbsp;" +
+        Math.round(data.receivable_ageing_value[4], 0).toLocaleString("hi")
+    );
+  }
+  $("#ageing-5-count-drs").html(
+    Math.round(data.receivable_ageing_count[4], 0).toLocaleString("hi")
+  );
+
+  if (find_digits(data.payable_ageing_value[4]) > 6) {
+    $("#ageing-5-amount-crs").html(
+      "&#8377;&nbsp;" +
+        Math.round(data.payable_ageing_value[4] / 100000, 0).toLocaleString(
+          "hi"
+        ) +
+        " L"
+    );
+  } else {
+    $("#ageing-5-amount-crs").html(
+      "&#8377;&nbsp;" +
+        Math.round(data.payable_ageing_value[4], 0).toLocaleString("hi")
+    );
+  }
+  $("#ageing-5-count-crs").html(
+    Math.round(data.payable_ageing_count[4], 0).toLocaleString("hi")
+  );
+
+  new Chart(ageing_dash, {
+    type: "bar",
+    data: {
+      labels: data.ageing_labels,
+      datasets: [
+        {
+          label: "Receivable",
+          data: data.receivable_ageing_value,
+          backgroundColor: custom_colors[0],
+          borderRadius: 5,
+        },
+        {
+          label: "Payable",
+          data: data.payable_ageing_value,
+          backgroundColor: custom_colors[4],
+          borderRadius: 5,
+        },
+      ],
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        legend: {
+          display: false,
+        },
+        title: {
+          display: false,
+        },
+      },
+      scales: {
+        x: {
+          grid: { display: true, drawBorder: true },
+          ticks: {
+            display: true,
+            autoSkip: false,
+            padding: 0,
+            maxRotation: 0,
+            font: { size: 10 },
+          },
+        },
+        y: {
+          grid: { display: false, drawBorder: false },
+          ticks: {
+            display: false,
+          },
+        },
+      },
+    },
+  });
+}
+
+// Update Receipts Vs Payments Dash Card:
+function rec_pay_dash_card(data) {
+  $("#rec-pay").remove();
+  $("#rec-pay-div").append(
+    '<canvas class="chart p-0" id="rec-pay" style="display: block"></canvas>'
+  );
+  var $rec_pay_chart = $("#rec-pay");
+  var rec_pay_dash = $rec_pay_chart[0].getContext("2d");
+
+  new Chart(rec_pay_dash, {
+    type: "bar",
+    data: {
+      labels: data.receipts_payments_labels,
+      datasets: [
+        {
+          label: "Bank Receipt",
+          data: data.bank_receipts_value,
+          borderColor: custom_colors_rgba[0],
+          backgroundColor: custom_colors_rgba[0],
+          borderRadius: 5,
+          order: 1,
+          yAxisID: "yAxis",
+        },
+        {
+          label: "Bank Payment",
+          data: data.bank_payments_value,
+          borderColor: custom_colors_rgba[4],
+          backgroundColor: custom_colors_rgba[4],
+          borderRadius: 5,
+          order: 1,
+          yAxisID: "yAxis",
+        },
+        {
+          label: "Cash Receipt",
+          data: data.cash_receipts_value,
+          borderColor: custom_colors_rgba[0],
+          fill: true,
+          backgroundColor: custom_colors_rgba[0],
+          order: 0,
+          type: "line",
+          lineTension: 0.3,
+          pointRadius: 2,
+          pointHoverRadius: 6,
+          yAxisID: "yAxis_1",
+        },
+        {
+          label: "Cash Payment",
+          data: data.cash_payments_value,
+          borderColor: custom_colors_rgba[4],
+          fill: true,
+          backgroundColor: custom_colors_rgba[4],
+          order: 0,
+          type: "line",
+          lineTension: 0.3,
+          pointRadius: 2,
+          pointHoverRadius: 6,
+          yAxisID: "yAxis_1",
+        },
+      ],
+    },
+    options: {
+      repsonsive: true,
+      title: {
+        display: false,
+      },
+      plugins: {
+        legend: false,
+      },
+      scales: {
+        x: {
+          grid: { display: true, drawBorder: true },
+          ticks: {
+            display: true,
+            autoSkip: false,
+            padding: 0,
+            maxRotation: 0,
+            font: { size: 10 },
+          },
+        },
+        yAxis: {
+          type: "linear",
+          display: false,
+          position: "left",
+          grid: { drawOnChart: false },
+          ticks: {
+            display: false,
+          },
+        },
+        yAxis_1: {
+          type: "linear",
+          display: false,
+          position: "left",
+          grid: { drawOnChart: false },
+          ticks: {
+            display: false,
+          },
+        },
+      },
+    },
+  });
+}
+
+// Update Top 5 Cost Centers Dash Card:
+function cc_dash_card(data) {
+  $("#top-5-cc").remove();
+  $("#top-5-cc-div").append(
+    '<canvas id="top-5-cc" class="chart p-1 h-100" id="tree-top-5-cc"></canvas>'
+  );
+  var $top_cc_chart = $("#top-5-cc");
+  var top_cc_dash = $top_cc_chart[0].getContext("2d");
+
+  // Update First Table Row
+  var cc = data.cc_category_chart_labels[0];
+  if (typeof cc !== "undefined") {
+    $("#top-cc-heading").removeAttr("style");
+    $("#top-cc-row-1").removeAttr("style");
+    try {
+      $("#top-cc-1").html(toProperCase(cc.charAt(0)));
+    } catch (error) {
+      $("#top-cc-1").html("");
+    }
+    try {
+      $("#top-cc-1-name").html(
+        toProperCase(cc.split(" ")[0] + " " + cc.split(" ")[1])
+      );
+      $("#top-cc-1-name").attr({ title: toProperCase(cc) });
+    } catch (error) {
+      $("#top-cc-1-name").html("");
+    }
+
+    if (find_digits(data.cc_category_chart_data[0]) > 6) {
+      $("#top-cc-1-amount").html(
+        "&#8377;&nbsp;" +
+          Math.round(data.cc_category_chart_data[0] / 100000, 0).toLocaleString(
+            "hi"
+          ) +
+          " L"
+      );
+    } else {
+      $("#top-cc-1-amount").html(
+        "&#8377;&nbsp;" +
+          Math.round(data.cc_category_chart_data[0], 0).toLocaleString("hi")
+      );
+    }
+    $("#top-cc-1-perc").removeClass("perc_increase");
+    $("#top-cc-1-perc").removeClass("perc_decrease");
+    if (data.perc_change_top_cc_category[cc] > 0) {
+      $("#top-cc-1-perc").html(
+        '<span><i class="fas fa-arrow-up"></i></span>&nbsp;' +
+          data.perc_change_top_cc_category[cc] +
+          " %"
+      );
+      $("#top-cc-1-perc").addClass("perc_increase");
+    } else {
+      $("#top-cc-1-perc").html(
+        '<span><i class="fas fa-arrow-down"></i></span>&nbsp;' +
+          Math.abs(data.perc_change_top_cc_category[cc]) +
+          " %"
+      );
+      $("#top-cc-1-perc").addClass("perc_decrease");
+    }
+  } else {
+    $("#top-cc-row-1").css("display", "None");
+    $("#top-cc-heading").css("display", "None");
+  }
+  var cc = data.cc_category_chart_labels[1];
+  if (typeof cc !== "undefined") {
+    $("#top-cc-row-2").removeAttr("style");
+    try {
+      $("#top-cc-2").html(toProperCase(cc.charAt(0)));
+    } catch (error) {
+      $("#top-cc-2").html("");
+    }
+    try {
+      $("#top-cc-2-name").html(
+        toProperCase(cc.split(" ")[0] + " " + cc.split(" ")[1])
+      );
+      $("#top-cc-2-name").attr({ title: toProperCase(cc) });
+    } catch (error) {
+      $("#top-cc-2-name").html("");
+    }
+
+    if (find_digits(data.cc_category_chart_data[1]) > 6) {
+      $("#top-cc-2-amount").html(
+        "&#8377;&nbsp;" +
+          Math.round(data.cc_category_chart_data[1] / 100000, 0).toLocaleString(
+            "hi"
+          ) +
+          " L"
+      );
+    } else {
+      $("#top-cc-2-amount").html(
+        "&#8377;&nbsp;" +
+          Math.round(data.cc_category_chart_data[1], 0).toLocaleString("hi")
+      );
+    }
+    $("#top-cc-2-perc").removeClass("perc_increase");
+    $("#top-cc-2-perc").removeClass("perc_decrease");
+    if (data.perc_change_top_cc_category[cc] > 0) {
+      $("#top-cc-2-perc").html(
+        '<span><i class="fas fa-arrow-up"></i></span>&nbsp;' +
+          data.perc_change_top_cc_category[cc] +
+          " %"
+      );
+      $("#top-cc-2-perc").addClass("perc_increase");
+    } else {
+      $("#top-cc-2-perc").html(
+        '<span><i class="fas fa-arrow-down"></i></span>&nbsp;' +
+          Math.abs(data.perc_change_top_cc_category[cc]) +
+          " %"
+      );
+      $("#top-cc-2-perc").addClass("perc_decrease");
+    }
+  } else {
+    $("#top-cc-row-2").css("display", "None");
+  }
+  var cc = data.cc_category_chart_labels[2];
+  if (typeof cc !== "undefined") {
+    $("#top-cc-row-3").removeAttr("style");
+    try {
+      $("#top-cc-3").html(toProperCase(cc.charAt(0)));
+    } catch (error) {
+      $("#top-cc-3").html("");
+    }
+    try {
+      $("#top-cc-3-name").html(
+        toProperCase(cc.split(" ")[0] + " " + cc.split(" ")[1])
+      );
+      $("#top-cc-3-name").attr({ title: toProperCase(cc) });
+    } catch (error) {
+      $("#top-cc-3-name").html("");
+    }
+
+    if (find_digits(data.cc_category_chart_data[2]) > 6) {
+      $("#top-cc-3-amount").html(
+        "&#8377;&nbsp;" +
+          Math.round(data.cc_category_chart_data[2] / 100000, 0).toLocaleString(
+            "hi"
+          ) +
+          " L"
+      );
+    } else {
+      $("#top-cc-3-amount").html(
+        "&#8377;&nbsp;" +
+          Math.round(data.cc_category_chart_data[2], 0).toLocaleString("hi")
+      );
+    }
+    $("#top-cc-3-perc").removeClass("perc_increase");
+    $("#top-cc-3-perc").removeClass("perc_decrease");
+    if (data.perc_change_top_cc_category[cc] > 0) {
+      $("#top-cc-3-perc").html(
+        '<span><i class="fas fa-arrow-up"></i></span>&nbsp;' +
+          data.perc_change_top_cc_category[cc] +
+          " %"
+      );
+      $("#top-cc-3-perc").addClass("perc_increase");
+    } else {
+      $("#top-cc-3-perc").html(
+        '<span><i class="fas fa-arrow-down"></i></span>&nbsp;' +
+          Math.abs(data.perc_change_top_cc_category[cc]) +
+          " %"
+      );
+      $("#top-cc-3-perc").addClass("perc_decrease");
+    }
+  } else {
+    $("#top-cc-row-3").css("display", "None");
+  }
+  var cc = data.cc_category_chart_labels[3];
+  if (typeof cc !== "undefined") {
+    $("#top-cc-row-4").removeAttr("style");
+    try {
+      $("#top-cc-4").html(toProperCase(cc.charAt(0)));
+    } catch (error) {
+      $("#top-cc-4").html("");
+    }
+    try {
+      $("#top-cc-4-name").html(
+        toProperCase(cc.split(" ")[0] + " " + cc.split(" ")[1])
+      );
+      $("#top-cc-4-name").attr({ title: toProperCase(cc) });
+    } catch (error) {
+      $("#top-cc-4-name").html("");
+    }
+
+    if (find_digits(data.cc_category_chart_data[3]) > 6) {
+      $("#top-cc-4-amount").html(
+        "&#8377;&nbsp;" +
+          Math.round(data.cc_category_chart_data[3] / 100000, 0).toLocaleString(
+            "hi"
+          ) +
+          " L"
+      );
+    } else {
+      $("#top-cc-4-amount").html(
+        "&#8377;&nbsp;" +
+          Math.round(data.cc_category_chart_data[3], 0).toLocaleString("hi")
+      );
+    }
+    $("#top-cc-4-perc").removeClass("perc_increase");
+    $("#top-cc-4-perc").removeClass("perc_decrease");
+    if (data.perc_change_top_cc_category[cc] > 0) {
+      $("#top-cc-4-perc").html(
+        '<span><i class="fas fa-arrow-up"></i></span>&nbsp;' +
+          data.perc_change_top_cc_category[cc] +
+          " %"
+      );
+      $("#top-cc-4-perc").addClass("perc_increase");
+    } else {
+      $("#top-cc-4-perc").html(
+        '<span><i class="fas fa-arrow-down"></i></span>&nbsp;' +
+          Math.abs(data.perc_change_top_cc_category[cc]) +
+          " %"
+      );
+      $("#top-cc-4-perc").addClass("perc_decrease");
+    }
+  } else {
+    $("#top-cc-row-4").css("display", "None");
+  }
+  var cc = data.cc_category_chart_labels[4];
+  if (typeof cc !== "undefined") {
+    $("#top-cc-row-5").removeAttr("style");
+    try {
+      $("#top-cc-5").html(toProperCase(cc.charAt(0)));
+    } catch (error) {
+      $("#top-cc-5").html("");
+    }
+    try {
+      $("#top-cc-5-name").html(
+        toProperCase(cc.split(" ")[0] + " " + cc.split(" ")[1])
+      );
+      $("#top-cc-5-name").attr({ title: toProperCase(cc) });
+    } catch (error) {
+      $("#top-cc-5-name").html("");
+    }
+
+    if (find_digits(data.cc_category_chart_data[4]) > 6) {
+      $("#top-cc-5-amount").html(
+        "&#8377;&nbsp;" +
+          Math.round(data.cc_category_chart_data[4] / 100000, 0).toLocaleString(
+            "hi"
+          ) +
+          " L"
+      );
+    } else {
+      $("#top-cc-5-amount").html(
+        "&#8377;&nbsp;" +
+          Math.round(data.cc_category_chart_data[4], 0).toLocaleString("hi")
+      );
+    }
+    $("#top-cc-5-perc").removeClass("perc_increase");
+    $("#top-cc-5-perc").removeClass("perc_decrease");
+    if (data.perc_change_top_cc_category[cc] > 0) {
+      $("#top-cc-5-perc").html(
+        '<span><i class="fas fa-arrow-up"></i></span>&nbsp;' +
+          data.perc_change_top_cc_category[cc] +
+          " %"
+      );
+      $("#top-cc-5-perc").addClass("perc_increase");
+    } else {
+      $("#top-cc-5-perc").html(
+        '<span><i class="fas fa-arrow-down"></i></span>&nbsp;' +
+          Math.abs(data.perc_change_top_cc_category[cc]) +
+          " %"
+      );
+      $("#top-cc-5-perc").addClass("perc_decrease");
+    }
+  } else {
+    $("#top-cc-row-5").css("display", "None");
+  }
+  new Chart(top_cc_dash, {
+    type: "treemap",
+    data: {
+      datasets: [
+        {
+          tree: data.cc_category_chart_data,
+          backgroundColor: [...custom_colors],
+        },
+      ],
+    },
+    options: {
+      repsonsive: true,
+      title: {
+        display: false,
+      },
+      plugins: {
+        dataLabels: false,
+        legend: false,
       },
     },
   });

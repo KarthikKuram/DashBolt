@@ -520,8 +520,12 @@
     ></script>
     <script type="text/javascript">
       $(function () {
-        var start = moment().subtract(29, "days");
-        var end = moment();
+        var start = moment().set({'year': 2019, 'month': 3, 'date' : 1});
+        var end = moment().set({'year': 2019, 'month': 7, 'date' : 31});
+        //var start = moment().startOf("month");
+        //var end = moment().endOf("month");
+        //var start = moment().subtract(29, "days");
+        //var end = moment();
 
         function cb(start, end) {
           $("#reportrange span.selected-date").html(

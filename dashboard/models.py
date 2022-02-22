@@ -109,8 +109,6 @@ class BankManager(models.Manager):
     def get_queryset(self):
         return super(BankManager, self).get_queryset().filter(ledger_primary_group='Bank Accounts')
 
-
-    
 class Voucher_Ledgers(models.Model):
     master_id = models.IntegerField()
     alter_id = models.IntegerField()

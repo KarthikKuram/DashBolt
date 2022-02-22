@@ -2,14 +2,15 @@ from django.views.generic import CreateView,UpdateView,RedirectView,ListView,Del
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib import messages
 from django.db.models import ProtectedError, Sum, Q, Count,Min,Case,Value,When,FloatField,DateField,ExpressionWrapper,F,IntegerField,CharField
-from django.db.models.functions import Cast,ExtractDay,TruncDate
+from django.db.models.functions import Cast,ExtractDay,TruncDate,TruncMonth
 from .forms import Tally_Details_Form
-from .models import Tally_Detail,Voucher_Ledgers,Ledger_Master,Voucher_Bills
+from .models import Tally_Detail,Voucher_Ledgers,Ledger_Master,Voucher_Bills,Voucher_CostCenters
 from django.urls import reverse_lazy, reverse
 from django.shortcuts import render,redirect
 from django.http import JsonResponse
 import pandas as pd
 from datetime import datetime,timedelta
+from dateutil.relativedelta import relativedelta
 import math
 
 def find_digits(n):
@@ -171,7 +172,7 @@ def update_dashboard(request):
             .values('voucher_date').annotate(total = Sum('amount')).order_by('voucher_date')
         for entry in income_entries:
             income_chart_labels.append(entry['voucher_date'])
-            income_chart_data.append(float(entry['total']))          
+            income_chart_data.append(round(float(entry['total']),0))
     except:
         income_chart_labels = []
         income_chart_data = []
@@ -274,6 +275,13 @@ def update_dashboard(request):
     
     
     ### AGEING SCHEDULE WORKINGS ###
+    ageing_labels = ['0-30','31-90','91-120','>>120','On Account']
+    receivable_ageing_value = []
+    receivable_ageing_count = []
+    payable_ageing_value = []
+    payable_ageing_count = []
+    
+    # receivable ageing
     debtor_bills_ref = Voucher_Bills.objects.filter(voucher_date__lte=end_date,ledger_primary_group="Sundry Debtors").exclude(bill_type = "On Account").\
         values('bill_name').annotate(
             bill_date = Min('voucher_date'),
@@ -282,8 +290,7 @@ def update_dashboard(request):
             age=Cast(ExtractDay(TruncDate(F('cutoff_date')) - TruncDate(F('bill_date'))),output_field = IntegerField()),
             age_group = Case(
                         When(age__range = [0,30],then = Value('0-30')),
-                        When(age__range = [31,60],then = Value('31-60')),
-                        When(age__range = [61,90],then = Value('61-90')),
+                        When(age__range = [31,90],then = Value('31-90')),
                         When(age__range = [91,120],then = Value('91-120')),
                         When(age__gt = 120,then = Value('>>120')),
                         default = Value('No Group'),
@@ -291,72 +298,118 @@ def update_dashboard(request):
                     )
             ).filter(net_due__gt = 0).values_list('age_group','net_due')
     debtor_bills_ref = pd.DataFrame(debtor_bills_ref,columns = ['Age_Group','Due'])
-    debtor_bills_ref = debtor_bills_ref.groupby('Age_Group').Due.agg(['sum','count'])
+    debtor_bills_ref = debtor_bills_ref.groupby('Age_Group').Due.agg(['sum','count']).reset_index()
     
+    # payable ageing
+    creditor_bills_ref = Voucher_Bills.objects.filter(voucher_date__lte=end_date,ledger_primary_group="Sundry Creditors").exclude(bill_type = "On Account").\
+        values('bill_name').annotate(
+            bill_date = Min('voucher_date'),
+            net_due = Sum('bill_amount'),
+            cutoff_date = Value(end_date_pd,output_field=DateField()),
+            age=Cast(ExtractDay(TruncDate(F('cutoff_date')) - TruncDate(F('bill_date'))),output_field = IntegerField()),
+            age_group = Case(
+                        When(age__range = [0,30],then = Value('0-30')),
+                        When(age__range = [31,90],then = Value('31-90')),
+                        When(age__range = [91,120],then = Value('91-120')),
+                        When(age__gt = 120,then = Value('>>120')),
+                        default = Value('No Group'),
+                        output_field = CharField()
+                    )
+            ).filter(net_due__gt = 0).values_list('bill_name','age_group','net_due')
+    creditor_bills_ref = pd.DataFrame(creditor_bills_ref,columns = ['Bill Name','Age_Group','Due'])
+    creditor_bills_ref = creditor_bills_ref.groupby('Age_Group').Due.agg(['sum','count']).reset_index()
+    
+    # On Account Entries
     debtor_bills_onaccount = Voucher_Bills.objects.filter(voucher_date__lte=end_date,ledger_primary_group="Sundry Debtors",bill_type = "On Account").\
-        values('bill_name').annotate(net_due = Sum('bill_amount')*-1, count = Count('bill_amount')).\
-            filter(net_due__gt = 0).values_list('net_due','count')
+        values('bill_name').annotate(bill_type = Value('On Account'), net_due = Sum('bill_amount')*-1, count = Count('bill_amount')).\
+            filter(net_due__gt = 0).values_list('bill_type','net_due','count')        
             
-    if debtor_bills_onaccount.exists():
-        print("Yes")
-    else:
-        print("No")            
-        
-        
-    # debtor_bills = Voucher_Bills.objects.filter(voucher_date__lte=end_date,ledger_primary_group="Sundry Debtors").exclude(bill_type = "On Account").\
-    #     values('bill_name').annotate(
-    #         bill_date = Min('voucher_date'),
-    #         net_due = Sum('bill_amount')*-1,
-    #         cutoff_date = Value(end_date_pd,output_field=DateField()),
-    #         age=Cast(ExtractDay(TruncDate(F('cutoff_date')) - TruncDate(F('bill_date'))),output_field = IntegerField())).\
-    #             filter(net_due__gt = 0).annotate(
-    #                 age_group = Case(
-    #                     When(age__range=[0,30],then= Value('0-30')),
-    #                     When(age__range=[31,60],then= Value('31-60')),
-    #                     When(age__range=[61,90],then= Value('61-90')),
-    #                     When(age__range=[91,120],then= Value('91-120')),
-    #                     When(age__gt=120,then= Value('>>120')),
-    #                     default = Value('No Group'),
-    #                     output_field = CharField()
-    #                 )
-    #             ).values('age_group').annotate(total=Sum(F('net_due')))
+    debtor_bills_onaccount_reverse = Voucher_Bills.objects.filter(voucher_date__lte=end_date,ledger_primary_group="Sundry Debtors",bill_type = "On Account").\
+        values('bill_name').annotate(bill_type = Value('On Account'), net_due = Sum('bill_amount'), count = Count('bill_amount')).\
+            filter(net_due__gt = 0).values_list('bill_type','net_due','count')                
+            
     
-    # debtor_bills = Voucher_Bills.objects.filter(voucher_date__lte=end_date,ledger_primary_group="Sundry Debtors").exclude(bill_type = "On Account").\
-    #     values('bill_name').annotate(
-    #         Booking_Date = Case(
-    #         When(bill_amount__lt = 0, then = Min('voucher_date')),
-    #         output_field = DateField()
-    #     ),
-    #         Booked_Amount = Case(
-    #         When(bill_amount__lt = 0,then = Sum('bill_amount')*-1),
-    #         default = 0,output_field=FloatField()
-    #     ),
-    #         Paid_Amount = Case(
-    #             When(bill_amount__gt = 0, then = Sum('bill_amount')),
-    #             default = 0, output_field = FloatField()
-    #                                  )).filter(bill_name = '0082/2019-20')
-    # print(debtor_bills_ref)
+    creditor_bills_onaccount = Voucher_Bills.objects.filter(voucher_date__lte=end_date,ledger_primary_group="Sundry Creditors",bill_type = "On Account").\
+        values('bill_name').annotate(bill_type = Value('On Account'), net_due = Sum('bill_amount'), count = Count('bill_amount')).\
+            filter(net_due__gt = 0).values_list('bill_type','net_due','count')        
+    
+    creditor_bills_onaccount_reverse = Voucher_Bills.objects.filter(voucher_date__lte=end_date,ledger_primary_group="Sundry Creditors",bill_type = "On Account").\
+        values('bill_name').annotate(bill_type = Value('On Account'), net_due = Sum('bill_amount')*-1, count = Count('bill_amount')).\
+            filter(net_due__gt = 0).values_list('bill_type','net_due','count')        
+
+    
+    if debtor_bills_onaccount.exists():
+        debtor_bills_onaccount = pd.DataFrame(debtor_bills_onaccount,columns = ['Age_Group','sum','count'])
+    else:
+        debtor_bills_onaccount = pd.DataFrame(columns = ['Age_Group','sum','count'])
+    
+    if creditor_bills_onaccount.exists():
+        creditor_bills_onaccount = pd.DataFrame(creditor_bills_onaccount,columns = ['Age_Group','sum','count'])
+    else:
+        creditor_bills_onaccount = pd.DataFrame(columns = ['Age_Group','sum','count'])
+    
+    if debtor_bills_onaccount_reverse.exists():
+        debtor_bills_onaccount_reverse = pd.DataFrame(debtor_bills_onaccount_reverse,columns = ['Age_Group','sum','count'])
+    else:
+        debtor_bills_onaccount_reverse = pd.DataFrame(columns = ['Age_Group','sum','count'])
+    
+    if creditor_bills_onaccount_reverse.exists():
+        creditor_bills_onaccount_reverse = pd.DataFrame(creditor_bills_onaccount_reverse,columns = ['Age_Group','sum','count'])
+    else:
+        creditor_bills_onaccount_reverse = pd.DataFrame(columns = ['Age_Group','sum','count'])
+    
+    # create consolidated dataframe for On Account Entries #
+    debtor_bills_onaccount = debtor_bills_onaccount.append(creditor_bills_onaccount_reverse,ignore_index=True)
+    creditor_bills_onaccount = creditor_bills_onaccount.append(debtor_bills_onaccount_reverse,ignore_index = True)
+    
+    debtor_bills_onaccount = debtor_bills_onaccount.groupby('Age_Group').agg({'sum':'sum', 'count':'sum'}).reset_index()
+    creditor_bills_onaccount = creditor_bills_onaccount.groupby('Age_Group').agg({'sum':'sum', 'count':'sum'}).reset_index()  
+    
+    # Append to ageing summary
+    debtor_bills_ref = debtor_bills_ref.append(debtor_bills_onaccount,ignore_index = True)
+    creditor_bills_ref = creditor_bills_ref.append(creditor_bills_onaccount,ignore_index = True)
+    
+    
+    for entry in ageing_labels:
+        try:
+            receivable_ageing_value.append(round(float(debtor_bills_ref[debtor_bills_ref['Age_Group']==entry]['sum'].iloc[0]),0))
+            receivable_ageing_count.append(int(debtor_bills_ref[debtor_bills_ref['Age_Group']==entry]['count'].iloc[0]))
+        except:
+            receivable_ageing_value.append(0)    
+            receivable_ageing_count.append(0)
+    
+    for entry in ageing_labels:
+        try:
+            payable_ageing_value.append(round(float(creditor_bills_ref[creditor_bills_ref['Age_Group']==entry]['sum'].iloc[0]),0))
+            payable_ageing_count.append(int(creditor_bills_ref[creditor_bills_ref['Age_Group']==entry]['count'].iloc[0]))
+        except:
+            payable_ageing_value.append(0)    
+            payable_ageing_count.append(0)    
         
     ### CASH & BANK DASH CARD ###
     cashbank_chart_data = []
     try:
-        present_cash = round(Voucher_Ledgers.cash.filter(voucher_date__range=[start_date,end_date]).aggregate(Sum('amount'))['amount__sum'],0)*-1        
+        present_cash_dump = Voucher_Ledgers.cash.filter(voucher_date__range=[start_date,end_date])
+        present_cash = round(present_cash_dump.aggregate(Sum('amount'))['amount__sum'],0)*-1        
         cashbank_chart_data.append(float(present_cash))
     except:
         present_cash = 0
         cashbank_chart_data.append(float(present_cash))
     try:
-        previous_cash = round(Voucher_Ledgers.cash.filter(voucher_date__range=[previous_start_date,previous_end_date]).aggregate(Sum('amount'))['amount__sum'],0)*-1
+        previous_cash_dump = Voucher_Ledgers.cash.filter(voucher_date__range=[previous_start_date,previous_end_date])
+        previous_cash = round(previous_cash_dump.aggregate(Sum('amount'))['amount__sum'],0)*-1
     except:
         previous_cash = 0
     try:
-        present_bank = round(Voucher_Ledgers.bank.filter(voucher_date__range=[start_date,end_date]).aggregate(Sum('amount'))['amount__sum'],0)*-1
+        present_bank_dump = Voucher_Ledgers.bank.filter(voucher_date__range=[start_date,end_date])
+        present_bank = round(present_bank_dump.aggregate(Sum('amount'))['amount__sum'],0)*-1
         cashbank_chart_data.append(float(present_bank))
     except:
         present_bank = 0
         cashbank_chart_data.append(float(present_bank))
     try:
-        previous_bank = round(Voucher_Ledgers.bank.filter(voucher_date__range=[previous_start_date,previous_end_date]).aggregate(Sum('amount'))['amount__sum'],0)*-1
+        previous_bank_dump = Voucher_Ledgers.bank.filter(voucher_date__range=[previous_start_date,previous_end_date])
+        previous_bank = round(previous_bank_dump.aggregate(Sum('amount'))['amount__sum'],0)*-1
     except:
         previous_bank = 0
     try:
@@ -373,6 +426,60 @@ def update_dashboard(request):
             perc_change_bank = 0
         else:
             perc_change_bank = 100        
+    
+    # Cash Receipts Entries
+    receipts_payments_labels_date = []
+    receipts_payments_labels = []
+    cash_receipts_value = []
+    cash_payments_value = []
+    bank_receipts_value = []
+    bank_payments_value = []
+    
+    # begin_date = (datetime.strptime(end_date,'%Y-%m-%d') + relativedelta(months = -5)).replace(day=1).strftime('%Y-%m-%d')
+    begin_date = (datetime.strptime(end_date,'%Y-%m-%d') + relativedelta(months = -5)).replace(day=1)
+    # Get Last 6 Months Label
+    for i in range (6):
+        receipts_payments_labels_date.append((begin_date + relativedelta(months = i)).date())
+           
+    cash_receipts_dump = Voucher_Ledgers.cash.filter(voucher_date__range=[begin_date,end_date],amount__lt = 0)
+    cash_receipts = cash_receipts_dump.annotate(month = TruncMonth('voucher_date')).\
+        values('month').annotate(amount = Sum('amount')*-1)
+    cash_receipts = pd.DataFrame(cash_receipts,columns = ['month','amount'])
+    
+    cash_payments_dump = Voucher_Ledgers.cash.filter(voucher_date__range=[begin_date,end_date],amount__gt = 0)
+    cash_payments = cash_payments_dump.annotate(month = TruncMonth('voucher_date')).\
+        values('month').annotate(amount = Sum('amount'))
+    cash_payments = pd.DataFrame(cash_payments,columns = ['month','amount'])
+       
+    bank_receipts_dump = Voucher_Ledgers.bank.filter(voucher_date__range=[begin_date,end_date],amount__lt = 0)
+    bank_receipts = bank_receipts_dump.annotate(month = TruncMonth('voucher_date')).\
+        values('month').annotate(amount = Sum('amount')*-1)
+    bank_receipts = pd.DataFrame(bank_receipts,columns = ['month','amount'])
+    
+    bank_payments_dump = Voucher_Ledgers.bank.filter(voucher_date__range=[begin_date,end_date],amount__gt = 0)
+    bank_payments = bank_payments_dump.annotate(month = TruncMonth('voucher_date')).\
+        values('month').annotate(amount = Sum('amount'))
+    bank_payments = pd.DataFrame(bank_payments,columns = ['month','amount'])
+    
+    for entry in receipts_payments_labels_date:
+        try:
+            cash_receipts_value.append(round(float(cash_receipts[cash_receipts['month']==entry]['amount'].iloc[0]),0))
+            receipts_payments_labels.append(entry.strftime('%b-%Y'))
+        except:
+            receipts_payments_labels.append(entry.strftime('%b-%Y'))
+            cash_receipts_value.append(0)        
+        try:
+            cash_payments_value.append(round(float(cash_payments[cash_payments['month']==entry]['amount'].iloc[0]),0))
+        except:
+            cash_payments_value.append(0)        
+        try:
+            bank_receipts_value.append(round(float(bank_receipts[bank_receipts['month']==entry]['amount'].iloc[0]),0))
+        except:
+            bank_receipts_value.append(0)        
+        try:
+            bank_payments_value.append(round(float(bank_payments[bank_payments['month']==entry]['amount'].iloc[0]),0))
+        except:
+            bank_payments_value.append(0)            
         
     ### P&L MOVEMENT DASH CARD ###
     pl_chart_data = []
@@ -534,14 +641,55 @@ def update_dashboard(request):
     except:
         pass
     
+    ### TOP 5 COST CENTERS DASH CARD ###
+    cc_category_chart_labels=[]
+    cc_category_chart_data=[]
+    present_top_cc_category = {}
+    previous_top_cc_category = {}
+    perc_change_top_cc_category = {}
+    
+    try:
+        present_cc_dump = Voucher_CostCenters.objects.filter(
+        (Q(ledger_category = 'Income') | Q(ledger_category = 'Expense')),
+            voucher_date__range=[start_date,end_date])
+        present_cc_category = present_cc_dump.values('cc_category').annotate(total=Sum('cc_amount')).\
+            filter(total__gt = 0).order_by('-total')[:5]
+        
+        for entry in present_cc_category:
+            cc_category_chart_labels.append(entry['cc_category'])
+            cc_category_chart_data.append(round(float(entry['total']),0))
+            present_top_cc_category[entry['cc_category']] = round(float(entry['total']),0)
+    except:
+        pass
+    
+    try:
+        previous_cc_category = Voucher_CostCenters.objects.filter(
+            (Q(ledger_category = 'Income') | Q(ledger_category = 'Expense')),
+            cc_category__in = cc_category_chart_labels,
+            voucher_date__range=[previous_start_date,previous_end_date]).\
+            values('cc_category').annotate(total=Sum('cc_amount'))
+        
+        for entry in previous_cc_category:
+            previous_top_cc_category[entry['cc_category']] = round(float(entry['total']),0)
+    except:
+        pass
+        
+    for entry in cc_category_chart_labels:
+        try:
+            perc_change_top_cc_category[entry] = round((present_top_cc_category[entry] - previous_top_cc_category[entry])/abs(previous_top_cc_category[entry])*100,0)
+        except:
+            if present_top_cc_category[entry] == 0:
+                perc_change_top_cc_category[entry]=0
+            else:
+                perc_change_top_cc_category[entry] = 100    
     
     ### FINDING NUMBER OF DIGITS OF VARIOUS FIGURES FOR DISPLAY IN DASHBOARD ###
-    digits = find_digits(present_income)
-    if digits > 6:
-        present_income = round(present_income/100000,2)
-        present_income_denomination = " L"
-    else:
-        present_income_denomination = ""    
+    # digits = find_digits(present_income)
+    # if digits > 6:
+    #     present_income = round(present_income/100000,2)
+    #     present_income_denomination = " L"
+    # else:
+    #     present_income_denomination = ""    
     
     digits = find_digits(previous_income)
     if digits > 6:
@@ -622,7 +770,7 @@ def update_dashboard(request):
        
     return JsonResponse(data={
       'present_income': present_income,
-      'present_income_denomination' : present_income_denomination,
+    #   'present_income_denomination' : present_income_denomination,
       'previous_income' : previous_income,
       'previous_income_denomination' : previous_income_denomination,
       'perc_change_income' : perc_change_income,
@@ -678,6 +826,19 @@ def update_dashboard(request):
       'expense_ledgers_chart_labels' : expense_ledgers_chart_labels,
       'expense_ledgers_chart_data' : expense_ledgers_chart_data,
       'perc_change_top_expense_ledgers' : perc_change_top_expense_ledgers,
+      'ageing_labels' : ageing_labels,
+      'receivable_ageing_value' : receivable_ageing_value,
+      'receivable_ageing_count' : receivable_ageing_count,
+      'payable_ageing_value' : payable_ageing_value,
+      'payable_ageing_count' : payable_ageing_count,
+      'receipts_payments_labels' : receipts_payments_labels,
+      'cash_receipts_value' : cash_receipts_value,
+      'cash_payments_value' : cash_payments_value,
+      'bank_receipts_value' : bank_receipts_value,
+      'bank_payments_value' : bank_payments_value,
+      'cc_category_chart_labels' : cc_category_chart_labels,
+      'cc_category_chart_data' : cc_category_chart_data,
+      'perc_change_top_cc_category' : perc_change_top_cc_category,
       
     })
     

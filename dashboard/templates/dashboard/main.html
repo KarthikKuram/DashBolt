@@ -116,7 +116,7 @@
               <div class="col-12 pr-2">
                 <div class="d-flex flex-row justify-content-between mb-2">
                   <div class="d-flex mr-2 p-0 align-self-center">
-                    <span class="material-icons fw-bold fs-4 first_color"
+                    <span title="Receivables" class="material-icons fw-bold fs-4 first_color"
                       >account_balance_wallet</span
                     >
                   </div>
@@ -129,7 +129,7 @@
               <div class="col-12 pr-2">
                 <div class="d-flex flex-row justify-content-between">
                   <div class="d-flex mr-2 p-0 align-self-center">
-                    <span class="material-icons fw-bold fs-4 second_color"
+                    <span title="Payables" class="material-icons fw-bold fs-4 second_color"
                       >payments</span
                     >
                   </div>
@@ -160,7 +160,7 @@
               <div class="col-12 pr-2">
                 <div class="d-flex flex-row justify-content-between mb-2">
                   <div class="d-flex mr-2 p-0 align-self-center">
-                    <span class="material-icons fs-4 fw-bold fourth_color"
+                    <span title = "Cash" class="material-icons fs-4 fw-bold fourth_color"
                       >attach_money</span
                     >
                   </div>
@@ -174,7 +174,7 @@
               <div class="col-12 pr-2">
                 <div class="d-flex flex-row justify-content-between">
                   <div class="d-flex mr-2 p-1 align-self-center">
-                    <span class="material-icons fs-4 first_color fw-bold"
+                    <span title = "Bank" class="material-icons fs-4 first_color fw-bold"
                       >account_balance</span
                     >
                   </div>
@@ -1724,24 +1724,9 @@
             </div>
           </div>
           <div class="card-body p-1" style="font-size: 12px">
-            <div
-              class="
-                align-items-center
-                py-1
-                border-bottom border-200
-                d-flex
-                flex-row
-              "
-            >
+            <div class="align-items-center py-1 border-bottom border-200 d-flex flex-row">
               <div class="col-6 py-1">
-                <div
-                  class="
-                    align-items-center
-                    d-flex
-                    flex-row
-                    justify-cotent-start
-                  "
-                >
+                <div class="align-items-center d-flex flex-row justify-cotent-start">
                   <div class="col-3 text-start align-items-center">
                     <div class="align-self-center px-2">
                       <span class="first_value badge rounded-pill m-0">CR</span>
@@ -1753,52 +1738,26 @@
                 </div>
               </div>
               <div class="col-6 px-2">
-                <div
-                  class="align-items-center d-flex flex-row justify-content-end"
-                >
-                  <div class="col-6 text-end">
-                    <div class="align-self-center px-2">2.23</div>
+                <div class="align-items-center d-flex flex-row justify-content-end">
+                  <div id="current-ratio-value-div" class="col-6 text-end">
+                    <div id="current-ratio-value" class="align-self-center px-2"></div>
                   </div>
                   <div class="col-6 text-start">
                     <div class="align-self-center">
-                      <div class="progress">
-                        <div
-                          class="progress-bar first_value"
-                          role="progressbar"
-                          style="width: 75%"
-                          aria-valuenow="75"
-                          aria-valuemin="0"
-                          aria-valuemax="100"
-                        ></div>
+                      <div id="current-ratio-progress-div" class="progress">
+                        <div id="current-ratio-progress" class="progress-bar first_value" role="progressbar" style="width: 0%" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100"></div>
                       </div>
                     </div>
                   </div>
                 </div>
               </div>
             </div>
-            <div
-              class="
-                align-items-center
-                py-1
-                border-bottom border-200
-                d-flex
-                flex-row
-              "
-            >
+            <div class="align-items-center py-1 border-bottom border-200 d-flex flex-row">
               <div class="col-6 py-1">
-                <div
-                  class="
-                    align-items-center
-                    d-flex
-                    flex-row
-                    justify-content-start
-                  "
-                >
+                <div class="align-items-center d-flex flex-row justify-content-start">
                   <div class="col-3 text-start aling-items-center">
                     <div class="align-self-center px-2">
-                      <span class="second_value badge rounded-pill m-0"
-                        >CR</span
-                      >
+                      <span class="second_value badge rounded-pill m-0">CR</span>
                     </div>
                   </div>
                   <div class="col-9 text-start">
@@ -1807,47 +1766,23 @@
                 </div>
               </div>
               <div class="col-6 px-2">
-                <div
-                  class="align-items-center d-flex flex-row justify-content-end"
-                >
-                  <div class="col-6 text-end">
-                    <div class="align-self-center px-2">2.0</div>
+                <div class="align-items-center d-flex flex-row justify-content-end">
+                  <div id="cash-ratio-value-div" class="col-6 text-end">
+                    <div id="cash-ratio-value" class="align-self-center px-2"></div>
                   </div>
                   <div class="col-6 text-start">
                     <div class="align-self-center">
-                      <div class="progress">
-                        <div
-                          class="progress-bar second_value"
-                          role="progressbar"
-                          style="width: 25%"
-                          aria-valuenow="25"
-                          aria-valuemin="0"
-                          aria-valuemax="100"
-                        ></div>
+                      <div id="cash-ratio-progress-div" class="progress">
+                        <div id="cash-ratio-progress" class="progress-bar second_value" role="progressbar" style="width: 0%" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>
                       </div>
                     </div>
                   </div>
                 </div>
               </div>
             </div>
-            <div
-              class="
-                align-items-center
-                py-1
-                border-bottom border-200
-                d-flex
-                flex-row
-              "
-            >
+            <div class="align-items-center py-1 border-bottom border-200 d-flex flex-row">
               <div class="col-6 py-1">
-                <div
-                  class="
-                    align-items-center
-                    d-flex
-                    flex-row
-                    justify-content-start
-                  "
-                >
+                <div class="align-items-center d-flex flex-row justify-content-start">
                   <div class="col-3 text-start align-items-center">
                     <div class="align-self-center px-2">
                       <span class="third_value badge rounded-pill m-0">IC</span>
@@ -1882,106 +1817,56 @@
                 </div>
               </div>
             </div>
-            <div
-              class="
-                align-items-center
-                py-1
-                border-bottom border-200
-                d-flex
-                flex-row
-              "
-            >
+            <div class="align-items-center py-1 border-bottom border-200 d-flex flex-row">
               <div class="col-6 py-1">
-                <div
-                  class="
-                    align-items-center
-                    d-flex
-                    flex-row
-                    justify-content-start
-                  "
-                >
+                <div class="align-items-center d-flex flex-row justify-content-start">
                   <div class="col-3 text-start align-items-center">
                     <div class="align-self-center px-2">
-                      <span class="fourth_value badge rounded-pill m-0"
-                        >GM</span
-                      >
+                      <span class="fourth_value badge rounded-pill m-0">GP</span>
                     </div>
                   </div>
                   <div class="col-9 text-start">
-                    <div class="align-self-center">Gross Margin</div>
+                    <div class="align-self-center">Gross Profit Margin</div>
                   </div>
                 </div>
               </div>
               <div class="col-6 px-2">
-                <div
-                  class="align-items-center d-flex flex-row justify-content-end"
-                >
-                  <div class="col-6 text-end">
-                    <div class="align-self-center px-2">1.12</div>
+                <div class="align-items-center d-flex flex-row justify-content-end">
+                  <div id="gp-ratio-value-div" class="col-6 text-end">
+                    <div id="gp-ratio-value" class="align-self-center px-2"></div>
                   </div>
                   <div class="col-6 text-start">
                     <div class="align-self-center">
-                      <div class="progress">
-                        <div
-                          class="progress-bar fourth_value"
-                          role="progressbar"
-                          style="width: 100%"
-                          aria-valuenow="100"
-                          aria-valuemin="0"
-                          aria-valuemax="100"
-                        ></div>
+                      <div id="gp-ratio-progress-div" class="progress">
+                        <div id="gp-ratio-progress" class="progress-bar fourth_value" role="progressbar" style="width: 0%" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"></div>
                       </div>
                     </div>
                   </div>
                 </div>
               </div>
             </div>
-            <div
-              class="
-                align-items-center
-                py-1
-                border-bottom border-200
-                d-flex
-                flex-row
-              "
-            >
+            <div class="align-items-center py-1 border-bottom border-200 d-flex flex-row">
               <div class="col-6 py-1">
-                <div
-                  class="
-                    align-items-center
-                    d-flex
-                    flex-row
-                    justify-content-start
-                  "
-                >
+                <div class="align-items-center d-flex flex-row justify-content-start">
                   <div class="col-3 text-start align-items-center">
                     <div class="align-self-center px-2">
-                      <span class="fifth_value badge rounded-pill m-0">OM</span>
+                      <span class="fifth_value badge rounded-pill m-0">NP</span>
                     </div>
                   </div>
                   <div class="col-9 text-start">
-                    <div class="align-self-center">Operating Margin</div>
+                    <div class="align-self-center">Net Profit Margin</div>
                   </div>
                 </div>
               </div>
               <div class="col-6 px-2">
-                <div
-                  class="align-items-center d-flex flex-row justify-content-end"
-                >
-                  <div class="col-6 text-end">
-                    <div class="align-self-center px-2">7.6</div>
+                <div class="align-items-center d-flex flex-row justify-content-end">
+                  <div id="np-ratio-value-div" class="col-6 text-end">
+                    <div id="np-ratio-value" class="align-self-center px-2"></div>
                   </div>
                   <div class="col-6 text-start">
                     <div class="align-self-center">
-                      <div class="progress">
-                        <div
-                          class="progress-bar fifth_value"
-                          role="progressbar"
-                          style="width: 85%"
-                          aria-valuenow="85"
-                          aria-valuemin="0"
-                          aria-valuemax="100"
-                        ></div>
+                      <div id="np-ratio-progress-div" class="progress">
+                        <div id="np-ratio-progress" class="progress-bar fifth_value" role="progressbar" style="width: 0%" aria-valuenow="85" aria-valuemin="0" aria-valuemax="100"></div>
                       </div>
                     </div>
                   </div>
@@ -2024,6 +1909,7 @@
         ageing_dash_card(data);
         rec_pay_dash_card(data);
         cc_dash_card(data);
+        ratios(data);
       },
       complete: function () { // Set our complete callback, adding the .hidden class and hiding the spinner.
                   $('#loader').addClass('hidden')
@@ -2059,6 +1945,7 @@
         ageing_dash_card(data);
         rec_pay_dash_card(data);
         cc_dash_card(data);
+        ratios(data);
         
 
       },

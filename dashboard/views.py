@@ -229,7 +229,7 @@ def update_dashboard(request):
             .values('voucher_date').annotate(total = Sum('amount')).order_by('voucher_date')
         for entry in expense_entries:
             expense_chart_labels.append(entry['voucher_date'])
-            expense_chart_data.append(float(entry['total'])*-1)          
+            expense_chart_data.append(round(float(entry['total'])*-1,0))
     except:
         expense_chart_labels = []
         expense_chart_data = []
@@ -680,134 +680,71 @@ def update_dashboard(request):
         except:
             if present_top_cc_category[entry] == 0:
                 perc_change_top_cc_category[entry]=0
-            else:
+            else:   
                 perc_change_top_cc_category[entry] = 100    
     
-    ### FINDING NUMBER OF DIGITS OF VARIOUS FIGURES FOR DISPLAY IN DASHBOARD ###
-    # digits = find_digits(present_income)
-    # if digits > 6:
-    #     present_income = round(present_income/100000,2)
-    #     present_income_denomination = " L"
-    # else:
-    #     present_income_denomination = ""    
+    ### CALCULATION OF FINANCIAL RATIOS ###
+    # Current Ratio #
+    current_assets = round(max((Voucher_Ledgers.objects.filter(Q(ledger_primary_group = "Current Assets")\
+        | Q(ledger_grand_parent = "Current Assets")\
+            | Q(ledger_parent = "Current Assets"),voucher_date__range=[start_date,end_date]).aggregate(Sum('amount'))['amount__sum'])*-1,0),0)
+    current_liabilities = round(max(Voucher_Ledgers.objects.filter(Q(ledger_primary_group = "Current Liabilities")\
+        | Q(ledger_grand_parent = "Current Liabilities")\
+            | Q(ledger_parent = "Current Liabilities"),voucher_date__range=[start_date,end_date]).aggregate(Sum('amount'))['amount__sum'],0),0)
+    try:
+        current_ratio = round(current_assets/current_liabilities,2)
+        if current_ratio > 2:
+            current_ratio_perc = 100
+        else:
+            current_ratio_perc = round(current_ratio/2,2)
+    except:
+        current_ratio = 0
+        current_ratio_perc = 0
     
-    digits = find_digits(previous_income)
-    if digits > 6:
-        previous_income_denomination = " L"
-        previous_income = round(previous_income/100000,2)
-    else:
-        previous_income_denomination = ""         
-        
-    digits = find_digits(present_expense)
-    if digits > 6:
-        present_expense = round(present_expense/100000,2)
-        present_expense_denomination = " L"
-    else:
-        present_expense_denomination = ""                
+    # Cash Ratio #
+    cash_equivalent = round(max((Voucher_Ledgers.objects.filter(Q(ledger_primary_group = "Cash-in-hand")\
+        | Q(ledger_grand_parent = "Cash-in-hand") | Q(ledger_parent = "Cash-in-hand")\
+            | Q(ledger_primary_group = "Bank Accounts") | Q(ledger_grand_parent = "Cash-in-hand") | Q(ledger_parent = "Cash-in-hand"),
+            voucher_date__range=[start_date,end_date]).aggregate(Sum('amount'))['amount__sum'])*-1,0),0)
+    try:
+        cash_ratio = round(cash_equivalent/current_liabilities,2)
+        if cash_ratio > 1:
+            cash_ratio_perc = 100
+        else:
+            cash_ratio_perc = cash_ratio
+    except:
+        cash_ratio = 0
+        cash_ratio_perc = 0
     
-    digits = find_digits(previous_expense)
-    if digits > 6:
-        previous_expense_denomination = " L"
-        previous_expense = round(previous_expense/100000,2)
-    else:
-        previous_expense_denomination = ""    
-        
-    digits = find_digits(present_debtor)
-    if digits > 6:
-        present_debtor = round(present_debtor/100000,2)
-        present_debtor_denomination = " L"
-    else:
-        present_debtor_denomination = ""                
     
-    digits = find_digits(present_creditor)
-    if digits > 6:
-        present_creditor = round(present_creditor/100000,2)
-        present_creditor_denomination = " L"
-    else:
-        present_creditor_denomination = ""                    
-        
-    digits = find_digits(present_cash)
-    if digits > 6:
-        present_cash = round(present_cash/100000,2)
-        present_cash_denomination = " L"
-    else:
-        present_cash_denomination = ""                
-    
-    digits = find_digits(present_bank)
-    if digits > 6:
-        present_bank = round(present_bank/100000,2)
-        present_bank_denomination = " L"
-    else:
-        present_bank_denomination = ""                    
-    
-    digits = find_digits(present_direct_expense)
-    if digits > 6:
-        present_direct_expense = round(present_direct_expense/100000,2)
-        present_direct_expense_denomination = " L"
-    else:
-        present_direct_expense_denomination = ""
-    
-    digits = find_digits(present_gross_profit)
-    if digits > 6:
-        present_gross_profit = round(present_gross_profit/100000,2)
-        present_gross_profit_denomination = " L"
-    else:
-        present_gross_profit_denomination = ""    
-    
-    digits = find_digits(present_indirect_expense)
-    if digits > 6:
-        present_indirect_expense = round(present_indirect_expense/100000,2)
-        present_indirect_expense_denomination = " L"
-    else:
-        present_indirect_expense_denomination = ""
-    
-    digits = find_digits(present_net_profit)
-    if digits > 6:
-        present_net_profit = round(present_net_profit/100000,2)
-        present_net_profit_denomination = " L"
-    else:
-        present_net_profit_denomination = ""
-       
     return JsonResponse(data={
       'present_income': present_income,
-    #   'present_income_denomination' : present_income_denomination,
       'previous_income' : previous_income,
-      'previous_income_denomination' : previous_income_denomination,
       'perc_change_income' : perc_change_income,
       'income_chart_labels' : income_chart_labels,
       'income_chart_data' : income_chart_data,
       'present_expense': present_expense,
-      'present_expense_denomination' : present_expense_denomination,
       'previous_expense' : previous_expense,
-      'previous_expense_denomination' : previous_expense_denomination,
       'perc_change_expense' : perc_change_expense,
       'expense_chart_labels' : expense_chart_labels,
       'expense_chart_data' : expense_chart_data,
       'present_debtor' : present_debtor,
-      'present_debtor_denomination' : present_debtor_denomination,
       'present_creditor' : present_creditor,
-      'present_creditor_denomination' : present_creditor_denomination,
       'perc_change_debtor' : perc_change_debtor,
       'perc_change_creditor' : perc_change_creditor,
       'recpay_chart_data' : recpay_chart_data,
       'present_cash' : present_cash,
-      'present_cash_denomination' : present_cash_denomination,
       'perc_change_cash' : perc_change_cash,
       'present_bank' : present_bank,
-      'present_bank_denomination' : present_bank_denomination,
       'perc_change_bank' : perc_change_bank,
       'cashbank_chart_data' : cashbank_chart_data,
       'present_direct_expense' : present_direct_expense,
-      'present_direct_expense_denomination' : present_direct_expense_denomination,
       'perc_change_direct_expense' : perc_change_direct_expense,
       'present_gross_profit' : present_gross_profit,
-      'present_gross_profit_denomination' : present_gross_profit_denomination,
       'perc_change_gross_profit' : perc_change_gross_profit,
       'present_indirect_expense' : present_indirect_expense,
-      'present_indirect_expense_denomination' : present_indirect_expense_denomination,
       'perc_change_indirect_expense' : perc_change_indirect_expense,
       'present_net_profit' : present_net_profit,
-      'present_net_profit_denomination' : present_net_profit_denomination,
       'perc_change_net_profit' : perc_change_net_profit,
       'pl_chart_data' : pl_chart_data,
       'top_customer_chart_labels' : top_customer_chart_labels,
@@ -839,6 +776,10 @@ def update_dashboard(request):
       'cc_category_chart_labels' : cc_category_chart_labels,
       'cc_category_chart_data' : cc_category_chart_data,
       'perc_change_top_cc_category' : perc_change_top_cc_category,
+      'current_ratio' : current_ratio,
+      'current_ratio_perc' : current_ratio_perc,
+      'cash_ratio' : cash_ratio,
+      'cash_ratio_perc' : cash_ratio_perc,
       
     })
     

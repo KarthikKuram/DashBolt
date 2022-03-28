@@ -160,7 +160,7 @@ function income_dash_card(data) {
   if (find_digits(data.present_income) > 6) {
     $("#income-amount-present").html(
       "&#8377;&nbsp;" +
-        Math.round(data.present_income / 100000, 2).toLocaleString("hi") +
+        (data.present_income / 100000).toFixed(2).toLocaleString("hi") +
         " L"
     );
   } else {
@@ -171,17 +171,23 @@ function income_dash_card(data) {
   $("#income-amount-present").attr({
     title: "₹ " + Math.round(data.present_income, 0).toLocaleString("hi"),
   });
-  // $("#income-amount-present").html(
-  //   "&#8377;&nbsp;" +
-  //     data.present_income.toLocaleString("hi") +
-  //     data.present_income_denomination
-  // );
-  // custom_colors$("#income-amount-present").attr({ title: data.present_income });
-  $("#income-amount-previous").html(
-    "&nbsp;&nbsp;from &#8377;&nbsp;" +
-      data.previous_income.toLocaleString("hi") +
-      data.previous_income_denomination
-  );
+
+  if (find_digits(data.previous_income) > 6) {
+    $("#income-amount-previous").html(
+      "&nbsp;&nbsp;from &#8377;&nbsp;" +
+        (data.previous_income / 100000).toFixed(2).toLocaleString("hi") +
+        " L"
+    );
+  } else {
+    $("#income-amount-previous").html(
+      "&nbsp;&nbsp;from &#8377;&nbsp;" +
+        Math.round(data.previous_income, 0).toLocaleString("hi")
+    );
+  }
+  $("#income-amount-previous").attr({
+    title: "₹ " + Math.round(data.previous_income, 0).toLocaleString("hi"),
+  });
+
   $("#perc-change-income").removeClass("perc_increase");
   $("#perc-change-income").removeClass("perc_decrease");
   if (data.perc_change_income > 0) {
@@ -254,16 +260,35 @@ function expense_dash_card(data) {
   var $expense_chart = $("#expense-chart-dash");
   var expense_dash = $expense_chart[0].getContext("2d");
 
-  $("#expense-amount-present").html(
-    "&#8377;&nbsp;" +
-      data.present_expense.toLocaleString("hi") +
-      data.present_expense_denomination
-  );
-  $("#expense-amount-previous").html(
-    "&nbsp;&nbsp;from &#8377;&nbsp;" +
-      data.previous_expense.toLocaleString("hi") +
-      data.previous_expense_denomination
-  );
+  if (find_digits(data.present_expense) > 6) {
+    $("#expense-amount-present").html(
+      "&#8377;&nbsp;" +
+        (data.present_expense / 100000).toFixed(2).toLocaleString("hi") +
+        " L"
+    );
+  } else {
+    $("#expense-amount-present").html(
+      "&#8377;&nbsp;" + Math.round(data.present_expense, 0).toLocaleString("hi")
+    );
+  }
+  $("#expense-amount-present").attr({
+    title: "₹ " + Math.round(data.present_expense, 0).toLocaleString("hi"),
+  });
+  if (find_digits(data.previous_expense) > 6) {
+    $("#expense-amount-previous").html(
+      "&nbsp;&nbsp;from &#8377;&nbsp;" +
+        (data.previous_expense / 100000).toFixed(2).toLocaleString("hi") +
+        " L"
+    );
+  } else {
+    $("#expense-amount-previous").html(
+      "&nbsp;&nbsp;from &#8377;&nbsp;" +
+        Math.round(data.previous_expense, 0).toLocaleString("hi")
+    );
+  }
+  $("#expense-amount-previous").attr({
+    title: "₹ " + Math.round(data.previous_expense, 0).toLocaleString("hi"),
+  });
   $("#perc-change-expense").removeClass("perc_increase");
   $("#perc-change-expense").removeClass("perc_decrease");
   if (data.perc_change_expense > 0) {
@@ -297,7 +322,17 @@ function expense_dash_card(data) {
       title: {
         display: false,
       },
-      plugins: { legend: false },
+      plugins: {
+        legend: false,
+        tooltip: {
+          callbacks: {
+            label: (tooltipItems) => {
+              const v = tooltipItems.dataset.data[tooltipItems.dataIndex];
+              return v.toLocaleString("hi");
+            },
+          },
+        },
+      },
       scales: {
         x: {
           grid: { display: false, drawBorder: false },
@@ -325,11 +360,21 @@ function recpay_dash_card(data) {
 
   $("#receivable-amount-present").removeAttr("style");
 
-  $("#receivable-amount-present").html(
-    "&#8377;&nbsp;" +
-      data.present_debtor.toLocaleString("hi") +
-      data.present_debtor_denomination
-  );
+  if (find_digits(data.present_debtor) > 6) {
+    $("#receivable-amount-present").html(
+      "&#8377;&nbsp;" +
+        (data.present_debtor / 100000).toFixed(2).toLocaleString("hi") +
+        " L"
+    );
+  } else {
+    $("#receivable-amount-present").html(
+      "&#8377;&nbsp;" + Math.round(data.present_debtor, 0).toLocaleString("hi")
+    );
+  }
+  $("#receivable-amount-present").attr({
+    title: "₹ " + Math.round(data.present_debtor, 0).toLocaleString("hi"),
+  });
+
   if (data.perc_change_debtor > 0) {
     $("#receivable-amount-present").css({ color: "#00c9a7" });
   } else {
@@ -338,11 +383,22 @@ function recpay_dash_card(data) {
 
   $("#payable-amount-present").removeAttr("style");
 
-  $("#payable-amount-present").html(
-    "&#8377;&nbsp;" +
-      data.present_creditor.toLocaleString("hi") +
-      data.present_creditor_denomination
-  );
+  if (find_digits(data.present_creditor) > 6) {
+    $("#payable-amount-present").html(
+      "&#8377;&nbsp;" +
+        (data.present_creditor / 100000).toFixed(2).toLocaleString("hi") +
+        " L"
+    );
+  } else {
+    $("#payable-amount-present").html(
+      "&#8377;&nbsp;" +
+        Math.round(data.present_creditor, 0).toLocaleString("hi")
+    );
+  }
+  $("#payable-amount-present").attr({
+    title: "₹ " + Math.round(data.present_creditor, 0).toLocaleString("hi"),
+  });
+
   if (data.perc_change_creditor > 0) {
     $("#payable-amount-present").css({ color: "#00c9a7" });
   } else {
@@ -368,6 +424,14 @@ function recpay_dash_card(data) {
         title: {
           display: false,
         },
+        tooltip: {
+          callbacks: {
+            label: (tooltipItems) => {
+              const v = tooltipItems.dataset.data[tooltipItems.dataIndex];
+              return v.toLocaleString("hi");
+            },
+          },
+        },
       },
       borderAlign: "inner",
       cutout: 40,
@@ -386,11 +450,21 @@ function cashbank_dash_card(data) {
 
   $("#cash-amount-present").removeAttr("style");
 
-  $("#cash-amount-present").html(
-    "&#8377;&nbsp;" +
-      data.present_cash.toLocaleString("hi") +
-      data.present_cash_denomination
-  );
+  if (find_digits(data.present_cash) > 6) {
+    $("#cash-amount-present").html(
+      "&#8377;&nbsp;" +
+        (data.present_cash / 100000).toFixed(2).toLocaleString("hi") +
+        " L"
+    );
+  } else {
+    $("#cash-amount-present").html(
+      "&#8377;&nbsp;" + Math.round(data.present_cash, 0).toLocaleString("hi")
+    );
+  }
+  $("#cash-amount-present").attr({
+    title: "₹ " + Math.round(data.present_cash, 0).toLocaleString("hi"),
+  });
+
   if (data.perc_change_cash > 0) {
     $("#cash-amount-present").css({ color: "#00c9a7" });
   } else {
@@ -399,11 +473,21 @@ function cashbank_dash_card(data) {
 
   $("#bank-amount-present").removeAttr("style");
 
-  $("#bank-amount-present").html(
-    "&#8377;&nbsp;" +
-      data.present_bank.toLocaleString("hi") +
-      data.present_bank_denomination
-  );
+  if (find_digits(data.present_bank) > 6) {
+    $("#bank-amount-present").html(
+      "&#8377;&nbsp;" +
+        (data.present_bank / 100000).toFixed(2).toLocaleString("hi") +
+        " L"
+    );
+  } else {
+    $("#bank-amount-present").html(
+      "&#8377;&nbsp;" + Math.round(data.present_bank, 0).toLocaleString("hi")
+    );
+  }
+  $("#bank-amount-present").attr({
+    title: "₹ " + Math.round(data.present_bank, 0).toLocaleString("hi"),
+  });
+
   if (data.perc_change_bank > 0) {
     $("#bank-amount-present").css({ color: "#00c9a7" });
   } else {
@@ -430,6 +514,14 @@ function cashbank_dash_card(data) {
         title: {
           display: false,
         },
+        tooltip: {
+          callbacks: {
+            label: (tooltipItems) => {
+              const v = tooltipItems.dataset.data[tooltipItems.dataIndex];
+              return v.toLocaleString("hi");
+            },
+          },
+        },
       },
     },
   });
@@ -444,11 +536,20 @@ function pl_dash_card(data) {
   var $pl_chart = $("#pl-chart-dash");
   var pl_dash = $pl_chart[0].getContext("2d");
 
-  $("#income-pl").html(
-    "&#8377;&nbsp;" +
-      data.present_income.toLocaleString("hi") +
-      data.present_income_denomination
-  );
+  if (find_digits(data.present_income) > 6) {
+    $("#income-pl").html(
+      "&#8377;&nbsp;" +
+        (data.present_income / 100000).toFixed(2).toLocaleString("hi") +
+        " L"
+    );
+  } else {
+    $("#income-pl").html(
+      "&#8377;&nbsp;" + Math.round(data.present_income, 0).toLocaleString("hi")
+    );
+  }
+  $("#income-pl").attr({
+    title: "₹ " + Math.round(data.present_income, 0).toLocaleString("hi"),
+  });
   $("#perc-change-income-pl").removeClass("perc_increase");
   $("#perc-change-income-pl").removeClass("perc_decrease");
   if (data.perc_change_income > 0) {
@@ -467,11 +568,22 @@ function pl_dash_card(data) {
     $("#perc-change-income-pl").addClass("perc_decrease");
   }
 
-  $("#direct-expense-pl").html(
-    "&#8377;&nbsp;" +
-      data.present_direct_expense.toLocaleString("hi") +
-      data.present_direct_expense_denomination
-  );
+  if (find_digits(data.present_direct_expense) > 6) {
+    $("#direct-expense-pl").html(
+      "&#8377;&nbsp;" +
+        (data.present_direct_expense / 100000).toFixed(2).toLocaleString("hi") +
+        " L"
+    );
+  } else {
+    $("#direct-expense-pl").html(
+      "&#8377;&nbsp;" +
+        Math.round(data.present_direct_expense, 0).toLocaleString("hi")
+    );
+  }
+  $("#direct-expense-pl").attr({
+    title:
+      "₹ " + Math.round(data.present_direct_expense, 0).toLocaleString("hi"),
+  });
   $("#perc-change-direct-expense-pl").removeClass("perc_increase");
   $("#perc-change-direct-expense-pl").removeClass("perc_decrease");
   if (data.perc_change_direct_expense > 0) {
@@ -489,11 +601,21 @@ function pl_dash_card(data) {
     );
     $("#perc-change-direct-expense-pl").addClass("perc_decrease");
   }
-  $("#gp-pl").html(
-    "&#8377;&nbsp;" +
-      data.present_gross_profit.toLocaleString("hi") +
-      data.present_gross_profit_denomination
-  );
+  if (find_digits(data.present_gross_profit) > 6) {
+    $("#gp-pl").html(
+      "&#8377;&nbsp;" +
+        (data.present_gross_profit / 100000).toFixed(2).toLocaleString("hi") +
+        " L"
+    );
+  } else {
+    $("#gp-pl").html(
+      "&#8377;&nbsp;" +
+        Math.round(data.present_gross_profit, 0).toLocaleString("hi")
+    );
+  }
+  $("#gp-pl").attr({
+    title: "₹ " + Math.round(data.present_gross_profit, 0).toLocaleString("hi"),
+  });
   $("#perc-change-gp-pl").removeClass("perc_increase");
   $("#perc-change-gp-pl").removeClass("perc_decrease");
   if (data.perc_change_gross_profit > 0) {
@@ -511,11 +633,24 @@ function pl_dash_card(data) {
     );
     $("#perc-change-gp-pl").addClass("perc_decrease");
   }
-  $("#indirect-expense-pl").html(
-    "&#8377;&nbsp;" +
-      data.present_indirect_expense.toLocaleString("hi") +
-      data.present_indirect_expense_denomination
-  );
+  if (find_digits(data.present_indirect_expense) > 6) {
+    $("#indirect-expense-pl").html(
+      "&#8377;&nbsp;" +
+        (data.present_indirect_expense / 100000)
+          .toFixed(2)
+          .toLocaleString("hi") +
+        " L"
+    );
+  } else {
+    $("#indirect-expense-pl").html(
+      "&#8377;&nbsp;" +
+        Math.round(data.present_indirect_expense, 0).toLocaleString("hi")
+    );
+  }
+  $("#indirect-expense-pl").attr({
+    title:
+      "₹ " + Math.round(data.present_indirect_expense, 0).toLocaleString("hi"),
+  });
   $("#perc-change-indirect-expense-pl").removeClass("perc_increase");
   $("#perc-change-indirect-expense-pl").removeClass("perc_decrease");
   if (data.perc_change_indirect_expense > 0) {
@@ -533,11 +668,21 @@ function pl_dash_card(data) {
     );
     $("#perc-change-indirect-expense-pl").addClass("perc_decrease");
   }
-  $("#np-pl").html(
-    "&#8377;&nbsp;" +
-      data.present_net_profit.toLocaleString("hi") +
-      data.present_net_profit_denomination
-  );
+  if (find_digits(data.present_net_profit) > 6) {
+    $("#np-pl").html(
+      "&#8377;&nbsp;" +
+        (data.present_net_profit / 100000).toFixed(2).toLocaleString("hi") +
+        " L"
+    );
+  } else {
+    $("#np-pl").html(
+      "&#8377;&nbsp;" +
+        Math.round(data.present_net_profit, 0).toLocaleString("hi")
+    );
+  }
+  $("#np-pl").attr({
+    title: "₹ " + Math.round(data.present_net_profit, 0).toLocaleString("hi"),
+  });
   $("#perc-change-np-pl").removeClass("perc_increase");
   $("#perc-change-np-pl").removeClass("perc_decrease");
   if (data.perc_change_net_profit > 0) {
@@ -662,15 +807,33 @@ function top_customer_dash_card(data) {
           ).toLocaleString("hi") +
           " L"
       );
+      $("#top-customer-1-amount").attr({
+        title:
+          "₹ " +
+          Math.round(data.top_customer_chart_total[0], 0).toLocaleString("hi"),
+      });
     } else {
       $("#top-customer-1-amount").html(
         "&#8377;&nbsp;" +
           Math.round(data.top_customer_chart_total[0], 0).toLocaleString("hi")
       );
+      $("#top-customer-1-amount").attr({
+        title:
+          "₹ " +
+          Math.round(data.top_customer_chart_total[0], 0).toLocaleString("hi"),
+      });
     }
     $("#top-customer-1-count").html(
       Math.round(data.top_customer_chart_count[0], 0).toLocaleString("hi")
     );
+    $("#top-customer-1-count").attr({
+      title:
+        "Average Bill Amount During the Period - ₹ " +
+        Math.round(
+          data.top_customer_chart_total[0] / data.top_customer_chart_count[0],
+          0
+        ).toLocaleString("hi"),
+    });
 
     if (find_digits(data.present_party_receivables[party]) > 6) {
       $("#top-customer-1-receivable").html(
@@ -681,6 +844,13 @@ function top_customer_dash_card(data) {
           ).toLocaleString("hi") +
           " L"
       );
+      $("#top-customer-1-receivable").attr({
+        title:
+          "₹ " +
+          Math.round(data.present_party_receivables[party], 0).toLocaleString(
+            "hi"
+          ),
+      });
     } else {
       $("#top-customer-1-receivable").html(
         "&#8377;&nbsp;" +
@@ -688,6 +858,13 @@ function top_customer_dash_card(data) {
             "hi"
           )
       );
+      $("#top-customer-1-receivable").attr({
+        title:
+          "₹ " +
+          Math.round(data.present_party_receivables[party], 0).toLocaleString(
+            "hi"
+          ),
+      });
     }
     $("#top-customer-1-receivable-perc").removeClass("perc_increase");
     $("#top-customer-1-receivable-perc").removeClass("perc_decrease");
@@ -734,15 +911,33 @@ function top_customer_dash_card(data) {
           ).toLocaleString("hi") +
           " L"
       );
+      $("#top-customer-2-amount").attr({
+        title:
+          "₹ " +
+          Math.round(data.top_customer_chart_total[1], 0).toLocaleString("hi"),
+      });
     } else {
       $("#top-customer-2-amount").html(
         "&#8377;&nbsp;" +
           Math.round(data.top_customer_chart_total[1], 0).toLocaleString("hi")
       );
+      $("#top-customer-2-amount").attr({
+        title:
+          "₹ " +
+          Math.round(data.top_customer_chart_total[1], 0).toLocaleString("hi"),
+      });
     }
     $("#top-customer-2-count").html(
       Math.round(data.top_customer_chart_count[1], 0).toLocaleString("hi")
     );
+    $("#top-customer-2-count").attr({
+      title:
+        "Average Bill Amount During the Period - ₹ " +
+        Math.round(
+          data.top_customer_chart_total[1] / data.top_customer_chart_count[1],
+          0
+        ).toLocaleString("hi"),
+    });
 
     if (find_digits(data.present_party_receivables[party]) > 6) {
       $("#top-customer-2-receivable").html(
@@ -753,6 +948,13 @@ function top_customer_dash_card(data) {
           ).toLocaleString("hi") +
           " L"
       );
+      $("#top-customer-2-receivable").attr({
+        title:
+          "₹ " +
+          Math.round(data.present_party_receivables[party], 0).toLocaleString(
+            "hi"
+          ),
+      });
     } else {
       $("#top-customer-2-receivable").html(
         "&#8377;&nbsp;" +
@@ -760,6 +962,13 @@ function top_customer_dash_card(data) {
             "hi"
           )
       );
+      $("#top-customer-2-receivable").attr({
+        title:
+          "₹ " +
+          Math.round(data.present_party_receivables[party], 0).toLocaleString(
+            "hi"
+          ),
+      });
     }
     $("#top-customer-2-receivable-perc").removeClass("perc_increase");
     $("#top-customer-2-receivable-perc").removeClass("perc_decrease");
@@ -805,15 +1014,33 @@ function top_customer_dash_card(data) {
           ).toLocaleString("hi") +
           " L"
       );
+      $("#top-customer-3-amount").attr({
+        title:
+          "₹ " +
+          Math.round(data.top_customer_chart_total[2], 0).toLocaleString("hi"),
+      });
     } else {
       $("#top-customer-3-amount").html(
         "&#8377;&nbsp;" +
           Math.round(data.top_customer_chart_total[2], 0).toLocaleString("hi")
       );
+      $("#top-customer-3-amount").attr({
+        title:
+          "₹ " +
+          Math.round(data.top_customer_chart_total[2], 0).toLocaleString("hi"),
+      });
     }
     $("#top-customer-3-count").html(
       Math.round(data.top_customer_chart_count[2], 0).toLocaleString("hi")
     );
+    $("#top-customer-3-count").attr({
+      title:
+        "Average Bill Amount During the Period - ₹ " +
+        Math.round(
+          data.top_customer_chart_total[2] / data.top_customer_chart_count[2],
+          0
+        ).toLocaleString("hi"),
+    });
 
     if (find_digits(data.present_party_receivables[party]) > 6) {
       $("#top-customer-3-receivable").html(
@@ -824,6 +1051,13 @@ function top_customer_dash_card(data) {
           ).toLocaleString("hi") +
           " L"
       );
+      $("#top-customer-3-receivable").attr({
+        title:
+          "₹ " +
+          Math.round(data.present_party_receivables[party], 0).toLocaleString(
+            "hi"
+          ),
+      });
     } else {
       $("#top-customer-3-receivable").html(
         "&#8377;&nbsp;" +
@@ -831,6 +1065,13 @@ function top_customer_dash_card(data) {
             "hi"
           )
       );
+      $("#top-customer-3-receivable").attr({
+        title:
+          "₹ " +
+          Math.round(data.present_party_receivables[party], 0).toLocaleString(
+            "hi"
+          ),
+      });
     }
     $("#top-customer-3-receivable-perc").removeClass("perc_increase");
     $("#top-customer-3-receivable-perc").removeClass("perc_decrease");
@@ -876,15 +1117,33 @@ function top_customer_dash_card(data) {
           ).toLocaleString("hi") +
           " L"
       );
+      $("#top-customer-4-amount").attr({
+        title:
+          "₹ " +
+          Math.round(data.top_customer_chart_total[3], 0).toLocaleString("hi"),
+      });
     } else {
       $("#top-customer-4-amount").html(
         "&#8377;&nbsp;" +
           Math.round(data.top_customer_chart_total[3], 0).toLocaleString("hi")
       );
+      $("#top-customer-4-amount").attr({
+        title:
+          "₹ " +
+          Math.round(data.top_customer_chart_total[3], 0).toLocaleString("hi"),
+      });
     }
     $("#top-customer-4-count").html(
       Math.round(data.top_customer_chart_count[3], 0).toLocaleString("hi")
     );
+    $("#top-customer-4-count").attr({
+      title:
+        "Average Bill Amount During the Period - ₹ " +
+        Math.round(
+          data.top_customer_chart_total[3] / data.top_customer_chart_count[3],
+          0
+        ).toLocaleString("hi"),
+    });
 
     if (find_digits(data.present_party_receivables[party]) > 6) {
       $("#top-customer-4-receivable").html(
@@ -895,6 +1154,13 @@ function top_customer_dash_card(data) {
           ).toLocaleString("hi") +
           " L"
       );
+      $("#top-customer-4-receivable").attr({
+        title:
+          "₹ " +
+          Math.round(data.present_party_receivables[party], 0).toLocaleString(
+            "hi"
+          ),
+      });
     } else {
       $("#top-customer-4-receivable").html(
         "&#8377;&nbsp;" +
@@ -902,6 +1168,13 @@ function top_customer_dash_card(data) {
             "hi"
           )
       );
+      $("#top-customer-4-receivable").attr({
+        title:
+          "₹ " +
+          Math.round(data.present_party_receivables[party], 0).toLocaleString(
+            "hi"
+          ),
+      });
     }
     $("#top-customer-4-receivable-perc").removeClass("perc_increase");
     $("#top-customer-4-receivable-perc").removeClass("perc_decrease");
@@ -947,15 +1220,33 @@ function top_customer_dash_card(data) {
           ).toLocaleString("hi") +
           " L"
       );
+      $("#top-customer-5-amount").attr({
+        title:
+          "₹ " +
+          Math.round(data.top_customer_chart_total[4], 0).toLocaleString("hi"),
+      });
     } else {
       $("#top-customer-5-amount").html(
         "&#8377;&nbsp;" +
           Math.round(data.top_customer_chart_total[4], 0).toLocaleString("hi")
       );
+      $("#top-customer-5-amount").attr({
+        title:
+          "₹ " +
+          Math.round(data.top_customer_chart_total[4], 0).toLocaleString("hi"),
+      });
     }
     $("#top-customer-5-count").html(
       Math.round(data.top_customer_chart_count[4], 0).toLocaleString("hi")
     );
+    $("#top-customer-5-count").attr({
+      title:
+        "Average Bill Amount During the Period - ₹ " +
+        Math.round(
+          data.top_customer_chart_total[4] / data.top_customer_chart_count[4],
+          0
+        ).toLocaleString("hi"),
+    });
 
     if (find_digits(data.present_party_receivables[party]) > 6) {
       $("#top-customer-5-receivable").html(
@@ -966,6 +1257,13 @@ function top_customer_dash_card(data) {
           ).toLocaleString("hi") +
           " L"
       );
+      $("#top-customer-5-receivable").attr({
+        title:
+          "₹ " +
+          Math.round(data.present_party_receivables[party], 0).toLocaleString(
+            "hi"
+          ),
+      });
     } else {
       $("#top-customer-5-receivable").html(
         "&#8377;&nbsp;" +
@@ -973,6 +1271,13 @@ function top_customer_dash_card(data) {
             "hi"
           )
       );
+      $("#top-customer-5-receivable").attr({
+        title:
+          "₹ " +
+          Math.round(data.present_party_receivables[party], 0).toLocaleString(
+            "hi"
+          ),
+      });
     }
     $("#top-customer-5-receivable-perc").removeClass("perc_increase");
     $("#top-customer-5-receivable-perc").removeClass("perc_decrease");
@@ -1013,11 +1318,19 @@ function top_customer_dash_card(data) {
         title: {
           display: false,
         },
-        tooltip: {
-          titleFont: { size: 5 },
+        tooltips: {
+          callbacks: {
+            label: (tooltipItems) => {
+              const v = tooltipItems.dataset.data[tooltipItems.dataIndex];
+              const net = v[1] - v[0];
+              return net.toLocaleString("hi");
+            },
+          },
         },
+        // tooltip: {
+        //   // titleFont: { size: 5 },
+        // },
       },
-      // borderAlign: "inner",
       cutout: 70,
     },
   });
@@ -1057,15 +1370,33 @@ function top_vendor_dash_card(data) {
           ) +
           " L"
       );
+      $("#top-vendor-1-amount").attr({
+        title:
+          "₹ " +
+          Math.round(data.top_vendor_chart_total[0], 0).toLocaleString("hi"),
+      });
     } else {
       $("#top-vendor-1-amount").html(
         "&#8377;&nbsp;" +
           Math.round(data.top_vendor_chart_total[0], 0).toLocaleString("hi")
       );
+      $("#top-vendor-1-amount").attr({
+        title:
+          "₹ " +
+          Math.round(data.top_vendor_chart_total[0], 0).toLocaleString("hi"),
+      });
     }
     $("#top-vendor-1-count").html(
       Math.round(data.top_vendor_chart_count[0], 0).toLocaleString("hi")
     );
+    $("#top-vendor-1-count").attr({
+      title:
+        "Average Bill Amount During the Period - ₹ " +
+        Math.round(
+          data.top_vendor_chart_total[0] / data.top_vendor_chart_count[0],
+          0
+        ).toLocaleString("hi"),
+    });
 
     if (find_digits(data.present_party_payables[party]) > 6) {
       $("#top-vendor-1-payable").html(
@@ -1076,11 +1407,25 @@ function top_vendor_dash_card(data) {
           ).toLocaleString("hi") +
           " L"
       );
+      $("#top-vendor-1-payable").attr({
+        title:
+          "₹ " +
+          Math.round(data.present_party_payables[party], 0).toLocaleString(
+            "hi"
+          ),
+      });
     } else {
       $("#top-vendor-1-payable").html(
         "&#8377;&nbsp;" +
           Math.round(data.present_party_payables[party], 0).toLocaleString("hi")
       );
+      $("#top-vendor-1-payable").attr({
+        title:
+          "₹ " +
+          Math.round(data.present_party_payables[party], 0).toLocaleString(
+            "hi"
+          ),
+      });
     }
     $("#top-vendor-1-payable-perc").removeClass("perc_increase");
     $("#top-vendor-1-payable-perc").removeClass("perc_decrease");
@@ -1126,15 +1471,33 @@ function top_vendor_dash_card(data) {
           ) +
           " L"
       );
+      $("#top-vendor-2-amount").attr({
+        title:
+          "₹ " +
+          Math.round(data.top_vendor_chart_total[1], 0).toLocaleString("hi"),
+      });
     } else {
       $("#top-vendor-2-amount").html(
         "&#8377;&nbsp;" +
           Math.round(data.top_vendor_chart_total[1], 0).toLocaleString("hi")
       );
+      $("#top-vendor-2-amount").attr({
+        title:
+          "₹ " +
+          Math.round(data.top_vendor_chart_total[1], 0).toLocaleString("hi"),
+      });
     }
     $("#top-vendor-2-count").html(
       Math.round(data.top_vendor_chart_count[1], 0).toLocaleString("hi")
     );
+    $("#top-vendor-2-count").attr({
+      title:
+        "Average Bill Amount During the Period - ₹ " +
+        Math.round(
+          data.top_vendor_chart_total[1] / data.top_vendor_chart_count[1],
+          0
+        ).toLocaleString("hi"),
+    });
 
     if (find_digits(data.present_party_payables[party]) > 6) {
       $("#top-vendor-2-payable").html(
@@ -1145,11 +1508,25 @@ function top_vendor_dash_card(data) {
           ).toLocaleString("hi") +
           " L"
       );
+      $("#top-vendor-2-payable").attr({
+        title:
+          "₹ " +
+          Math.round(data.present_party_payables[party], 0).toLocaleString(
+            "hi"
+          ),
+      });
     } else {
       $("#top-vendor-2-payable").html(
         "&#8377;&nbsp;" +
           Math.round(data.present_party_payables[party], 0).toLocaleString("hi")
       );
+      $("#top-vendor-2-payable").attr({
+        title:
+          "₹ " +
+          Math.round(data.present_party_payables[party], 0).toLocaleString(
+            "hi"
+          ),
+      });
     }
     $("#top-vendor-2-payable-perc").removeClass("perc_increase");
     $("#top-vendor-2-payable-perc").removeClass("perc_decrease");
@@ -1194,15 +1571,33 @@ function top_vendor_dash_card(data) {
           ) +
           " L"
       );
+      $("#top-vendor-3-amount").attr({
+        title:
+          "₹ " +
+          Math.round(data.top_vendor_chart_total[2], 0).toLocaleString("hi"),
+      });
     } else {
       $("#top-vendor-3-amount").html(
         "&#8377;&nbsp;" +
           Math.round(data.top_vendor_chart_total[2], 0).toLocaleString("hi")
       );
+      $("#top-vendor-3-amount").attr({
+        title:
+          "₹ " +
+          Math.round(data.top_vendor_chart_total[2], 0).toLocaleString("hi"),
+      });
     }
     $("#top-vendor-3-count").html(
       Math.round(data.top_vendor_chart_count[2], 0).toLocaleString("hi")
     );
+    $("#top-vendor-3-count").attr({
+      title:
+        "Average Bill Amount During the Period - ₹ " +
+        Math.round(
+          data.top_vendor_chart_total[2] / data.top_vendor_chart_count[2],
+          0
+        ).toLocaleString("hi"),
+    });
 
     if (find_digits(data.present_party_payables[party]) > 6) {
       $("#top-vendor-3-payable").html(
@@ -1213,11 +1608,25 @@ function top_vendor_dash_card(data) {
           ).toLocaleString("hi") +
           " L"
       );
+      $("#top-vendor-3-payable").attr({
+        title:
+          "₹ " +
+          Math.round(data.present_party_payables[party], 0).toLocaleString(
+            "hi"
+          ),
+      });
     } else {
       $("#top-vendor-3-payable").html(
         "&#8377;&nbsp;" +
           Math.round(data.present_party_payables[party], 0).toLocaleString("hi")
       );
+      $("#top-vendor-3-payable").attr({
+        title:
+          "₹ " +
+          Math.round(data.present_party_payables[party], 0).toLocaleString(
+            "hi"
+          ),
+      });
     }
     $("#top-vendor-3-payable-perc").removeClass("perc_increase");
     $("#top-vendor-3-payable-perc").removeClass("perc_decrease");
@@ -1262,15 +1671,33 @@ function top_vendor_dash_card(data) {
           ) +
           " L"
       );
+      $("#top-vendor-4-amount").attr({
+        title:
+          "₹ " +
+          Math.round(data.top_vendor_chart_total[3], 0).toLocaleString("hi"),
+      });
     } else {
       $("#top-vendor-4-amount").html(
         "&#8377;&nbsp;" +
           Math.round(data.top_vendor_chart_total[3], 0).toLocaleString("hi")
       );
+      $("#top-vendor-4-amount").attr({
+        title:
+          "₹ " +
+          Math.round(data.top_vendor_chart_total[3], 0).toLocaleString("hi"),
+      });
     }
     $("#top-vendor-4-count").html(
       Math.round(data.top_vendor_chart_count[3], 0).toLocaleString("hi")
     );
+    $("#top-vendor-4-count").attr({
+      title:
+        "Average Bill Amount During the Period - ₹ " +
+        Math.round(
+          data.top_vendor_chart_total[3] / data.top_vendor_chart_count[3],
+          0
+        ).toLocaleString("hi"),
+    });
 
     if (find_digits(data.present_party_payables[party]) > 6) {
       $("#top-vendor-4-payable").html(
@@ -1281,11 +1708,25 @@ function top_vendor_dash_card(data) {
           ).toLocaleString("hi") +
           " L"
       );
+      $("#top-vendor-4-payable").attr({
+        title:
+          "₹ " +
+          Math.round(data.present_party_payables[party], 0).toLocaleString(
+            "hi"
+          ),
+      });
     } else {
       $("#top-vendor-4-payable").html(
         "&#8377;&nbsp;" +
           Math.round(data.present_party_payables[party], 0).toLocaleString("hi")
       );
+      $("#top-vendor-4-payable").attr({
+        title:
+          "₹ " +
+          Math.round(data.present_party_payables[party], 0).toLocaleString(
+            "hi"
+          ),
+      });
     }
     $("#top-vendor-4-payable-perc").removeClass("perc_increase");
     $("#top-vendor-4-payable-perc").removeClass("perc_decrease");
@@ -1330,15 +1771,33 @@ function top_vendor_dash_card(data) {
           ) +
           " L"
       );
+      $("#top-vendor-5-amount").attr({
+        title:
+          "₹ " +
+          Math.round(data.top_vendor_chart_total[4], 0).toLocaleString("hi"),
+      });
     } else {
       $("#top-vendor-5-amount").html(
         "&#8377;&nbsp;" +
           Math.round(data.top_vendor_chart_total[4], 0).toLocaleString("hi")
       );
+      $("#top-vendor-5-amount").attr({
+        title:
+          "₹ " +
+          Math.round(data.top_vendor_chart_total[4], 0).toLocaleString("hi"),
+      });
     }
     $("#top-vendor-5-count").html(
       Math.round(data.top_vendor_chart_count[4], 0).toLocaleString("hi")
     );
+    $("#top-vendor-5-count").attr({
+      title:
+        "Average Bill Amount During the Period - ₹ " +
+        Math.round(
+          data.top_vendor_chart_total[4] / data.top_vendor_chart_count[4],
+          0
+        ).toLocaleString("hi"),
+    });
 
     if (find_digits(data.present_party_payables[party]) > 6) {
       $("#top-vendor-5-payable").html(
@@ -1349,11 +1808,25 @@ function top_vendor_dash_card(data) {
           ).toLocaleString("hi") +
           " L"
       );
+      $("#top-vendor-5-payable").attr({
+        title:
+          "₹ " +
+          Math.round(data.present_party_payables[party], 0).toLocaleString(
+            "hi"
+          ),
+      });
     } else {
       $("#top-vendor-5-payable").html(
         "&#8377;&nbsp;" +
           Math.round(data.present_party_payables[party], 0).toLocaleString("hi")
       );
+      $("#top-vendor-5-payable").attr({
+        title:
+          "₹ " +
+          Math.round(data.present_party_payables[party], 0).toLocaleString(
+            "hi"
+          ),
+      });
     }
     $("#top-vendor-5-payable-perc").removeClass("perc_increase");
     $("#top-vendor-5-payable-perc").removeClass("perc_decrease");
@@ -1457,11 +1930,21 @@ function top_income_ledgers_dash_card(data) {
           ).toLocaleString("hi") +
           " L"
       );
+      $("#top-income-ledger-1-amount").attr({
+        title:
+          "₹ " +
+          Math.round(data.income_ledgers_chart_data[0], 0).toLocaleString("hi"),
+      });
     } else {
       $("#top-income-ledger-1-amount").html(
         "&#8377;&nbsp;" +
           Math.round(data.income_ledgers_chart_data[0], 0).toLocaleString("hi")
       );
+      $("#top-income-ledger-1-amount").attr({
+        title:
+          "₹ " +
+          Math.round(data.income_ledgers_chart_data[0], 0).toLocaleString("hi"),
+      });
     }
     $("#top-income-ledger-1-perc").removeClass("perc_increase");
     $("#top-income-ledger-1-perc").removeClass("perc_decrease");
@@ -1508,11 +1991,21 @@ function top_income_ledgers_dash_card(data) {
           ).toLocaleString("hi") +
           " L"
       );
+      $("#top-income-ledger-2-amount").attr({
+        title:
+          "₹ " +
+          Math.round(data.income_ledgers_chart_data[1], 0).toLocaleString("hi"),
+      });
     } else {
       $("#top-income-ledger-2-amount").html(
         "&#8377;&nbsp;" +
           Math.round(data.income_ledgers_chart_data[1], 0).toLocaleString("hi")
       );
+      $("#top-income-ledger-2-amount").attr({
+        title:
+          "₹ " +
+          Math.round(data.income_ledgers_chart_data[1], 0).toLocaleString("hi"),
+      });
     }
     $("#top-income-ledger-2-perc").removeClass("perc_increase");
     $("#top-income-ledger-2-perc").removeClass("perc_decrease");
@@ -1558,11 +2051,21 @@ function top_income_ledgers_dash_card(data) {
           ).toLocaleString("hi") +
           " L"
       );
+      $("#top-income-ledger-3-amount").attr({
+        title:
+          "₹ " +
+          Math.round(data.income_ledgers_chart_data[2], 0).toLocaleString("hi"),
+      });
     } else {
       $("#top-income-ledger-3-amount").html(
         "&#8377;&nbsp;" +
           Math.round(data.income_ledgers_chart_data[2], 0).toLocaleString("hi")
       );
+      $("#top-income-ledger-3-amount").attr({
+        title:
+          "₹ " +
+          Math.round(data.income_ledgers_chart_data[2], 0).toLocaleString("hi"),
+      });
     }
     $("#top-income-ledger-3-perc").removeClass("perc_increase");
     $("#top-income-ledger-3-perc").removeClass("perc_decrease");
@@ -1608,11 +2111,21 @@ function top_income_ledgers_dash_card(data) {
           ).toLocaleString("hi") +
           " L"
       );
+      $("#top-income-ledger-4-amount").attr({
+        title:
+          "₹ " +
+          Math.round(data.income_ledgers_chart_data[3], 0).toLocaleString("hi"),
+      });
     } else {
       $("#top-income-ledger-4-amount").html(
         "&#8377;&nbsp;" +
           Math.round(data.income_ledgers_chart_data[3], 0).toLocaleString("hi")
       );
+      $("#top-income-ledger-4-amount").attr({
+        title:
+          "₹ " +
+          Math.round(data.income_ledgers_chart_data[3], 0).toLocaleString("hi"),
+      });
     }
     $("#top-income-ledger-4-perc").removeClass("perc_increase");
     $("#top-income-ledger-4-perc").removeClass("perc_decrease");
@@ -1658,11 +2171,21 @@ function top_income_ledgers_dash_card(data) {
           ).toLocaleString("hi") +
           " L"
       );
+      $("#top-income-ledger-5-amount").attr({
+        title:
+          "₹ " +
+          Math.round(data.income_ledgers_chart_data[4], 0).toLocaleString("hi"),
+      });
     } else {
       $("#top-income-ledger-5-amount").html(
         "&#8377;&nbsp;" +
           Math.round(data.income_ledgers_chart_data[4], 0).toLocaleString("hi")
       );
+      $("#top-income-ledger-5-amount").attr({
+        title:
+          "₹ " +
+          Math.round(data.income_ledgers_chart_data[4], 0).toLocaleString("hi"),
+      });
     }
     $("#top-income-ledger-5-perc").removeClass("perc_increase");
     $("#top-income-ledger-5-perc").removeClass("perc_decrease");
@@ -1703,6 +2226,14 @@ function top_income_ledgers_dash_card(data) {
       },
       plugins: {
         legend: false,
+        tooltip: {
+          callbacks: {
+            label: (tooltipItems) => {
+              const v = tooltipItems.dataset.data[tooltipItems.dataIndex];
+              return v.toLocaleString("hi");
+            },
+          },
+        },
       },
     },
   });
@@ -1743,11 +2274,25 @@ function top_expense_ledgers_dash_card(data) {
           ).toLocaleString("hi") +
           " L"
       );
+      $("#top-expense-ledger-1-amount").attr({
+        title:
+          "₹ " +
+          Math.round(data.expense_ledgers_chart_data[0], 0).toLocaleString(
+            "hi"
+          ),
+      });
     } else {
       $("#top-expense-ledger-1-amount").html(
         "&#8377;&nbsp;" +
           Math.round(data.expense_ledgers_chart_data[0], 0).toLocaleString("hi")
       );
+      $("#top-expense-ledger-1-amount").attr({
+        title:
+          "₹ " +
+          Math.round(data.expense_ledgers_chart_data[0], 0).toLocaleString(
+            "hi"
+          ),
+      });
     }
     $("#top-expense-ledger-1-perc").removeClass("perc_increase");
     $("#top-expense-ledger-1-perc").removeClass("perc_decrease");
@@ -1794,11 +2339,25 @@ function top_expense_ledgers_dash_card(data) {
           ).toLocaleString("hi") +
           " L"
       );
+      $("#top-expense-ledger-2-amount").attr({
+        title:
+          "₹ " +
+          Math.round(data.expense_ledgers_chart_data[1], 0).toLocaleString(
+            "hi"
+          ),
+      });
     } else {
       $("#top-expense-ledger-2-amount").html(
         "&#8377;&nbsp;" +
           Math.round(data.expense_ledgers_chart_data[1], 0).toLocaleString("hi")
       );
+      $("#top-expense-ledger-2-amount").attr({
+        title:
+          "₹ " +
+          Math.round(data.expense_ledgers_chart_data[1], 0).toLocaleString(
+            "hi"
+          ),
+      });
     }
     $("#top-expense-ledger-2-perc").removeClass("perc_increase");
     $("#top-expense-ledger-2-perc").removeClass("perc_decrease");
@@ -1844,11 +2403,25 @@ function top_expense_ledgers_dash_card(data) {
           ).toLocaleString("hi") +
           " L"
       );
+      $("#top-expense-ledger-3-amount").attr({
+        title:
+          "₹ " +
+          Math.round(data.expense_ledgers_chart_data[2], 0).toLocaleString(
+            "hi"
+          ),
+      });
     } else {
       $("#top-expense-ledger-3-amount").html(
         "&#8377;&nbsp;" +
           Math.round(data.expense_ledgers_chart_data[2], 0).toLocaleString("hi")
       );
+      $("#top-expense-ledger-3-amount").attr({
+        title:
+          "₹ " +
+          Math.round(data.expense_ledgers_chart_data[2], 0).toLocaleString(
+            "hi"
+          ),
+      });
     }
     $("#top-expense-ledger-3-perc").removeClass("perc_increase");
     $("#top-expense-ledger-3-perc").removeClass("perc_decrease");
@@ -1894,11 +2467,25 @@ function top_expense_ledgers_dash_card(data) {
           ).toLocaleString("hi") +
           " L"
       );
+      $("#top-expense-ledger-4-amount").attr({
+        title:
+          "₹ " +
+          Math.round(data.expense_ledgers_chart_data[3], 0).toLocaleString(
+            "hi"
+          ),
+      });
     } else {
       $("#top-expense-ledger-4-amount").html(
         "&#8377;&nbsp;" +
           Math.round(data.expense_ledgers_chart_data[3], 0).toLocaleString("hi")
       );
+      $("#top-expense-ledger-4-amount").attr({
+        title:
+          "₹ " +
+          Math.round(data.expense_ledgers_chart_data[3], 0).toLocaleString(
+            "hi"
+          ),
+      });
     }
     $("#top-expense-ledger-4-perc").removeClass("perc_increase");
     $("#top-expense-ledger-4-perc").removeClass("perc_decrease");
@@ -1944,11 +2531,25 @@ function top_expense_ledgers_dash_card(data) {
           ).toLocaleString("hi") +
           " L"
       );
+      $("#top-expense-ledger-5-amount").attr({
+        title:
+          "₹ " +
+          Math.round(data.expense_ledgers_chart_data[4], 0).toLocaleString(
+            "hi"
+          ),
+      });
     } else {
       $("#top-expense-ledger-5-amount").html(
         "&#8377;&nbsp;" +
           Math.round(data.expense_ledgers_chart_data[4], 0).toLocaleString("hi")
       );
+      $("#top-expense-ledger-5-amount").attr({
+        title:
+          "₹ " +
+          Math.round(data.expense_ledgers_chart_data[4], 0).toLocaleString(
+            "hi"
+          ),
+      });
     }
     $("#top-expense-ledger-5-perc").removeClass("perc_increase");
     $("#top-expense-ledger-5-perc").removeClass("perc_decrease");
@@ -1990,6 +2591,14 @@ function top_expense_ledgers_dash_card(data) {
         },
         title: {
           display: false,
+        },
+        tooltip: {
+          callbacks: {
+            label: (tooltipItems) => {
+              const v = tooltipItems.dataset.data[tooltipItems.dataIndex];
+              return v.toLocaleString("hi");
+            },
+          },
         },
       },
       scales: {
@@ -2036,11 +2645,21 @@ function ageing_dash_card(data) {
         ) +
         " L"
     );
+    $("#ageing-1-amount-drs").attr({
+      title:
+        "₹ " +
+        Math.round(data.receivable_ageing_value[0], 0).toLocaleString("hi"),
+    });
   } else {
     $("#ageing-1-amount-drs").html(
       "&#8377;&nbsp;" +
         Math.round(data.receivable_ageing_value[0], 0).toLocaleString("hi")
     );
+    $("#ageing-1-amount-drs").attr({
+      title:
+        "₹ " +
+        Math.round(data.receivable_ageing_value[0], 0).toLocaleString("hi"),
+    });
   }
   $("#ageing-1-count-drs").html(
     Math.round(data.receivable_ageing_count[0], 0).toLocaleString("hi")
@@ -2054,11 +2673,19 @@ function ageing_dash_card(data) {
         ) +
         " L"
     );
+    $("#ageing-1-amount-crs").attr({
+      title:
+        "₹ " + Math.round(data.payable_ageing_value[0], 0).toLocaleString("hi"),
+    });
   } else {
     $("#ageing-1-amount-crs").html(
       "&#8377;&nbsp;" +
         Math.round(data.payable_ageing_value[0], 0).toLocaleString("hi")
     );
+    $("#ageing-1-amount-crs").attr({
+      title:
+        "₹ " + Math.round(data.payable_ageing_value[0], 0).toLocaleString("hi"),
+    });
   }
   $("#ageing-1-count-crs").html(
     Math.round(data.payable_ageing_count[0], 0).toLocaleString("hi")
@@ -2072,11 +2699,21 @@ function ageing_dash_card(data) {
         ) +
         " L"
     );
+    $("#ageing-2-amount-drs").attr({
+      title:
+        "₹ " +
+        Math.round(data.receivable_ageing_value[1], 0).toLocaleString("hi"),
+    });
   } else {
     $("#ageing-2-amount-drs").html(
       "&#8377;&nbsp;" +
         Math.round(data.receivable_ageing_value[1], 0).toLocaleString("hi")
     );
+    $("#ageing-2-amount-drs").attr({
+      title:
+        "₹ " +
+        Math.round(data.receivable_ageing_value[1], 0).toLocaleString("hi"),
+    });
   }
   $("#ageing-2-count-drs").html(
     Math.round(data.receivable_ageing_count[1], 0).toLocaleString("hi")
@@ -2090,11 +2727,19 @@ function ageing_dash_card(data) {
         ) +
         " L"
     );
+    $("#ageing-2-amount-crs").attr({
+      title:
+        "₹ " + Math.round(data.payable_ageing_value[1], 0).toLocaleString("hi"),
+    });
   } else {
     $("#ageing-2-amount-crs").html(
       "&#8377;&nbsp;" +
         Math.round(data.payable_ageing_value[1], 0).toLocaleString("hi")
     );
+    $("#ageing-2-amount-crs").attr({
+      title:
+        "₹ " + Math.round(data.payable_ageing_value[1], 0).toLocaleString("hi"),
+    });
   }
   $("#ageing-2-count-crs").html(
     Math.round(data.payable_ageing_count[1], 0).toLocaleString("hi")
@@ -2108,16 +2753,25 @@ function ageing_dash_card(data) {
         ) +
         " L"
     );
+    $("#ageing-3-amount-drs").attr({
+      title:
+        "₹ " +
+        Math.round(data.receivable_ageing_value[2], 0).toLocaleString("hi"),
+    });
   } else {
     $("#ageing-3-amount-drs").html(
       "&#8377;&nbsp;" +
         Math.round(data.receivable_ageing_value[2], 0).toLocaleString("hi")
     );
+    $("#ageing-3-amount-drs").attr({
+      title:
+        "₹ " +
+        Math.round(data.receivable_ageing_value[2], 0).toLocaleString("hi"),
+    });
   }
   $("#ageing-3-count-drs").html(
     Math.round(data.receivable_ageing_count[2], 0).toLocaleString("hi")
   );
-
   if (find_digits(data.payable_ageing_value[2]) > 6) {
     $("#ageing-3-amount-crs").html(
       "&#8377;&nbsp;" +
@@ -2126,11 +2780,19 @@ function ageing_dash_card(data) {
         ) +
         " L"
     );
+    $("#ageing-3-amount-crs").attr({
+      title:
+        "₹ " + Math.round(data.payable_ageing_value[2], 0).toLocaleString("hi"),
+    });
   } else {
     $("#ageing-3-amount-crs").html(
       "&#8377;&nbsp;" +
         Math.round(data.payable_ageing_value[2], 0).toLocaleString("hi")
     );
+    $("#ageing-3-amount-crs").attr({
+      title:
+        "₹ " + Math.round(data.payable_ageing_value[2], 0).toLocaleString("hi"),
+    });
   }
   $("#ageing-3-count-crs").html(
     Math.round(data.payable_ageing_count[2], 0).toLocaleString("hi")
@@ -2144,11 +2806,21 @@ function ageing_dash_card(data) {
         ) +
         " L"
     );
+    $("#ageing-4-amount-drs").attr({
+      title:
+        "₹ " +
+        Math.round(data.receivable_ageing_value[3], 0).toLocaleString("hi"),
+    });
   } else {
     $("#ageing-4-amount-drs").html(
       "&#8377;&nbsp;" +
         Math.round(data.receivable_ageing_value[3], 0).toLocaleString("hi")
     );
+    $("#ageing-4-amount-drs").attr({
+      title:
+        "₹ " +
+        Math.round(data.receivable_ageing_value[3], 0).toLocaleString("hi"),
+    });
   }
   $("#ageing-4-count-drs").html(
     Math.round(data.receivable_ageing_count[3], 0).toLocaleString("hi")
@@ -2162,11 +2834,19 @@ function ageing_dash_card(data) {
         ) +
         " L"
     );
+    $("#ageing-4-amount-crs").attr({
+      title:
+        "₹ " + Math.round(data.payable_ageing_value[3], 0).toLocaleString("hi"),
+    });
   } else {
     $("#ageing-4-amount-crs").html(
       "&#8377;&nbsp;" +
         Math.round(data.payable_ageing_value[3], 0).toLocaleString("hi")
     );
+    $("#ageing-4-amount-crs").attr({
+      title:
+        "₹ " + Math.round(data.payable_ageing_value[3], 0).toLocaleString("hi"),
+    });
   }
   $("#ageing-4-count-crs").html(
     Math.round(data.payable_ageing_count[3], 0).toLocaleString("hi")
@@ -2180,11 +2860,21 @@ function ageing_dash_card(data) {
         ) +
         " L"
     );
+    $("#ageing-5-amount-drs").attr({
+      title:
+        "₹ " +
+        Math.round(data.receivable_ageing_value[4], 0).toLocaleString("hi"),
+    });
   } else {
     $("#ageing-5-amount-drs").html(
       "&#8377;&nbsp;" +
         Math.round(data.receivable_ageing_value[4], 0).toLocaleString("hi")
     );
+    $("#ageing-5-amount-drs").attr({
+      title:
+        "₹ " +
+        Math.round(data.receivable_ageing_value[4], 0).toLocaleString("hi"),
+    });
   }
   $("#ageing-5-count-drs").html(
     Math.round(data.receivable_ageing_count[4], 0).toLocaleString("hi")
@@ -2198,11 +2888,19 @@ function ageing_dash_card(data) {
         ) +
         " L"
     );
+    $("#ageing-5-amount-crs").attr({
+      title:
+        "₹ " + Math.round(data.payable_ageing_value[4], 0).toLocaleString("hi"),
+    });
   } else {
     $("#ageing-5-amount-crs").html(
       "&#8377;&nbsp;" +
         Math.round(data.payable_ageing_value[4], 0).toLocaleString("hi")
     );
+    $("#ageing-5-amount-crs").attr({
+      title:
+        "₹ " + Math.round(data.payable_ageing_value[4], 0).toLocaleString("hi"),
+    });
   }
   $("#ageing-5-count-crs").html(
     Math.round(data.payable_ageing_count[4], 0).toLocaleString("hi")
@@ -2235,6 +2933,14 @@ function ageing_dash_card(data) {
         },
         title: {
           display: false,
+        },
+        tooltip: {
+          callbacks: {
+            label: (tooltipItems) => {
+              const v = tooltipItems.dataset.data[tooltipItems.dataIndex];
+              return v.toLocaleString("hi");
+            },
+          },
         },
       },
       scales: {
@@ -2326,6 +3032,16 @@ function rec_pay_dash_card(data) {
       },
       plugins: {
         legend: false,
+        tooltip: {
+          callbacks: {
+            label: (tooltipItems) => {
+              const v = tooltipItems.dataset.data[tooltipItems.dataIndex];
+              return (
+                tooltipItems.dataset.label + " - " + v.toLocaleString("hi")
+              );
+            },
+          },
+        },
       },
       scales: {
         x: {
@@ -2397,11 +3113,21 @@ function cc_dash_card(data) {
           ) +
           " L"
       );
+      $("#top-cc-1-amount").attr({
+        title:
+          "₹ " +
+          Math.round(data.cc_category_chart_data[0], 0).toLocaleString("hi"),
+      });
     } else {
       $("#top-cc-1-amount").html(
         "&#8377;&nbsp;" +
           Math.round(data.cc_category_chart_data[0], 0).toLocaleString("hi")
       );
+      $("#top-cc-1-amount").attr({
+        title:
+          "₹ " +
+          Math.round(data.cc_category_chart_data[0], 0).toLocaleString("hi"),
+      });
     }
     $("#top-cc-1-perc").removeClass("perc_increase");
     $("#top-cc-1-perc").removeClass("perc_decrease");
@@ -2449,11 +3175,21 @@ function cc_dash_card(data) {
           ) +
           " L"
       );
+      $("#top-cc-2-amount").attr({
+        title:
+          "₹ " +
+          Math.round(data.cc_category_chart_data[1], 0).toLocaleString("hi"),
+      });
     } else {
       $("#top-cc-2-amount").html(
         "&#8377;&nbsp;" +
           Math.round(data.cc_category_chart_data[1], 0).toLocaleString("hi")
       );
+      $("#top-cc-2-amount").attr({
+        title:
+          "₹ " +
+          Math.round(data.cc_category_chart_data[1], 0).toLocaleString("hi"),
+      });
     }
     $("#top-cc-2-perc").removeClass("perc_increase");
     $("#top-cc-2-perc").removeClass("perc_decrease");
@@ -2500,11 +3236,21 @@ function cc_dash_card(data) {
           ) +
           " L"
       );
+      $("#top-cc-3-amount").attr({
+        title:
+          "₹ " +
+          Math.round(data.cc_category_chart_data[2], 0).toLocaleString("hi"),
+      });
     } else {
       $("#top-cc-3-amount").html(
         "&#8377;&nbsp;" +
           Math.round(data.cc_category_chart_data[2], 0).toLocaleString("hi")
       );
+      $("#top-cc-3-amount").attr({
+        title:
+          "₹ " +
+          Math.round(data.cc_category_chart_data[2], 0).toLocaleString("hi"),
+      });
     }
     $("#top-cc-3-perc").removeClass("perc_increase");
     $("#top-cc-3-perc").removeClass("perc_decrease");
@@ -2551,11 +3297,21 @@ function cc_dash_card(data) {
           ) +
           " L"
       );
+      $("#top-cc-4-amount").attr({
+        title:
+          "₹ " +
+          Math.round(data.cc_category_chart_data[3], 0).toLocaleString("hi"),
+      });
     } else {
       $("#top-cc-4-amount").html(
         "&#8377;&nbsp;" +
           Math.round(data.cc_category_chart_data[3], 0).toLocaleString("hi")
       );
+      $("#top-cc-4-amount").attr({
+        title:
+          "₹ " +
+          Math.round(data.cc_category_chart_data[3], 0).toLocaleString("hi"),
+      });
     }
     $("#top-cc-4-perc").removeClass("perc_increase");
     $("#top-cc-4-perc").removeClass("perc_decrease");
@@ -2602,11 +3358,21 @@ function cc_dash_card(data) {
           ) +
           " L"
       );
+      $("#top-cc-5-amount").attr({
+        title:
+          "₹ " +
+          Math.round(data.cc_category_chart_data[4], 0).toLocaleString("hi"),
+      });
     } else {
       $("#top-cc-5-amount").html(
         "&#8377;&nbsp;" +
           Math.round(data.cc_category_chart_data[4], 0).toLocaleString("hi")
       );
+      $("#top-cc-5-amount").attr({
+        title:
+          "₹ " +
+          Math.round(data.cc_category_chart_data[4], 0).toLocaleString("hi"),
+      });
     }
     $("#top-cc-5-perc").removeClass("perc_increase");
     $("#top-cc-5-perc").removeClass("perc_decrease");
@@ -2644,9 +3410,120 @@ function cc_dash_card(data) {
         display: false,
       },
       plugins: {
-        dataLabels: false,
+        dataLabels: true,
         legend: false,
       },
     },
   });
+}
+
+// Update Financial Ratios:
+function ratios(data) {
+  //Current Ratio
+  $("#current-ratio-value").remove();
+  $("#current-ratio-value-div").append(
+    '<div id="current-ratio-value" class="align-self-center px-2"></div>'
+  );
+  $("#current-ratio-value").html(data.current_ratio);
+
+  $("#current-ratio-progress").remove();
+  $("#current-ratio-progress-div").append(
+    '<div class="progress-bar first_value" id="current-ratio-progress" role="progressbar" aria-valuemin="0" aria-valuemax="100"></div>'
+  );
+  $("#current-ratio-progress-div").attr({
+    title: "The Bar represents a value of 2 which is the ideal number",
+  });
+  $("#current-ratio-progress").css(
+    "width",
+    (data.current_ratio_perc * 100).toString() + "%"
+  );
+  $("#current-ratio-progress").attr({
+    "aria-valuenow": data.current_ratio_perc,
+  });
+  //Cash Ratio
+  $("#cash-ratio-value").remove();
+  $("#cash-ratio-value-div").append(
+    '<div id="cash-ratio-value" class="align-self-center px-2"></div>'
+  );
+  $("#cash-ratio-value").html(data.cash_ratio);
+
+  $("#cash-ratio-progress").remove();
+  $("#cash-ratio-progress-div").append(
+    '<div class="progress-bar second_value" id="cash-ratio-progress" role="progressbar" aria-valuemin="0" aria-valuemax="100"></div>'
+  );
+  $("#cash-ratio-progress-div").attr({
+    title: "The Bar represents a value of 1 which is the ideal number",
+  });
+  $("#cash-ratio-progress").css(
+    "width",
+    (data.cash_ratio_perc * 100).toString() + "%"
+  );
+  $("#cash-ratio-progress").attr({
+    "aria-valuenow": data.cash_ratio_perc,
+  });
+  //Gross Profit Margin Ratio
+  $("#gp-ratio-value").remove();
+  $("#gp-ratio-value-div").append(
+    '<div id="gp-ratio-value" class="align-self-center px-2"></div>'
+  );
+  $("#gp-ratio-value").html(
+    ((data.present_gross_profit / data.present_income) * 100)
+      .toFixed(2)
+      .toString() + "%"
+  );
+
+  $("#gp-ratio-progress").remove();
+  $("#gp-ratio-progress-div").append(
+    '<div class="progress-bar fourth_value" id="gp-ratio-progress" role="progressbar" aria-valuemin="0" aria-valuemax="100"></div>'
+  );
+  $("#gp-ratio-progress-div").attr({
+    title: "The Bar represents a value of 100%",
+  });
+  $("#gp-ratio-progress").css(
+    "width",
+    ((data.present_gross_profit / data.present_income) * 100)
+      .toFixed(2)
+      .toString() + "%"
+  );
+  $("#gp-ratio-progress").attr({
+    "aria-valuenow": (
+      (data.present_gross_profit / data.present_income) *
+      100
+    ).toFixed(2),
+  });
+  //Net Profit Margin Ratio
+  $("#np-ratio-value").remove();
+  $("#np-ratio-value-div").append(
+    '<div id="np-ratio-value" class="align-self-center px-2"></div>'
+  );
+  $("#np-ratio-value").html(
+    ((data.present_net_profit / data.present_income) * 100)
+      .toFixed(2)
+      .toString() + "%"
+  );
+
+  $("#np-ratio-progress").remove();
+  $("#np-ratio-progress-div").append(
+    '<div class="progress-bar fifth_value" id="np-ratio-progress" role="progressbar" aria-valuemin="0" aria-valuemax="100"></div>'
+  );
+  $("#np-ratio-progress-div").attr({
+    title: "The Bar represents a value of 100%",
+  });
+  $("#np-ratio-progress").css(
+    "width",
+    ((data.present_net_profit / data.present_income) * 100)
+      .toFixed(2)
+      .toString() + "%"
+  );
+  $("#np-ratio-progress").attr({
+    "aria-valuenow": (
+      (data.present_net_profit / data.present_income) *
+      100
+    ).toFixed(2),
+  });
+
+  $(".first_value").css("background", custom_colors[0]);
+  $(".second_value").css("background", custom_colors[1]);
+  $(".fourth_value").css("background", custom_colors[3]);
+  $(".fifth_value").css("background", custom_colors[4]);
 }

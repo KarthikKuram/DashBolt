@@ -25,6 +25,7 @@ class CustomUserManager(BaseUserManager):
         extra_fields.setdefault('is_active',True)
         extra_fields.setdefault('is_staff',False)
         extra_fields.setdefault('access',False)
+        extra_fields.setdefault('org_admin',False)
         return self._create_user(email, password, **extra_fields)
     
     
@@ -33,6 +34,7 @@ class CustomUserManager(BaseUserManager):
         extra_fields.setdefault('is_superuser',True)
         extra_fields.setdefault('is_active',True)
         extra_fields.setdefault('access',True)
+        extra_fields.setdefault('org_admin',True)
         organization = Organization(
             name = "Optimalytics Business Solutions Private Limited"
         )
@@ -50,6 +52,9 @@ class CustomUserManager(BaseUserManager):
         
         if extra_fields.get('access') is not True:
             raise ValueError(_('Superuser must have access=True'))
+        
+        if extra_fields.get('org_admin') is not True:
+            raise ValueError(_('Superuser must have org_admin=True'))
         
         return self._create_user(email, password, **extra_fields)
         

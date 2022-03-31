@@ -7,6 +7,7 @@ class Tally_Detail(models.Model):
     tally_begin_date = models.DateField()
     tally_port = models.IntegerField(default=9000)
     organization = models.ForeignKey('users.Organization', related_name='tally_organization',on_delete=models.CASCADE,blank=True)
+    valid_users = models.ManyToManyField('users.User',blank=True)
     account_id = models.EmailField(max_length=254,help_text="Registered AccountID of Tally")
     computer_name = models.CharField(max_length=255,help_text="Name of the computer where tdl and tally is running. Please see system settings to get computer name.")
     

@@ -31,6 +31,7 @@
                         <th scope="col" >Tally Running Port</th>
                         <th scope="col" >Tally Account ID</th>
                         <th scope="col" >Computer Name</th>
+                        <th scope="col" >Users</th>
                         <th scope="col" class = 'text-center align-middle'>Edit</th>
                         <th scope="col" class = 'text-center align-middle'>Delete</th>
                     </tr>
@@ -43,6 +44,7 @@
                         <td class="align-start">{{detail.tally_port}}</td>
                         <td class="align-start">{{detail.account_id}}</td>
                         <td class="align-start">{{detail.computer_name}}</td>
+                        <td class="align-start"><a href="{% url 'valid_users' detail.pk %}">Access List</a></td>
                         <td class = 'text-center align-middle'>
                             <a href="{% url 'update_tally_settings' detail.pk %}"><span class="material-icons align-middle">edit</span></a>
                         </td>

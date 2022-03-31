@@ -1,0 +1,78 @@
+{% extends 'dashboard/base.html' %}
+{% load static %} 
+{% load widget_tweaks %}
+{% load crispy_forms_tags %} 
+{%block dashboard %}
+<div class="row m-1">
+  <div class="col-4 offset-3">
+    <div class="m-1" style="border: 1px solid lightgrey; border-radius:27px;background:#f8f9fa">
+      <h3 class="my-3 text-center">User Access Settings</h3>
+      <form class="align-middle" method="post">
+        {% csrf_token %} 
+        {% if form.non_field_errors %}
+          <div class="m-3">
+            {% for error in form.non_field_errors %}
+              <div class="alert alert-danger form-control" role="alert" style="font-size: 12px">
+                {{error}}
+              </div>
+            {% endfor %} 
+          </div>
+        {% endif %}      
+        {% if form.name.errors %}
+          <div class="m-3">
+            <label for="{{form.name.id_for_label}}" class="form-label"><strong>Company Name</strong></label>
+            {% render_field form.name class+='form-control is-invalid mb-2' %}
+            {% for error in form.name.errors %}
+              <div class="aler alert-danger mb-1" role="alert" style="font-size:12px">
+                {{error}}
+              </div>
+            {% endfor %}
+          </div>
+        {% else %}
+          <div class="m-3">
+            <label for="{{form.name.id_for_label}}" class="form-label"><strong>Company Name</strong></label>
+            {% render_field form.name class+='form-control' aria-describedby+='companyHelp' %}
+            <div id="companyHelp" class="form-text">
+              Name of the company as per tally.
+            </div> 
+          </div>
+        {% endif %}
+        {% if form.valid_users.errors %}
+          <div class="m-3">
+            <label for="" class="form-label"><strong>Users Access List</strong></label>
+            <hr>
+            {% for u in form.valid_users %}
+              {{u}}
+              <br>
+            {% endfor %}
+            <br>  
+            {% comment %} <label for="{{form.valid_users.id_for_label}}" class="form-label"><strong>Users Access List</strong></label>
+            {% render_field form.valid_users class+='form-control is-invalid mb-2' %} {% endcomment %}
+            {% for error in form.valid_users.errors %}
+              <div class="aler alert-danger mb-1" role="alert" style="font-size:12px">
+                {{error}}
+              </div>
+            {% endfor %}
+          </div>
+        {% else %}
+          <div class="m-3">
+            <label for="" class="form-label"><strong>Users Access List</strong></label>
+            <hr>
+            {% for u in form.valid_users %}
+              {{u}}
+              <br>
+            {% endfor %}
+            <br>
+            <div class="form-text my-2">
+              Select all users who needs access to the company dashboard
+            </div>
+          </div>
+        {% endif %}
+        <div class="text-center">
+          <button type="submit" class="btn btn-primary m-3">Update Access List</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock dashboard %}

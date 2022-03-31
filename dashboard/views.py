@@ -3,7 +3,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib import messages
 from django.db.models import ProtectedError, Sum, Q, Count,Min,Case,Value,When,FloatField,DateField,ExpressionWrapper,F,IntegerField,CharField
 from django.db.models.functions import Cast,ExtractDay,TruncDate,TruncMonth
-from .forms import Tally_Details_Form
+from .forms import Tally_Details_Form, Tally_Valid_Users_Form
 from .models import Tally_Detail,Voucher_Ledgers,Ledger_Master,Voucher_Bills,Voucher_CostCenters
 from django.urls import reverse_lazy, reverse
 from django.shortcuts import render,redirect
@@ -21,13 +21,6 @@ def find_digits(n):
     else:
         return int(math.log10(-n)) + 1
 
-class Tally_Details_Redirect(LoginRequiredMixin,RedirectView):
-    def get_redirect_url(self):
-        if Tally_Detail.objects.filter(organization=self.request.user.organization).exists():
-            return reverse('dashboard')
-        else:
-            return reverse('tally_settings')
-
 class Tally_Details_List(LoginRequiredMixin,ListView):
     model = Tally_Detail
     
@@ -35,6 +28,21 @@ class Tally_Details_List(LoginRequiredMixin,ListView):
         qs = super(Tally_Details_List,self).get_queryset()
         return qs.filter(organization = self.request.user.organization)
     
+class Tally_Valid_Users(LoginRequiredMixin,UpdateView):
+    model = Tally_Detail
+    form_class = Tally_Valid_Users_Form
+    template_name = 'dashboard/tally_valid_users.html'
+    success_url = reverse_lazy('tally_settings')
+    
+    def get_form_kwargs(self):
+        kwargs = super(Tally_Valid_Users,self).get_form_kwargs()
+        kwargs['user'] = self.request.user
+        return kwargs
+
+
+    def form_valid(self, form):
+        messages.success(self.request,"User Access updated.")
+        return super(Tally_Valid_Users, self).form_valid(form)        
 class Tally_Details_CreateView(LoginRequiredMixin,CreateView):
     model = Tally_Detail
     form_class = Tally_Details_Form

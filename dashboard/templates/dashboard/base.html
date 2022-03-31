@@ -97,6 +97,7 @@
                     <span class="align-middle m-2">My Account</span>
                   </a>
                 </li>
+                {% if user.org_admin %}
                 <li>
                   <a class="dropdown-item" href="{% url 'tally_settings' %}"
                     ><span
@@ -107,6 +108,7 @@
                     <span class="align-middle m-2">Settings</span></a
                   >
                 </li>
+                {% endif %}
                 <li><hr class="dropdown-divider" /></li>
                 <li>
                   <a class="dropdown-item" href="{% url 'logout_page' %}">

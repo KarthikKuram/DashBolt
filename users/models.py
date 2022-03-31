@@ -19,6 +19,7 @@ class User(AbstractBaseUser,PermissionsMixin):
     date_registered = models.DateTimeField(_('date registered'),default= datetime.now)
     validity = models.DateTimeField(_('validity'),default= get_validity)
     access = models.BooleanField(default=False)
+    org_admin = models.BooleanField(default=False)
     is_staff = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
     

@@ -7,7 +7,18 @@
       <span class="m-1"><i class="fas fa-sync-alt"></i></span>
       <span>Latest Refresh an hour back</span>
     </div>
-    <div class="align-self-baseline ms-auto">
+    <div class="align-self-baseline ms-auto d-flex flex-row">
+      <div class="btn-group">
+        <button class="btn btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" style="color: #005f73;border: 1px solid lightgrey; border-radius:4px;background:#f8f9fa">
+          {{user.organization}}
+        </button>
+        <ul class="dropdown-menu">
+          <li>Karthik</li>
+          <li>Kuram</li>
+
+        </ul>
+      </div>
+      &nbsp; &nbsp; 
       <div
         id="reportrange"
         class="d-flex flex-row justify-content-start bg-light"

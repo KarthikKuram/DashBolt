@@ -3,11 +3,12 @@ from django.http import HttpResponse
 from django.urls import reverse,reverse_lazy
 from django.views.generic import (TemplateView, CreateView)
 from .forms import RegisterForm 
+from .managers import Organization
 from django.contrib.auth.views import LoginView, LogoutView
 from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib.auth import login,logout,authenticate
 from django.utils import timezone
-from dashboard.models import Tally_Detail
+from dashboard.models import Tally_Detail,Ledger_Master
 # Create your views here.
 
 class Login_page(LoginView):
@@ -19,7 +20,8 @@ class Register_page(CreateView):
     success_url = reverse_lazy('register_success')
 
     def form_valid(self,form):
-        organization = form['organization'].save()
+        new_organization = form['organization'].save(commit=False)
+        organization, created = Organization.objects.get_or_create(name = new_organization.name)
         new_user = form['user'].save(commit=False)
         new_user.organization = organization
         new_user.save()
@@ -36,9 +38,8 @@ def Dashboard_page(request):
     elif timezone.now() > request.user.validity:
         return render(request, 'users/validity_expired.html')
     
-    elif not Tally_Detail.objects.filter(organization=request.user.organization).exists():
-        return redirect('redirect_settings')
-    
+    elif (not Tally_Detail.objects.filter(organization=request.user.organization).exists()) & request.user.org_admin:
+        return redirect('tally_settings')
     else:
         return render(request,'dashboard/main.html')
     

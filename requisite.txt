@@ -1,0 +1,11 @@
+1. Create Database with name bolt_dash
+
+2. Enter Database and CREATE EXTENSION citext;
+
+3. run migrations
+
+4. run fixtures with loaddata
+
+5. create Superuser
+
+6.

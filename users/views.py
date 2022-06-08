@@ -8,7 +8,7 @@ from django.contrib.auth.views import LoginView, LogoutView
 from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib.auth import login,logout,authenticate
 from django.utils import timezone
-from dashboard.models import Tally_Detail,Ledger_Master
+from dashboard.models import Tally_Detail,Ledger_Master, Custom_Category
 # Create your views here.
 
 class Login_page(LoginView):
@@ -40,6 +40,10 @@ def Dashboard_page(request):
     
     elif (not Tally_Detail.objects.filter(organization=request.user.organization).exists()) & request.user.org_admin:
         return redirect('tally_settings')
+    
+    elif (Custom_Category.objects.filter(organization=request.user.organization,primary_group__isnull = True).count()) > 0:
+        return redirect('custom_group_list')
+    
     else:
         return render(request,'dashboard/main.html')
     

@@ -12,6 +12,11 @@ urlpatterns = [
     path('delete-settings/<int:pk>/',views.Tally_Details_DeleteView.as_view(), name='delete_tally_settings'),
     path('valid_users/<int:pk>/',
          user_passes_test(lambda u: u.org_admin and Tally_Detail.objects.filter(organization = u.organization))(views.Tally_Valid_Users.as_view()), name='valid_users'),
+    path('get-access-list/',views.get_company_access, name = 'get_company_access'),
     path('update-dashboard/', views.update_dashboard, name = 'update_dashboard'),
+    path('custom-group-list/',
+         user_passes_test(lambda u: u.org_admin)(views.Custom_Category_List.as_view()), name='custom_group_list'),
+    path('group/<int:pk>/edit/',
+         user_passes_test(lambda u: u.org_admin)(views.GroupUpdateView.as_view()), name='custom_group'),
     
 ]

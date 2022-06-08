@@ -1,0 +1,57 @@
+{% extends "dashboard/base.html" %}
+{% load crispy_forms_tags %}
+{% load widget_tweaks %}
+{% load static %}
+
+{%block dashboard %}
+<div class="container">
+    <div class="row">
+        <div class="d-flex flex-row justify-content-between align-items-center mb-3">
+            <div class="col-6">
+                <legend><strong>MAP CUSTOM GROUPS</strong></legend>
+            </div>
+        </div>
+        <div class="col-md-4">
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                    {{ message}}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            {% endfor %}
+        </div>          
+        <div class="col-md-12">
+            <table class = 'table table-hover table-bordered table-sm' style="width:85%">
+                <thead class="table-light">
+                    <tr>
+                        <th scope="col" >Custom Group Name in Tally</th>
+                        <th scope="col" >Primary Group Classification</th>
+                        <th scope="col" >Tally Name</th>
+                        <th scope="col" class = 'text-center align-middle'>Map</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for detail in custom_category_list %}
+                    <tr>
+                        <td class="align-start">{{detail.custom_group}}</td>
+                        {% if detail.primary_group == None %}
+                        <td class="align-start">Not Mapped</td>
+                        {% else %}
+                        <td class="align-start">{{detail.primary_group}}</td>
+                        {% endif %}
+                        <td class="align-start">{{detail.company|title}}</td>
+                        <td class = 'text-center align-middle'>
+                            <a href="{% url 'custom_group' detail.pk %}">
+                                <span class="material-icons align-middle">edit</span>
+                            </a>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <p>No Custom Groups to Display</p>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>    
+    </div> 
+</div>
+
+{% endblock %}

@@ -3,8 +3,8 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib import messages
 from django.db.models import ProtectedError, Sum, Q, Count,Min,Case,Value,When,FloatField,DateField,ExpressionWrapper,F,IntegerField,CharField
 from django.db.models.functions import Cast,ExtractDay,TruncDate,TruncMonth
-from .forms import Tally_Details_Form, Tally_Valid_Users_Form
-from .models import Tally_Detail,Voucher_Ledgers,Ledger_Master,Voucher_Bills,Voucher_CostCenters
+from .forms import Tally_Details_Form, Tally_Valid_Users_Form,CategoryUpdateForm
+from .models import Tally_Detail,Voucher_Ledgers,Ledger_Master,Voucher_Bills,Voucher_CostCenters,Custom_Category
 from django.urls import reverse_lazy, reverse
 from django.shortcuts import render,redirect
 from django.http import JsonResponse
@@ -12,6 +12,8 @@ import pandas as pd
 from datetime import datetime,timedelta
 from dateutil.relativedelta import relativedelta
 import math
+from django.contrib.auth.decorators import login_required
+from bootstrap_modal_forms.generic import BSModalCreateView, BSModalUpdateView,BSModalDeleteView,BSModalFormView
 
 def find_digits(n):
     if n > 0:
@@ -113,10 +115,18 @@ class Tally_Details_DeleteView(LoginRequiredMixin,DeleteView):
             return redirect('tally_settings')
 
         return render(request,self.success_url,{})
+
+@login_required
+def get_company_access(request):
+    companies = Tally_Detail.objects.filter(valid_users = request.user).values('id','name').order_by('name')
+    return JsonResponse(list(companies),safe=False)
     
+
+@login_required    
 def update_dashboard(request):
     start_date = request.GET.get('start_date')
     end_date = request.GET.get('end_date')
+    selected_company = request.GET.get('selected_company').lower()
     start_date_pd = datetime.strptime(start_date,'%Y-%m-%d')
     end_date_pd = datetime.strptime(end_date,'%Y-%m-%d')
     diff_days = (end_date_pd - start_date_pd).days + 1
@@ -132,7 +142,7 @@ def update_dashboard(request):
     previous_top_income_ledgers = {}
     perc_change_top_income_ledgers = {}
     try:
-        income_dump = Voucher_Ledgers.income.filter(voucher_date__range=[start_date,end_date])
+        income_dump = Voucher_Ledgers.income.filter(voucher_date__range=[start_date,end_date],company = selected_company)
         present_income = round(income_dump.aggregate(Sum('amount'))['amount__sum'],0)
         income_voucher_list = income_dump.values_list('voucher_key', flat=True) 
         present_income_ledgers = income_dump.values('ledger').annotate(total=Sum('amount')).order_by('-total')[:5]
@@ -147,10 +157,10 @@ def update_dashboard(request):
     present_gross_profit = present_income
     
     try:
-        previous_income_dump =  Voucher_Ledgers.income.filter(voucher_date__range=[previous_start_date,previous_end_date])
+        previous_income_dump =  Voucher_Ledgers.income.filter(voucher_date__range=[previous_start_date,previous_end_date],company = selected_company)
         previous_income = round(previous_income_dump.aggregate(Sum('amount'))['amount__sum'],0)        
         previous_income_ledgers = Voucher_Ledgers.objects.filter(ledger__in = income_ledgers_chart_labels,
-                                                                 voucher_date__range=[previous_start_date,previous_end_date]).\
+                                                                 voucher_date__range=[previous_start_date,previous_end_date],company = selected_company).\
                                                                      values('ledger').annotate(total=Sum('amount'))
         for entry in previous_income_ledgers:
             previous_top_income_ledgers[entry['ledger']] = round(float(entry['total']),0)
@@ -176,7 +186,7 @@ def update_dashboard(request):
         else:
             perc_change_income = 100        
     try:
-        income_entries = Voucher_Ledgers.income.filter(voucher_date__range=[start_date,end_date])\
+        income_entries = Voucher_Ledgers.income.filter(voucher_date__range=[start_date,end_date],company = selected_company)\
             .values('voucher_date').annotate(total = Sum('amount')).order_by('voucher_date')
         for entry in income_entries:
             income_chart_labels.append(entry['voucher_date'])
@@ -194,7 +204,7 @@ def update_dashboard(request):
     previous_top_expense_ledgers = {}
     perc_change_top_expense_ledgers = {}
     try:
-        expense_dump = Voucher_Ledgers.expense.filter(voucher_date__range=[start_date,end_date])
+        expense_dump = Voucher_Ledgers.expense.filter(voucher_date__range=[start_date,end_date],company = selected_company)
         present_expense = round(expense_dump.aggregate(Sum('amount'))['amount__sum'],0)*-1
         expense_voucher_list = expense_dump.values_list('voucher_key', flat=True)
         present_expense_ledgers = expense_dump.values('ledger').annotate(total=Sum('amount')).order_by('total')[:5]
@@ -206,10 +216,10 @@ def update_dashboard(request):
         present_expense = 0
         expense_voucher_list = []
     try:        
-        previous_expense_dump = Voucher_Ledgers.expense.filter(voucher_date__range=[previous_start_date,previous_end_date])
+        previous_expense_dump = Voucher_Ledgers.expense.filter(voucher_date__range=[previous_start_date,previous_end_date],company = selected_company)
         previous_expense = round(previous_expense_dump.aggregate(Sum('amount'))['amount__sum'],0)*-1
         previous_expense_ledgers = Voucher_Ledgers.objects.filter(ledger__in = expense_ledgers_chart_labels,
-                                                                 voucher_date__range=[previous_start_date,previous_end_date]).\
+                                                                 voucher_date__range=[previous_start_date,previous_end_date],company = selected_company).\
                                                                      values('ledger').annotate(total=Sum('amount'))
         for entry in previous_expense_ledgers:
             previous_top_expense_ledgers[entry['ledger']] = round(float(entry['total']),0)*-1                                                                   
@@ -233,7 +243,7 @@ def update_dashboard(request):
         else:
             perc_change_expense = 100        
     try:
-        expense_entries = Voucher_Ledgers.expense.filter(voucher_date__range=[start_date,end_date])\
+        expense_entries = Voucher_Ledgers.expense.filter(voucher_date__range=[start_date,end_date],company = selected_company)\
             .values('voucher_date').annotate(total = Sum('amount')).order_by('voucher_date')
         for entry in expense_entries:
             expense_chart_labels.append(entry['voucher_date'])
@@ -245,7 +255,7 @@ def update_dashboard(request):
     ### RECEIVABLE & PAYABLE DASH CARD ###
     recpay_chart_data = []
     try:
-        present_debtor = round(Voucher_Ledgers.debtor.filter(voucher_date__range=[start_date,end_date]).aggregate(Sum('amount'))['amount__sum'],0)*-1
+        present_debtor = round(Voucher_Ledgers.debtor.filter(voucher_date__range=[start_date,end_date],company = selected_company).aggregate(Sum('amount'))['amount__sum'],0)*-1
         recpay_chart_data.append(float(present_debtor))          
         
     except:
@@ -253,17 +263,17 @@ def update_dashboard(request):
         recpay_chart_data.append(float(present_debtor))
     
     try:
-        present_creditor = round(Voucher_Ledgers.creditor.filter(voucher_date__range=[start_date,end_date]).aggregate(Sum('amount'))['amount__sum'],0)
+        present_creditor = round(Voucher_Ledgers.creditor.filter(voucher_date__range=[start_date,end_date],company = selected_company).aggregate(Sum('amount'))['amount__sum'],0)
         recpay_chart_data.append(float(present_creditor))
     except:
         present_creditor = 0
         recpay_chart_data.append(float(present_creditor))
     try:        
-        previous_debtor = round(Voucher_Ledgers.debtor.filter(voucher_date__range=[previous_start_date,previous_end_date]).aggregate(Sum('amount'))['amount__sum'],0)*-1
+        previous_debtor = round(Voucher_Ledgers.debtor.filter(voucher_date__range=[previous_start_date,previous_end_date],company = selected_company).aggregate(Sum('amount'))['amount__sum'],0)*-1
     except:
         previous_debtor = 0    
     try:        
-        previous_creditor = round(Voucher_Ledgers.creditor.filter(voucher_date__range=[previous_start_date,previous_end_date]).aggregate(Sum('amount'))['amount__sum'],0)
+        previous_creditor = round(Voucher_Ledgers.creditor.filter(voucher_date__range=[previous_start_date,previous_end_date],company = selected_company).aggregate(Sum('amount'))['amount__sum'],0)
     except:
         previous_creditor = 0    
     try:
@@ -290,7 +300,7 @@ def update_dashboard(request):
     payable_ageing_count = []
     
     # receivable ageing
-    debtor_bills_ref = Voucher_Bills.objects.filter(voucher_date__lte=end_date,ledger_primary_group="Sundry Debtors").exclude(bill_type = "On Account").\
+    debtor_bills_ref = Voucher_Bills.objects.filter(voucher_date__lte=end_date,ledger_primary_group="Sundry Debtors",company = selected_company).exclude(bill_type = "On Account").\
         values('bill_name').annotate(
             bill_date = Min('voucher_date'),
             net_due = Sum('bill_amount')*-1,
@@ -309,7 +319,7 @@ def update_dashboard(request):
     debtor_bills_ref = debtor_bills_ref.groupby('Age_Group').Due.agg(['sum','count']).reset_index()
     
     # payable ageing
-    creditor_bills_ref = Voucher_Bills.objects.filter(voucher_date__lte=end_date,ledger_primary_group="Sundry Creditors").exclude(bill_type = "On Account").\
+    creditor_bills_ref = Voucher_Bills.objects.filter(voucher_date__lte=end_date,ledger_primary_group="Sundry Creditors",company = selected_company).exclude(bill_type = "On Account").\
         values('bill_name').annotate(
             bill_date = Min('voucher_date'),
             net_due = Sum('bill_amount'),
@@ -328,20 +338,20 @@ def update_dashboard(request):
     creditor_bills_ref = creditor_bills_ref.groupby('Age_Group').Due.agg(['sum','count']).reset_index()
     
     # On Account Entries
-    debtor_bills_onaccount = Voucher_Bills.objects.filter(voucher_date__lte=end_date,ledger_primary_group="Sundry Debtors",bill_type = "On Account").\
+    debtor_bills_onaccount = Voucher_Bills.objects.filter(voucher_date__lte=end_date,ledger_primary_group="Sundry Debtors",bill_type = "On Account",company = selected_company).\
         values('bill_name').annotate(bill_type = Value('On Account'), net_due = Sum('bill_amount')*-1, count = Count('bill_amount')).\
             filter(net_due__gt = 0).values_list('bill_type','net_due','count')        
             
-    debtor_bills_onaccount_reverse = Voucher_Bills.objects.filter(voucher_date__lte=end_date,ledger_primary_group="Sundry Debtors",bill_type = "On Account").\
+    debtor_bills_onaccount_reverse = Voucher_Bills.objects.filter(voucher_date__lte=end_date,ledger_primary_group="Sundry Debtors",bill_type = "On Account",company = selected_company).\
         values('bill_name').annotate(bill_type = Value('On Account'), net_due = Sum('bill_amount'), count = Count('bill_amount')).\
             filter(net_due__gt = 0).values_list('bill_type','net_due','count')                
             
     
-    creditor_bills_onaccount = Voucher_Bills.objects.filter(voucher_date__lte=end_date,ledger_primary_group="Sundry Creditors",bill_type = "On Account").\
+    creditor_bills_onaccount = Voucher_Bills.objects.filter(voucher_date__lte=end_date,ledger_primary_group="Sundry Creditors",bill_type = "On Account",company = selected_company).\
         values('bill_name').annotate(bill_type = Value('On Account'), net_due = Sum('bill_amount'), count = Count('bill_amount')).\
             filter(net_due__gt = 0).values_list('bill_type','net_due','count')        
     
-    creditor_bills_onaccount_reverse = Voucher_Bills.objects.filter(voucher_date__lte=end_date,ledger_primary_group="Sundry Creditors",bill_type = "On Account").\
+    creditor_bills_onaccount_reverse = Voucher_Bills.objects.filter(voucher_date__lte=end_date,ledger_primary_group="Sundry Creditors",bill_type = "On Account",company = selected_company).\
         values('bill_name').annotate(bill_type = Value('On Account'), net_due = Sum('bill_amount')*-1, count = Count('bill_amount')).\
             filter(net_due__gt = 0).values_list('bill_type','net_due','count')        
 
@@ -397,26 +407,26 @@ def update_dashboard(request):
     ### CASH & BANK DASH CARD ###
     cashbank_chart_data = []
     try:
-        present_cash_dump = Voucher_Ledgers.cash.filter(voucher_date__range=[start_date,end_date])
+        present_cash_dump = Voucher_Ledgers.cash.filter(voucher_date__range=[start_date,end_date],company = selected_company)
         present_cash = round(present_cash_dump.aggregate(Sum('amount'))['amount__sum'],0)*-1        
         cashbank_chart_data.append(float(present_cash))
     except:
         present_cash = 0
         cashbank_chart_data.append(float(present_cash))
     try:
-        previous_cash_dump = Voucher_Ledgers.cash.filter(voucher_date__range=[previous_start_date,previous_end_date])
+        previous_cash_dump = Voucher_Ledgers.cash.filter(voucher_date__range=[previous_start_date,previous_end_date],company = selected_company)
         previous_cash = round(previous_cash_dump.aggregate(Sum('amount'))['amount__sum'],0)*-1
     except:
         previous_cash = 0
     try:
-        present_bank_dump = Voucher_Ledgers.bank.filter(voucher_date__range=[start_date,end_date])
+        present_bank_dump = Voucher_Ledgers.bank.filter(voucher_date__range=[start_date,end_date],company = selected_company)
         present_bank = round(present_bank_dump.aggregate(Sum('amount'))['amount__sum'],0)*-1
         cashbank_chart_data.append(float(present_bank))
     except:
         present_bank = 0
         cashbank_chart_data.append(float(present_bank))
     try:
-        previous_bank_dump = Voucher_Ledgers.bank.filter(voucher_date__range=[previous_start_date,previous_end_date])
+        previous_bank_dump = Voucher_Ledgers.bank.filter(voucher_date__range=[previous_start_date,previous_end_date],company = selected_company)
         previous_bank = round(previous_bank_dump.aggregate(Sum('amount'))['amount__sum'],0)*-1
     except:
         previous_bank = 0
@@ -449,22 +459,22 @@ def update_dashboard(request):
     for i in range (6):
         receipts_payments_labels_date.append((begin_date + relativedelta(months = i)).date())
            
-    cash_receipts_dump = Voucher_Ledgers.cash.filter(voucher_date__range=[begin_date,end_date],amount__lt = 0)
+    cash_receipts_dump = Voucher_Ledgers.cash.filter(voucher_date__range=[begin_date,end_date],amount__lt = 0,company = selected_company)
     cash_receipts = cash_receipts_dump.annotate(month = TruncMonth('voucher_date')).\
         values('month').annotate(amount = Sum('amount')*-1)
     cash_receipts = pd.DataFrame(cash_receipts,columns = ['month','amount'])
     
-    cash_payments_dump = Voucher_Ledgers.cash.filter(voucher_date__range=[begin_date,end_date],amount__gt = 0)
+    cash_payments_dump = Voucher_Ledgers.cash.filter(voucher_date__range=[begin_date,end_date],amount__gt = 0,company = selected_company)
     cash_payments = cash_payments_dump.annotate(month = TruncMonth('voucher_date')).\
         values('month').annotate(amount = Sum('amount'))
     cash_payments = pd.DataFrame(cash_payments,columns = ['month','amount'])
        
-    bank_receipts_dump = Voucher_Ledgers.bank.filter(voucher_date__range=[begin_date,end_date],amount__lt = 0)
+    bank_receipts_dump = Voucher_Ledgers.bank.filter(voucher_date__range=[begin_date,end_date],amount__lt = 0,company = selected_company)
     bank_receipts = bank_receipts_dump.annotate(month = TruncMonth('voucher_date')).\
         values('month').annotate(amount = Sum('amount')*-1)
     bank_receipts = pd.DataFrame(bank_receipts,columns = ['month','amount'])
     
-    bank_payments_dump = Voucher_Ledgers.bank.filter(voucher_date__range=[begin_date,end_date],amount__gt = 0)
+    bank_payments_dump = Voucher_Ledgers.bank.filter(voucher_date__range=[begin_date,end_date],amount__gt = 0,company = selected_company)
     bank_payments = bank_payments_dump.annotate(month = TruncMonth('voucher_date')).\
         values('month').annotate(amount = Sum('amount'))
     bank_payments = pd.DataFrame(bank_payments,columns = ['month','amount'])
@@ -494,7 +504,7 @@ def update_dashboard(request):
     try:
         present_direct_expense = round(Voucher_Ledgers.expense.filter(
             Q(ledger_primary_group='Purchase Accounts') | Q(ledger_primary_group='Direct Expenses') | Q(ledger_primary_group='Expenses (Direct)'),
-            voucher_date__range=[start_date,end_date]).aggregate(Sum('amount'))['amount__sum'],0)*-1
+            voucher_date__range=[start_date,end_date],company = selected_company).aggregate(Sum('amount'))['amount__sum'],0)*-1
     except:
         present_direct_expense = 0    
     
@@ -503,7 +513,7 @@ def update_dashboard(request):
     try:
         previous_direct_expense = round(Voucher_Ledgers.expense.filter(
             Q(ledger_primary_group='Purchase Accounts') | Q(ledger_primary_group='Direct Expenses') | Q(ledger_primary_group='Expenses (Direct)'),
-            voucher_date__range=[previous_start_date,previous_end_date]).aggregate(Sum('amount'))['amount__sum'],0)*-1
+            voucher_date__range=[previous_start_date,previous_end_date],company = selected_company).aggregate(Sum('amount'))['amount__sum'],0)*-1
     except:
         previous_direct_expense = 0    
         
@@ -528,13 +538,13 @@ def update_dashboard(request):
     try:
         present_indirect_expense = round(Voucher_Ledgers.expense.filter(
             Q(ledger_primary_group='Indirect Expenses') | Q(ledger_primary_group='Expenses (Indirect)'),
-            voucher_date__range=[start_date,end_date]).aggregate(Sum('amount'))['amount__sum'],0)*-1
+            voucher_date__range=[start_date,end_date],company = selected_company).aggregate(Sum('amount'))['amount__sum'],0)*-1
     except:
         present_indirect_expense = 0    
     try:
         previous_indirect_expense = round(Voucher_Ledgers.expense.filter(
             Q(ledger_primary_group='Indirect Expenses') | Q(ledger_primary_group='Expenses (Indirect)'),
-            voucher_date__range=[previous_start_date,previous_end_date]).aggregate(Sum('amount'))['amount__sum'],0)*-1
+            voucher_date__range=[previous_start_date,previous_end_date],company = selected_company).aggregate(Sum('amount'))['amount__sum'],0)*-1
     except:
         previous_indirect_expense = 0    
     try:
@@ -562,7 +572,7 @@ def update_dashboard(request):
     top_customer_chart_total = []
     top_customer_chart_count = []
     try:
-        top_customers = Voucher_Ledgers.objects.filter(voucher_key__in = income_voucher_list, ledger_primary_group='Sundry Debtors').values('ledger')\
+        top_customers = Voucher_Ledgers.objects.filter(voucher_key__in = income_voucher_list, ledger_primary_group='Sundry Debtors',company = selected_company).values('ledger')\
             .annotate(total=Sum('amount'),inv_count=Count('ledger')).order_by('total')[:5]
         for entry in top_customers:
             top_customer_chart_labels.append(entry['ledger'])
@@ -570,7 +580,7 @@ def update_dashboard(request):
             top_customer_chart_count.append(float(entry['inv_count']))
         
         # Get Opening Balance for Receivable Calculations #    
-        opening_balances = Ledger_Master.objects.filter(ledger__in= top_customer_chart_labels).values('ledger','opening_balance')
+        opening_balances = Ledger_Master.objects.filter(ledger__in= top_customer_chart_labels,company = selected_company).values('ledger','opening_balance')
         present_party_receivables = {}
         previous_party_receivables = {}
         perc_change_party_receivables = {}
@@ -581,14 +591,14 @@ def update_dashboard(request):
         # Get Net Transactions from the beginning till the last day of present period #
         net_transactions_present = Voucher_Ledgers.objects.filter(
             ledger__in= top_customer_chart_labels,
-            voucher_date__lte=end_date).values('ledger').annotate(net=Sum('amount'))
+            voucher_date__lte=end_date,company = selected_company).values('ledger').annotate(net=Sum('amount'))
         for entry in net_transactions_present:
             present_party_receivables[entry['ledger']]+=round(float(entry['net'])*-1,0)
         
         # Get Net Transactions from the beginning till the last day of previous period #
         net_transactions_previous = Voucher_Ledgers.objects.filter(
             ledger__in= top_customer_chart_labels,
-            voucher_date__lte=previous_end_date).values('ledger').annotate(net=Sum('amount'))
+            voucher_date__lte=previous_end_date,company = selected_company).values('ledger').annotate(net=Sum('amount'))
         for entry in net_transactions_previous:
             previous_party_receivables[entry['ledger']]+=round(float(entry['net'])*-1,0)
         
@@ -608,7 +618,7 @@ def update_dashboard(request):
     top_vendor_chart_total = []
     top_vendor_chart_count = []
     try:
-        top_vendors = Voucher_Ledgers.objects.filter(voucher_key__in = expense_voucher_list, ledger_primary_group='Sundry Creditors').values('ledger')\
+        top_vendors = Voucher_Ledgers.objects.filter(voucher_key__in = expense_voucher_list, ledger_primary_group='Sundry Creditors',company = selected_company).values('ledger')\
             .annotate(total=Sum('amount'),inv_count=Count('ledger')).order_by('-total')[:5]
         for entry in top_vendors:
             top_vendor_chart_labels.append(entry['ledger'])
@@ -616,7 +626,7 @@ def update_dashboard(request):
             top_vendor_chart_count.append(float(entry['inv_count']))
         
         # Get Opening Balance for Payable Calculations #    
-        opening_balances = Ledger_Master.objects.filter(ledger__in= top_vendor_chart_labels).values('ledger','opening_balance')
+        opening_balances = Ledger_Master.objects.filter(ledger__in= top_vendor_chart_labels,company = selected_company).values('ledger','opening_balance')
         present_party_payables = {}
         previous_party_payables = {}
         perc_change_party_payables = {}
@@ -627,14 +637,14 @@ def update_dashboard(request):
         # Get Net Transactions from the beginning till the last day of present period #
         net_transactions_present = Voucher_Ledgers.objects.filter(
             ledger__in= top_vendor_chart_labels,
-            voucher_date__lte=end_date).values('ledger').annotate(net=Sum('amount'))
+            voucher_date__lte=end_date,company = selected_company).values('ledger').annotate(net=Sum('amount'))
         for entry in net_transactions_present:
             present_party_payables[entry['ledger']]+=round(float(entry['net']),0)
         
         # Get Net Transactions from the beginning till the last day of previous period #
         net_transactions_previous = Voucher_Ledgers.objects.filter(
             ledger__in= top_vendor_chart_labels,
-            voucher_date__lte=previous_end_date).values('ledger').annotate(net=Sum('amount'))
+            voucher_date__lte=previous_end_date,company = selected_company).values('ledger').annotate(net=Sum('amount'))
         for entry in net_transactions_previous:
             previous_party_payables[entry['ledger']]+=round(float(entry['net']),0)
         
@@ -659,7 +669,7 @@ def update_dashboard(request):
     try:
         present_cc_dump = Voucher_CostCenters.objects.filter(
         (Q(ledger_category = 'Income') | Q(ledger_category = 'Expense')),
-            voucher_date__range=[start_date,end_date])
+            voucher_date__range=[start_date,end_date],company = selected_company)
         present_cc_category = present_cc_dump.values('cc_category').annotate(total=Sum('cc_amount')).\
             filter(total__gt = 0).order_by('-total')[:5]
         
@@ -674,7 +684,7 @@ def update_dashboard(request):
         previous_cc_category = Voucher_CostCenters.objects.filter(
             (Q(ledger_category = 'Income') | Q(ledger_category = 'Expense')),
             cc_category__in = cc_category_chart_labels,
-            voucher_date__range=[previous_start_date,previous_end_date]).\
+            voucher_date__range=[previous_start_date,previous_end_date],company = selected_company).\
             values('cc_category').annotate(total=Sum('cc_amount'))
         
         for entry in previous_cc_category:
@@ -693,12 +703,20 @@ def update_dashboard(request):
     
     ### CALCULATION OF FINANCIAL RATIOS ###
     # Current Ratio #
-    current_assets = round(max((Voucher_Ledgers.objects.filter(Q(ledger_primary_group = "Current Assets")\
+    try:
+        current_assets = round(max((Voucher_Ledgers.objects.filter(Q(ledger_primary_group = "Current Assets")\
         | Q(ledger_grand_parent = "Current Assets")\
-            | Q(ledger_parent = "Current Assets"),voucher_date__range=[start_date,end_date]).aggregate(Sum('amount'))['amount__sum'])*-1,0),0)
-    current_liabilities = round(max(Voucher_Ledgers.objects.filter(Q(ledger_primary_group = "Current Liabilities")\
+            | Q(ledger_parent = "Current Assets"),voucher_date__range=[start_date,end_date],company = selected_company).aggregate(Sum('amount'))['amount__sum'])*-1,0),0)
+    except:
+        current_assets = 0    
+        
+    try:    
+        current_liabilities = round(max(Voucher_Ledgers.objects.filter(Q(ledger_primary_group = "Current Liabilities")\
         | Q(ledger_grand_parent = "Current Liabilities")\
-            | Q(ledger_parent = "Current Liabilities"),voucher_date__range=[start_date,end_date]).aggregate(Sum('amount'))['amount__sum'],0),0)
+            | Q(ledger_parent = "Current Liabilities"),voucher_date__range=[start_date,end_date],company = selected_company).aggregate(Sum('amount'))['amount__sum'],0),0)
+    except:
+        current_liabilities = 0    
+        
     try:
         current_ratio = round(current_assets/current_liabilities,2)
         if current_ratio > 2:
@@ -710,10 +728,14 @@ def update_dashboard(request):
         current_ratio_perc = 0
     
     # Cash Ratio #
-    cash_equivalent = round(max((Voucher_Ledgers.objects.filter(Q(ledger_primary_group = "Cash-in-hand")\
+    try:
+      cash_equivalent = round(max((Voucher_Ledgers.objects.filter(Q(ledger_primary_group = "Cash-in-hand")\
         | Q(ledger_grand_parent = "Cash-in-hand") | Q(ledger_parent = "Cash-in-hand")\
             | Q(ledger_primary_group = "Bank Accounts") | Q(ledger_grand_parent = "Cash-in-hand") | Q(ledger_parent = "Cash-in-hand"),
-            voucher_date__range=[start_date,end_date]).aggregate(Sum('amount'))['amount__sum'])*-1,0),0)
+            voucher_date__range=[start_date,end_date],company = selected_company).aggregate(Sum('amount'))['amount__sum'])*-1,0),0)
+    except:
+      cash_equivalent = 0
+    
     try:
         cash_ratio = round(cash_equivalent/current_liabilities,2)
         if cash_ratio > 1:
@@ -791,3 +813,16 @@ def update_dashboard(request):
       
     })
     
+class Custom_Category_List(LoginRequiredMixin,ListView):
+    model = Custom_Category
+    
+    def get_queryset(self):
+        qs = super(Custom_Category_List,self).get_queryset()
+        return qs.filter(organization = self.request.user.organization)
+
+class GroupUpdateView(LoginRequiredMixin,UpdateView):
+    model = Custom_Category
+    form_class = CategoryUpdateForm
+    template_name = "dashboard/custom_category_edit.html"
+    success_message = 'Mapping Successfull !!'
+    success_url = reverse_lazy('custom_group_list')

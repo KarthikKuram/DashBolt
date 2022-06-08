@@ -34,7 +34,7 @@ class Ledger_Category(models.Model):
         verbose_name_plural = 'Ledger Categories'
         
     def __str__(self):
-        return '%s - %s' %(self.primary_group,self.category)
+        return self.primary_group
     
 class Ledger_Master(models.Model):
     master_id = models.IntegerField()
@@ -209,3 +209,16 @@ class Voucher_BankDetails(models.Model):
         
     def __str__(self):
         return '%s - %s - %s - %s' %(self.voucher_date.strftime('%m-%b-%Y'),self.voucher_number,self.ledger,self.instrument_number)
+    
+class Custom_Category(models.Model):
+    custom_group = models.CharField(max_length=255,null=True)
+    primary_group = models.CharField(max_length=255,null=True)
+    company = models.CharField(max_length=255,null=True)
+    organization = models.ForeignKey('users.Organization', related_name='custom_category_organization',on_delete=models.CASCADE,blank=True)
+    
+    class Meta: 
+        verbose_name = 'Custom Ledger Group'
+        verbose_name_plural = 'Custom Ledger Groups'
+    def __str__(self):
+        return '%s - %s - %s' %(self.custom_group,self.primary_group,self.company)
+    

@@ -1,4 +1,10 @@
 {% extends 'dashboard/base.html' %} {% block dashboard %}
+<style>
+    .bootstrap-select {
+       // width: 315px !important;
+        //outline: 0.05px solid grey;
+    }
+</style>
 <div id="loader" class="se-pre-con hidden"></div>
 <div class="row mb-2">
   <div class="col-md-12 d-flex flex-row justify-content-start align-items-center">
@@ -8,15 +14,13 @@
       <span>Latest Refresh an hour back</span>
     </div>
     <div class="align-self-baseline ms-auto d-flex flex-row">
-      <div class="btn-group">
-        <button class="btn btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" style="color: #005f73;border: 1px solid lightgrey; border-radius:4px;background:#f8f9fa">
-          {{user.organization}}
-        </button>
-        <ul class="dropdown-menu">
-          <li>Karthik</li>
-          <li>Kuram</li>
-
-        </ul>
+      <div id="company_access_list_div" class="d-flex flex-row">
+        <select id="company_access_list" class="selectpicker" name="company_list">
+        {% comment %} <option selected>Surya Constructions Private Limited</option>
+        <option value="1">One</option>
+        <option value="2">Two</option>
+        <option value="3">Three</option> {% endcomment %}
+      </select>
       </div>
       &nbsp; &nbsp; 
       <div
@@ -1894,6 +1898,67 @@
 
 {% block customjs %}
 <script>
+  $(document).ready(function(){
+    $.ajax({
+      url: "{% url 'get_company_access' %}",
+      success: function(data){
+        $('#company_access_list').empty();
+        data.forEach(function(data){
+          $('select[name=company_list]').append(
+                        $('<option></option>').val(`${data.id}`).html(`${data.name}`).attr('data-content',`${data.name}`)
+                        );
+        });
+        $('.selectpicker').selectpicker('refresh');
+        $('#company_access_list').change();
+      }
+    });
+ });
+</script>
+<script>
+  $('#company_access_list').on('change', function() {
+    var selected_company = $(this).find('option:selected').text();
+    var start_date = $('#reportrange').data('daterangepicker').startDate.format("YYYY-MM-DD");
+    var end_date = $('#reportrange').data('daterangepicker').endDate.format("YYYY-MM-DD");
+    console.log(start_date, end_date);
+    $.ajax({
+      url: "{% url 'update_dashboard' %}",
+      data:{
+        'start_date': start_date,
+        'end_date': end_date,
+        'selected_company' : selected_company
+      },
+      beforeSend: function () { // Before we send the request, remove the .hidden class from the spinner and default to inline-block.
+                  $("#top-customer-total").css("display", "None");
+                  $('#loader').removeClass('hidden');                  
+              },
+      success: function(data){
+        income_dash_card(data);
+        expense_dash_card(data);
+        recpay_dash_card(data);
+        cashbank_dash_card(data);
+        pl_dash_card(data);
+        top_customer_dash_card(data);
+        top_vendor_dash_card(data);
+        top_income_ledgers_dash_card(data);
+        top_expense_ledgers_dash_card(data);
+        ageing_dash_card(data);
+        rec_pay_dash_card(data);
+        cc_dash_card(data);
+        ratios(data);
+      },
+      complete: function () { // Set our complete callback, adding the .hidden class and hiding the spinner.
+                  $('#loader').addClass('hidden')
+      }
+    }); 
+  });
+</script>
+<script>
+  $('#reportrange').on('apply.daterangepicker', function(ev, picker) {
+    $('.selectpicker').selectpicker('refresh');
+    $('#company_access_list').change();
+  });
+</script>
+{% comment %} <script>
   $(function(){
     var start_date = $('#reportrange').data('daterangepicker').startDate.format("YYYY-MM-DD");
     var end_date = $('#reportrange').data('daterangepicker').endDate.format("YYYY-MM-DD");
@@ -1901,7 +1966,8 @@
       url: "{% url 'update_dashboard' %}",
       data:{
         'start_date': start_date,
-        'end_date': end_date
+        'end_date': end_date,
+        //'selected_company' : selected_company
       },
       beforeSend: function () { // Before we send the request, remove the .hidden class from the spinner and default to inline-block.
                   $("#top-customer-total").css("display", "None");
@@ -1928,8 +1994,8 @@
     });
   });
 
-</script>
-<script>
+</script> {% endcomment %}
+{% comment %} <script>
   $('#reportrange').on('apply.daterangepicker', function(ev, picker) {
   var start_date = picker.startDate.format("YYYY-MM-DD");
   var end_date = picker.endDate.format("YYYY-MM-DD");
@@ -1964,8 +2030,8 @@
                   $('#loader').addClass('hidden')
       }
     });
-});
-</script>
+  });
+</script> {% endcomment %}
 <style>
   .se-pre-con {
     position: fixed;

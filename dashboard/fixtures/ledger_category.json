@@ -270,5 +270,29 @@
       "primary_group": "Unsecured Loans",
       "category": "Liability"
     }
+  },
+  {
+    "model": "dashboard.ledger_category",
+    "pk": 35,
+    "fields": {
+      "primary_group": "Duties and Taxes",
+      "category": "Liability"
+    }
+  },
+  {
+    "model": "dashboard.ledger_category",
+    "pk": 36,
+    "fields": {
+      "primary_group": "Reserves and Surplus",
+      "category": "Liability"
+    }
+  },
+  {
+    "model": "dashboard.ledger_category",
+    "pk": 37,
+    "fields": {
+      "primary_group": "Loans & Advances (Asset)",
+      "category": "Asset"
+    }
   }
 ]

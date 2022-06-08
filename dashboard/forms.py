@@ -1,7 +1,9 @@
 from django import forms
 from django.forms import widgets
-from .models import Tally_Detail
+from .models import Tally_Detail,Ledger_Category,Custom_Category
 from users.models import User
+from django.forms.models import modelformset_factory
+from bootstrap_modal_forms.forms import BSModalModelForm, BSModalForm
 
 
 class Tally_Details_Form(forms.ModelForm):
@@ -31,3 +33,16 @@ class Tally_Valid_Users_Form(forms.ModelForm):
         queryset= None,
         widget = forms.CheckboxSelectMultiple(attrs={'class': "form-check-input"})
     )
+    
+class CategoryUpdateForm(forms.ModelForm):
+    primary_group = forms.ModelChoiceField(queryset=Ledger_Category.objects.all())
+    def __init__(self,*args,**kwargs):
+        super(CategoryUpdateForm,self).__init__(*args,**kwargs)
+        instance = getattr(self,'instance',None)
+        if instance and instance.pk:
+            self.fields['company'].disabled = True
+            self.fields['custom_group'].disabled = True 
+    class Meta:
+        model = Custom_Category
+        fields = ('custom_group','primary_group','company',)
+        
